@@ -1,17 +1,16 @@
 {
-    "LevelName": "Basic Instructions",
+    "LevelName": "The First Stone",
     "Description": "Your first task as the architect begins! Move your worker to the stone pile, pick up the base stone, and place it on the foundation.",
-    "Commands": [
-        {
-            "Command": "Move",
+    "Commands": [{
+            "Command": "input",
             "Description": "Move your worker to the stone pile."
         },
         {
-            "Command": "PickUp",
+            "Command": "output",
             "Description": "Pick up the base stone."
         },
         {
-            "Command": "Place",
+            "Command": "copyfrom",
             "Description": "Place the base stone on the foundation."
         }
     ]

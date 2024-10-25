@@ -1,0 +1,25 @@
+{
+    "LevelName": "Race Against Time",
+    "Description": "A sandstorm is approaching! Complete the construction before it arrives, or risk losing everything to the desert winds!",
+    "Commands": [{
+            "Command": "input",
+            "Description": "Move your worker to the stone pile quickly."
+        },
+        {
+            "Command": "output",
+            "Description": "Pick up the stone."
+        },
+        {
+            "Command": "conditional timer",
+            "Description": "Track time left and prompt worker to speed up."
+        },
+        {
+            "Command": "copyfrom",
+            "Description": "Place stone on the foundation."
+        },
+        {
+            "Command": "jump if time low",
+            "Description": "If time is running low, go to a shortcut."
+        }
+    ]
+}

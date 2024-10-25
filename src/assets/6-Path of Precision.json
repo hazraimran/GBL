@@ -1,0 +1,21 @@
+{
+    "LevelName": "Path of Precision",
+    "Description": "Some stones are farther away, and your workers must take the long route. Plan your moves carefully, or you'll lose precious time.",
+    "Commands": [{
+            "Command": "input",
+            "Description": "Plan route to the distant stone pile."
+        },
+        {
+            "Command": "output",
+            "Description": "Pick up the stone carefully."
+        },
+        {
+            "Command": "conditional path optimization",
+            "Description": "Calculate shortest path to the foundation."
+        },
+        {
+            "Command": "copyfrom",
+            "Description": "Place stone at the precise location on the foundation."
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "LevelName": "Double Duty",
+    "Description": "Now you have two workers at your command! Divide and conquer by assigning tasks to each. Build faster, build smarter!",
+    "Commands": [{
+            "Command": "input worker 1",
+            "Description": "Move worker 1 to the stone pile."
+        },
+        {
+            "Command": "input worker 2",
+            "Description": "Move worker 2 to the stone pile."
+        },
+        {
+            "Command": "output worker 1",
+            "Description": "Worker 1 picks up the first stone."
+        },
+        {
+            "Command": "output worker 2",
+            "Description": "Worker 2 picks up the second stone."
+        },
+        {
+            "Command": "copyfrom worker 1",
+            "Description": "Worker 1 places the stone on the left side."
+        },
+        {
+            "Command": "copyfrom worker 2",
+            "Description": "Worker 2 places the stone on the right side."
+        }
+    ]
+}
