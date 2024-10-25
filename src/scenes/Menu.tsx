@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import GameContext from "../context/GameContext";
 
 const Menu: React.FC = () => {
-    const { currentScene } = useContext(GameContext);
+    const { currentScene, setCurrentScene } = useContext(GameContext);
     const [showMenu, setShowMenu] = useState<boolean>(false);
 
     return currentScene === 'menu' && (
@@ -10,6 +10,9 @@ const Menu: React.FC = () => {
             style={{ backgroundImage: `url('/bg.png')` }}
             onClick={() => {
                 setShowMenu(true);
+                setTimeout(() => {
+                    setCurrentScene('gameScene');
+                }, 500);
             }}
         >
         </div>

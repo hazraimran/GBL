@@ -7,7 +7,7 @@ function App() {
 
   return (
     <GameProvider>
-      <div className='h-[100vh] w-[100vw] relative'>
+      <div className='h-[100vh] w-[100vw] relative overflow-hidden'>
         <Menu />
         <GameScene />
       </div>
