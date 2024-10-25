@@ -7,6 +7,8 @@ interface GameContextType {
     setLevel: (level: number) => void;
     currentScene: currentSceneType;
     setCurrentScene: (scene: currentSceneType) => void;
+    instructions: string[];
+    setInstructions: (instructions: string[]) => void;
 }
 
 // Create the context with a default value (optional)
@@ -14,7 +16,9 @@ const GameContext = createContext<GameContextType>({
     level: 0,
     setLevel: () => {},
     currentScene: 'menu',
-    setCurrentScene: () => {}
+    setCurrentScene: () => {},
+    instructions: [],
+    setInstructions: () => {}
 });
 
 export default GameContext;

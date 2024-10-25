@@ -10,14 +10,17 @@ interface GameProviderProps {
 
 const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [level, setLevel] = useState<number>(1);
-  const [currentScene, setCurrentScene] = useState<currentSceneType>('menu')
+  const [currentScene, setCurrentScene] = useState<currentSceneType>('menu');
+  const [instructions, setInstructions] = useState<string[]>([]);
 
   return (
     <GameContext.Provider value={{
       level,
       setLevel,
       currentScene,
-      setCurrentScene
+      setCurrentScene,
+      instructions,
+      setInstructions
     }}>
     { children }
     </GameContext.Provider>
