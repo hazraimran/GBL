@@ -1,7 +1,7 @@
 // src/context/GameProvider.tsx
 import React, { useState, ReactNode } from 'react';
 import GameContext from './GameContext';
-import { currentSceneType } from '../types';
+import { CurrentSceneType } from '../types';
 
 // Define props type for the GameProvider, which includes `children`
 interface GameProviderProps {
@@ -10,7 +10,7 @@ interface GameProviderProps {
 
 const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [level, setLevel] = useState<number>(1);
-  const [currentScene, setCurrentScene] = useState<currentSceneType>('menu');
+  const [currentScene, setCurrentScene] = useState<CurrentSceneType>('menu');
   const [instructions, setInstructions] = useState<string[]>([]);
 
   return (
@@ -22,7 +22,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       instructions,
       setInstructions
     }}>
-    { children }
+      {children}
     </GameContext.Provider>
   );
 };

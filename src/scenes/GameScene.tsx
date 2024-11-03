@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import BottomPanel from '../components/BottomPanel';
 import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import GameContext from '../context/GameContext';
+import PhaserGame from '../game/PhaserGame';
 
 const GameScene: React.FC = () => {
     const { currentScene } = useContext(GameContext);
@@ -11,6 +12,8 @@ const GameScene: React.FC = () => {
 
             <InstructionPanel />
             <BottomPanel />
+            <PhaserGame />
+
         </div>
     )
 }
