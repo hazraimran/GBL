@@ -1,7 +1,15 @@
+// types/game.ts
 export interface Worker {
     sprite: Phaser.GameObjects.Sprite;
     isCarrying: boolean;
-    currentStone?: string;
+    currentStone?: StoneType;
+    carryingValue?: number;  // 新增属性
+}
+
+export interface Stone {
+    sprite: Phaser.GameObjects.Sprite;
+    type: StoneType;
+    value?: number;  // 新增属性
 }
 
 export interface Stone {

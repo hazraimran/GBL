@@ -1,10 +1,18 @@
 import React, { useState, useRef } from 'react';
 import { GoMute, GoUnmute } from "react-icons/go";
-// import { GrPowerReset } from "react-icons/gr";
 import { RxReset } from "react-icons/rx"; // go back icon
 
+interface BottomPanelProps {
+    onExecute: () => void;
+    onExecuteOneStep: () => void;
+    onReset: () => void;
+}
 
-const App: React.FC = () => {
+const BottomPanel: React.FC<BottomPanelProps> = ({
+    onExecute,
+    onExecuteOneStep,
+    onReset,
+}) => {
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
     const progressRef = useRef<HTMLDivElement>(null);
@@ -74,4 +82,4 @@ const App: React.FC = () => {
     );
 };
 
-export default App;
+export default BottomPanel;

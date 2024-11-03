@@ -1,10 +1,14 @@
-import React from 'react';
+// import React from 'react';
 
+type CommandPanelProps = {
+    // Define props for CommandPanel
+    commands: string[];
+}
 
 const CommandPanel: React.FC = () => {
 
     return (
-        <div className="flex space-x-4 right-[25rem] absolute">
+        <div className="flex space-x-4 right-[25rem] absolute top-1/3 -translate-y-1/2 ">
             <div className="flex flex-col space-y-2">
                 <button className="bg-green-500 text-black p-2 rounded">inbox</button>
                 <button className="bg-green-500 text-black p-2 rounded">outbox</button>
@@ -16,7 +20,6 @@ const CommandPanel: React.FC = () => {
                 <button className="bg-blue-500 p-2 rounded">jump if zero</button>
             </div>
         </div>
-
     )
 }
 

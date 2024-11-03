@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
+import { CiEraser } from "react-icons/ci";
 
 type Instruction = 'inbox' | 'outbox' | 'copyfrom' | 'copyto' | 'add' | 'sub' | 'jump' | 'jumpifzero' | null;
 
@@ -11,11 +12,15 @@ const CodingArea: React.FC = () => {
 
     const onDragStart = (event: React.DragEvent, instruction: Instruction) => {
         event.dataTransfer.setData('instruction', instruction as string);
-        event.currentTarget.classList.add('opacity-50', 'scale-105'); // Floating effect
+        // event.currentTarget.classList.add('opacity-50', 'scale-105'); // Floating effect
     };
 
+    const onDrag = (event: React.DragEvent) => {
+        event.preventDefault(); // Required to allow dropping
+    }
+
     const onDragEnd = (event: React.DragEvent) => {
-        event.currentTarget.classList.remove('opacity-50', 'scale-105');
+        // event.currentTarget.classList.remove('opacity-50', 'scale-105');
     };
 
     const onDrop = (event: React.DragEvent, lineIndex: number) => {
@@ -50,49 +55,66 @@ const CodingArea: React.FC = () => {
         setCodeLines(newCodeLines);
     };
 
-    return (
-        <div className="flex flex-col items-start space-y-2 p-4 bg-gray-200 rounded-md w-64">
-            {/* Code lines */}
-            {codeLines.map((instruction, index) => (
-                <div
-                    key={index}
-                    className={classNames(
-                        'flex items-center space-x-2 p-2 bg-white rounded-md shadow-md border border-gray-300 h-10 w-full transition-all duration-200',
-                        { 'border-blue-500 bg-blue-100': hoverIndex === index } // Highlight effect
-                    )}
-                    onDrop={(e) => onDrop(e, index)}
-                    onDragOver={(e) => onDragOver(e, index)}
-                    onDragLeave={() => setHoverIndex(null)} // Remove hover effect when drag leaves
-                >
-                    {/* Line number */}
-                    {instruction && <span className="text-gray-700">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>}
-                    {/* Instruction */}
-                    <div className="flex-grow text-gray-800">{instruction || 'Drop Instruction Here'}</div>
-                    {/* Clear button for each line */}
-                    {instruction && (
-                        <button
-                            onClick={() => clearLine(index)}
-                            className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
-                        >
-                            ✖
-                        </button>
-                    )}
-                </div>
-            ))}
+    const undo = () => {
+        const newCodeLines = [...codeLines];
+        newCodeLines.pop();
+        setCodeLines(newCodeLines);
+    }
 
-            {/* Draggable instruction buttons */}
-            <div className="flex flex-wrap gap-2 mt-4">
-                {instructionList.map((instruction, index) => (
+    const clear = () => {
+        setCodeLines([null]);
+    }
+
+    return (
+        <div>
+            <div className="flex flex-col items-start space-y-2 p-4 bg-gray-200 rounded-md w-full">
+                {/* Code lines */}
+                {codeLines.map((instruction, index) => (
                     <div
                         key={index}
-                        draggable
-                        onDragStart={(e) => onDragStart(e, instruction)}
-                        onDragEnd={onDragEnd}
-                        className="cursor-pointer p-2 bg-green-500 text-white rounded shadow-md hover:bg-green-400 transition-transform transform hover:scale-105"
+                        className={classNames(
+                            'flex items-center space-x-2 p-2 bg-white rounded-md shadow-md border border-gray-300 h-10 w-full transition-all duration-200',
+                            { 'border-blue-500 bg-blue-100': hoverIndex === index } // Highlight effect
+                        )}
+                        onDrop={(e) => onDrop(e, index)}
+                        onDragOver={(e) => onDragOver(e, index)}
+                        onDragLeave={() => setHoverIndex(null)} // Remove hover effect when drag leaves
                     >
-                        {instruction}
+                        {/* Line number */}
+                        {instruction && <span className="text-gray-700">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>}
+                        {/* Instruction */}
+                        <div className="flex-grow text-gray-800">{instruction || 'Drop Instruction Here'}</div>
+                        {/* Clear button for each line */}
+                        {instruction && (
+                            <button
+                                onClick={() => clearLine(index)}
+                                className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
+                            >
+                                <CiEraser />
+                            </button>
+                        )}
                     </div>
                 ))}
+
+                {/* Draggable instruction buttons */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                    {instructionList.map((instruction, index) => (
+                        <div
+                            key={index}
+                            draggable
+                            onDragStart={(e) => onDragStart(e, instruction)}
+                            onDragEnd={onDragEnd}
+                            className="cursor-pointer p-2 bg-green-500 text-white rounded shadow-md hover:bg-green-400 transition-transform transform hover:scale-105"
+                        >
+                            {instruction}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex justify-between space-x-2">
+                <button className="bg-gray-700 p-2 rounded" onClick={undo}>undo</button>
+                <button className="bg-gray-700 p-2 rounded" onClick={clear}>clear</button>
             </div>
         </div>
     );

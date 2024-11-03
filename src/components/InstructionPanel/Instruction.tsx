@@ -1,9 +1,13 @@
 import React from "react";
 
-const Instruction: React.FC = () => {
+interface InstructionProps {
+    name: string;
+}
+
+const Instruction: React.FC<InstructionProps> = ({ name }) => {
     return (
         <div>
-            <h1>Instruction</h1>
+            <>{name}</>
         </div>
     )
 }

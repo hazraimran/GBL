@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
 import { MainScene } from './MainScene';
 import { CommandType } from '../types/game';
+import BottomPanel from '../components/BottomPanel';
 
 const PhaserGame: React.FC = () => {
     const gameRef = useRef<HTMLDivElement>(null);
@@ -18,7 +19,7 @@ const PhaserGame: React.FC = () => {
             height: window.innerHeight,
             transparent: true,
             parent: gameRef.current,
-            scene: MainScene, // Pass the scene class directly, not in an array
+            scene: MainScene,
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -47,12 +48,7 @@ const PhaserGame: React.FC = () => {
 
     useEffect(() => {
         if (commands.length > 0 && gameInstanceRef.current) {
-            const mainScene = gameInstanceRef.current.scene.getScene('MainScene') as MainScene;
-            if (mainScene) {
-                // Execute commands here
-                mainScene.executeCommands(commands);
-                // console.log('Executing commands:', commands);
-            }
+            
         }
     }, [commands]);
 
@@ -61,18 +57,35 @@ const PhaserGame: React.FC = () => {
             'INPUT',
             'OUTPUT'
         ];
+        
         setCommands(inputCommands);
+
+        if (!gameInstanceRef.current) {
+            console.log('Game instance not found');
+        }
+
+        const mainScene = gameInstanceRef.current.scene.getScene('MainScene') as MainScene;
+        if (mainScene) {
+            // Execute commands here
+            mainScene.executeCommands(commands);
+        }
     };
+
+    const handleExecuteOneStep = () => {
+        const nextCommand = commands[0];
+        if (nextCommand) {
+            setCommands((prevCommands) => prevCommands.slice(1));
+        }
+    }
+
+    const handleReset = () => {
+        setCommands([]);
+    }
 
     return (
         <div className="w-full h-full relative">
-            <button
-                onClick={handleRunCode}
-                className="absolute mt-4 p-2 bg-blue-500 text-white rounded"
-            >
-                Execute
-            </button>
-            <div ref={gameRef} className="w-full h-full"></div>
+            <BottomPanel onExecute={handleRunCode} onExecuteOneStep={handleExecuteOneStep} onReset={handleReset}/>
+            <div ref={gameRef} className="w-full h-full" />
         </div>
     );
 };

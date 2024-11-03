@@ -1,14 +1,28 @@
 import { Worker, Stone, ConstructionSlot, StoneType, CommandType } from '../types/game';
 
+// 新增的类型定义
+interface LevelConfig {
+    generateInputs: () => number[];
+    validateOutput: (output: number[]) => boolean;
+    slots: SlotConfig[];
+}
+
+interface SlotConfig {
+    x: number;
+    y: number;
+}
+
 interface InputSlot {
     rect: Phaser.GameObjects.Rectangle;
     stone?: Stone;
+    value?: number;
 }
 
 interface OutputSlot {
     rect: Phaser.GameObjects.Rectangle;
     stone?: Stone;
     expectedValue?: StoneType;
+    value?: number;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -19,6 +33,7 @@ export class MainScene extends Phaser.Scene {
     private outputSlots: OutputSlot[] = [];
     private currentLevel: number;
     private commandQueue: CommandType[];
+    private levelConfig: LevelConfig | null = null;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -36,6 +51,18 @@ export class MainScene extends Phaser.Scene {
 
     create(): void {
         this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+
+        // 加载默认关卡配置
+        this.loadLevelConfig({
+            generateInputs: () => [1, 2, 3],
+            validateOutput: (output) => output.every((val, idx) => val === idx + 1),
+            slots: [
+                { x: 300, y: 200 },
+                { x: 300, y: 300 },
+                { x: 300, y: 400 }
+            ]
+        });
+
         this.setupInputArea();
         this.setupOutputArea();
         this.setupConstructionArea();
@@ -45,8 +72,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(): void {
-        const width = this.game.config.width as number;
-
         // Create input slots on the left side
         for (let i = 0; i < 3; i++) {
             const rect = this.add.rectangle(
@@ -138,26 +163,31 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupLevel(level: number): void {
-        // Example level setup
-        const inputData: StoneType[] = ['small', 'medium', 'large'];
+        if (this.levelConfig) {
+            const inputValues = this.levelConfig.generateInputs();
 
-        // Setup input slots with initial stones
-        inputData.forEach((stoneType, index) => {
-            const stone: Stone = {
-                sprite: this.add.sprite(
-                    this.inputSlots[index].rect.x,
-                    this.inputSlots[index].rect.y,
-                    `stone-${stoneType}`
-                ),
-                type: stoneType
-            };
-            this.inputSlots[index].stone = stone;
-        });
+            inputValues.forEach((value, index) => {
+                const stone: Stone = {
+                    sprite: this.add.sprite(
+                        this.inputSlots[index].rect.x,
+                        this.inputSlots[index].rect.y,
+                        `stone-small`
+                    ),
+                    type: 'small',
+                    value: value
+                };
+                this.inputSlots[index].stone = stone;
+                this.inputSlots[index].value = value;
 
-        // Setup expected output
-        this.outputSlots.forEach((slot, index) => {
-            slot.expectedValue = inputData[index];
-        });
+                // 在石头上显示数值
+                this.add.text(
+                    stone.sprite.x - 5,
+                    stone.sprite.y - 8,
+                    value.toString(),
+                    { fontSize: '16px', color: '#ffffff' }
+                ).setOrigin(0.5);
+            });
+        }
     }
 
     public executeCommands(commands: CommandType[]): void {
@@ -211,15 +241,15 @@ export class MainScene extends Phaser.Scene {
 
     private handlePickupFromInput(worker: Worker): void {
         if (!worker.isCarrying) {
-            // Find the first input slot with a stone
             const inputSlot = this.inputSlots.find(slot => slot.stone);
             if (inputSlot && inputSlot.stone) {
                 worker.isCarrying = true;
                 worker.currentStone = inputSlot.stone.type;
+                worker.carryingValue = inputSlot.value;
                 inputSlot.stone.sprite.setVisible(false);
                 inputSlot.stone = undefined;
+                inputSlot.value = undefined;
 
-                // Move worker to input position
                 this.tweenWorkerTo(worker, inputSlot.rect.x + 60, inputSlot.rect.y);
             }
         }
@@ -227,25 +257,33 @@ export class MainScene extends Phaser.Scene {
 
     private handleDropToOutput(worker: Worker): void {
         if (worker.isCarrying) {
-            // Find the first empty output slot
             const outputSlot = this.outputSlots.find(slot => !slot.stone);
             if (outputSlot) {
-                // Move worker to output position
                 this.tweenWorkerTo(worker, outputSlot.rect.x - 60, outputSlot.rect.y, () => {
-                    // Create new stone in output slot
                     const stone: Stone = {
                         sprite: this.add.sprite(
                             outputSlot.rect.x,
                             outputSlot.rect.y,
                             `stone-${worker.currentStone}`
                         ),
-                        type: worker.currentStone!
+                        type: worker.currentStone!,
+                        value: worker.carryingValue
                     };
+
                     outputSlot.stone = stone;
+                    outputSlot.value = worker.carryingValue;
+
+                    this.add.text(
+                        stone.sprite.x - 5,
+                        stone.sprite.y - 8,
+                        stone.value?.toString() || '',
+                        { fontSize: '16px', color: '#ffffff' }
+                    ).setOrigin(0.5);
+
                     worker.isCarrying = false;
                     worker.currentStone = undefined;
+                    worker.carryingValue = undefined;
 
-                    // Check if the output matches the expected value
                     this.checkOutput();
                 });
             }
@@ -258,6 +296,7 @@ export class MainScene extends Phaser.Scene {
             if (nearbyStone) {
                 worker.isCarrying = true;
                 worker.currentStone = nearbyStone.type;
+                worker.carryingValue = nearbyStone.value;
                 nearbyStone.sprite.setVisible(false);
             }
         }
@@ -268,8 +307,31 @@ export class MainScene extends Phaser.Scene {
             const validSlot = this.findValidConstructionSlot(worker);
             if (validSlot) {
                 validSlot.isOccupied = true;
+
+                // Create new stone in the slot
+                const stone: Stone = {
+                    sprite: this.add.sprite(
+                        validSlot.rect.x,
+                        validSlot.rect.y,
+                        `stone-${worker.currentStone}`
+                    ),
+                    type: worker.currentStone!,
+                    value: worker.carryingValue
+                };
+
+                // Display the value
+                if (worker.carryingValue !== undefined) {
+                    this.add.text(
+                        stone.sprite.x - 5,
+                        stone.sprite.y - 8,
+                        worker.carryingValue.toString(),
+                        { fontSize: '16px', color: '#ffffff' }
+                    ).setOrigin(0.5);
+                }
+
                 worker.isCarrying = false;
                 worker.currentStone = undefined;
+                worker.carryingValue = undefined;
             }
         }
     }
@@ -309,14 +371,55 @@ export class MainScene extends Phaser.Scene {
     }
 
     private checkOutput(): void {
-        const isCorrect = this.outputSlots.every(slot =>
-            !slot.expectedValue ||
-            (slot.stone && slot.stone.type === slot.expectedValue)
-        );
+        if (!this.levelConfig) return;
+
+        const outputValues = this.outputSlots
+            .map(slot => slot.value)
+            .filter((value): value is number => value !== undefined);
+
+        const isCorrect = this.levelConfig.validateOutput(outputValues);
 
         if (isCorrect) {
             console.log('Level completed!');
             // You can add level completion logic here
         }
+    }
+
+    public loadLevelConfig(config: LevelConfig): void {
+        this.levelConfig = config;
+        this.clearCurrentLevel();
+        this.setupLevel(this.currentLevel);
+
+        // 设置构造槽
+        config.slots.forEach((slotConfig, index) => {
+            if (index < this.constructionSlots.length) {
+                const slot = this.constructionSlots[index];
+                slot.rect.setPosition(slotConfig.x, slotConfig.y);
+            }
+        });
+    }
+
+    private clearCurrentLevel(): void {
+        // 清除所有石头
+        this.stones.forEach(stone => stone.sprite.destroy());
+        this.stones = [];
+
+        // 清除输入槽中的石头
+        this.inputSlots.forEach(slot => {
+            if (slot.stone) {
+                slot.stone.sprite.destroy();
+                slot.stone = undefined;
+                slot.value = undefined;
+            }
+        });
+
+        // 清除输出槽中的石头
+        this.outputSlots.forEach(slot => {
+            if (slot.stone) {
+                slot.stone.sprite.destroy();
+                slot.stone = undefined;
+                slot.value = undefined;
+            }
+        });
     }
 }

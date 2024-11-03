@@ -1,6 +1,6 @@
 // src/context/GameContext.ts
 import { createContext } from 'react';
-import { CurrentSceneType } from '../types';
+import { CurrentSceneType } from '../types/level';
 
 interface GameContextType {
     level: number;

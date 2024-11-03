@@ -1,6 +1,7 @@
 {
     "LevelName": "Double Duty",
     "Description": "Now you have two workers at your command! Divide and conquer by assigning tasks to each. Build faster, build smarter!",
+    "topic": "concurrency",
     "Commands": [{
             "Command": "input worker 1",
             "Description": "Move worker 1 to the stone pile."

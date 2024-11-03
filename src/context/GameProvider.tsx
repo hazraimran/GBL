@@ -1,7 +1,7 @@
 // src/context/GameProvider.tsx
 import React, { useState, ReactNode } from 'react';
 import GameContext from './GameContext';
-import { CurrentSceneType } from '../types';
+import { CurrentSceneType } from '../types/level';
 
 // Define props type for the GameProvider, which includes `children`
 interface GameProviderProps {

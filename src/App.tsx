@@ -1,6 +1,5 @@
-import GameScene from './scenes/GameScene';
-import Menu from './scenes/Menu';
-import { useState } from 'react';
+import GameScene from './pages/GameScene';
+import Menu from './pages/Menu';
 import GameProvider from './context/GameProvider';
 
 function App() {
