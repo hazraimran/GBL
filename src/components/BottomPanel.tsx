@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { GoMute, GoUnmute } from "react-icons/go";
 import { RxReset } from "react-icons/rx"; // go back icon
+import { Play, MoveRight, Square } from 'lucide-react';
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -46,35 +47,46 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 
             </button>
 
-            <div className=" flex items-center space-x-4 p-4 bg-custom-bg rounded-lg translate-x-1/2">
+            <div className=" flex items-center space-x-4 p-4 bg-custom-bg rounded-lg translate-x-1/2 ">
                 {/* Stop Button */}
-                <button className="w-[6vw] h-[6vw] bg-custom-red rounded-lg flex items-center justify-center">
-                    <div className="w-10 h-10 opacity-50 bg-black"></div>
-                </button>
-
-                {/* Turn Left Button */}
-                <button className="w-[6vw] h-[6vw] bg-gray-500 rounded-lg flex items-center justify-center">
-                    <svg className="w-10 h-10 opacity-50 bg-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h8M7 7v8m0-8l8 8" />
-                    </svg>
+                <button
+                    className="w-[6vw] h-[6vw] bg-custom-red rounded-lg flex items-center justify-center"
+                    onClick={onReset}
+                >
+                    <Square
+                        className="w-[3vw] h-[3vw] opacity-50"
+                        strokeWidth={2}
+                        fill="black"
+                        color="black"
+                    />
                 </button>
 
                 {/* Play Button */}
-                <button className="w-[6vw] h-[6vw] bg-custom-green rounded-lg flex items-center justify-center">
-                    <svg className="w-10 h-10 opacity-50 bg-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v18l14-9-14-9z" />
-                    </svg>
+                <button
+                    className="w-[6vw] h-[6vw] bg-custom-green rounded-lg flex items-center justify-center"
+                    onClick={onExecute}
+                >
+                    <Play
+                        className="w-10 h-10 opacity-50"
+                        strokeWidth={2}
+                        color="black"
+                    />
                 </button>
 
-                {/* Turn Right Button */}
-                <button className="w-[6vw] h-[6vw] bg-custom-green rounded-lg flex items-center justify-center">
-                    <svg className="w-10 h-10 text-green-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 7H9m8 0v8m0-8l-8 8" />
-                    </svg>
+                {/* Next Step Button */}
+                <button
+                    className="w-[6vw] h-[6vw] bg-custom-green rounded-lg flex items-center justify-center"
+                    onClick={onExecuteOneStep}
+                >
+                    <MoveRight
+                        className="w-10 h-10"
+                        strokeWidth={2}
+                        color="#064e3b" // text-green-900 equivalent
+                    />
                 </button>
 
                 {/* Draggable Progress Bar */}
-                <div className="relative w-64 h-10 bg-gray-700 rounded-lg" ref={progressRef} onMouseDown={handleDrag}>
+                <div className="relative w-[10vw] h-10 bg-gray-700 rounded-lg" ref={progressRef} onMouseDown={handleDrag}>
                     <div
                         className="absolute top-0 left-0 h-10 bg-green-500 rounded-lg"
                         style={{ width: `${progress}%` }}
