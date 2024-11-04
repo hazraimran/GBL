@@ -5,7 +5,7 @@ import PhaserGame from '../game/PhaserGame';
 
 const GameScene: React.FC = () => {
     const { currentScene } = useContext(GameContext);
-    return currentScene === 'gameScene' && (
+    return currentScene === 'GAME' && (
         <div className={`bg-cover bg-center bg-no-repeat h-screen`}
             style={{ backgroundImage: `url('/game_bg.png')` }}>
             <InstructionPanel />
