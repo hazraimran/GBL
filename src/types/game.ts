@@ -3,13 +3,13 @@ export interface Worker {
     sprite: Phaser.GameObjects.Sprite;
     isCarrying: boolean;
     currentStone?: StoneType;
-    carryingValue?: number;  // 新增属性
+    carryingValue?: number;
 }
 
 export interface Stone {
     sprite: Phaser.GameObjects.Sprite;
     type: StoneType;
-    value?: number;  // 新增属性
+    value?: number;
 }
 
 export interface Stone {

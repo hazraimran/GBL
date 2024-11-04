@@ -1,6 +1,5 @@
 import { Worker, Stone, ConstructionSlot, StoneType, CommandType } from '../types/game';
 
-// 新增的类型定义
 interface LevelConfig {
     generateInputs: () => number[];
     validateOutput: (output: number[]) => boolean;
@@ -52,7 +51,6 @@ export class MainScene extends Phaser.Scene {
     create(): void {
         this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
 
-        // 加载默认关卡配置
         this.loadLevelConfig({
             generateInputs: () => [1, 2, 3],
             validateOutput: (output) => output.every((val, idx) => val === idx + 1),

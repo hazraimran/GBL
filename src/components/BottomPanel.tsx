@@ -6,12 +6,14 @@ interface BottomPanelProps {
     onExecute: () => void;
     onExecuteOneStep: () => void;
     onReset: () => void;
+    onDrag: (progress: number) => void;
 }
 
 const BottomPanel: React.FC<BottomPanelProps> = ({
     onExecute,
     onExecuteOneStep,
     onReset,
+    onDrag
 }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -26,6 +28,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 barRect.width
             );
             setProgress((newProgress / barRect.width) * 100);
+            onDrag(newProgress / barRect.width);
         }
     };
 
@@ -71,12 +74,12 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 </button>
 
                 {/* Draggable Progress Bar */}
-                {/* <div className="relative w-64 h-10 bg-gray-700 rounded-lg" ref={progressRef} onMouseDown={handleDrag}>
+                <div className="relative w-64 h-10 bg-gray-700 rounded-lg" ref={progressRef} onMouseDown={handleDrag}>
                     <div
                         className="absolute top-0 left-0 h-10 bg-green-500 rounded-lg"
                         style={{ width: `${progress}%` }}
                     ></div>
-                </div> */}
+                </div>
             </div>
         </footer>
     );

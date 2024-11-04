@@ -15,7 +15,7 @@ interface GameContextType {
 const GameContext = createContext<GameContextType>({
     level: 0,
     setLevel: () => { },
-    currentScene: 'menu',
+    currentScene: 'LANDING',
     setCurrentScene: () => { },
     instructions: [],
     setInstructions: () => { }
