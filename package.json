@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "fingerprintjs": "^0.5.3",
     "firebase": "^11.0.1",
     "phaser": "^3.86.0",
     "react": "^18.3.1",
