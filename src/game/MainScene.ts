@@ -41,16 +41,29 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.setBaseURL('/assets/');
-        this.load.image('worker', '/OIP.jpeg');
-        this.load.image('stone-small', '/stone.png');
-        this.load.image('stone-medium', 'stone.png');
-        this.load.image('stone-large', 'stone.png');
+        // Just log for debugging
+        console.log('Preloading assets...');
     }
 
     create(): void {
-        this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+        console.log('Creating scene...');
 
+        // Create worker as a yellow rectangle
+        const workerRect = this.add.rectangle(200, 300, 30, 30, 0xffff00);
+        const worker: Worker = {
+            sprite: workerRect as any,
+            isCarrying: false
+        };
+        worker.sprite.setInteractive();
+        this.workers.push(worker);
+
+        // Setup all areas before loading level config
+        this.setupInputArea();
+        this.setupOutputArea();
+        this.setupConstructionArea(300); // Fixed Y position instead of relative to game height
+        this.setupStonePileArea();
+
+        // Load level configuration
         this.loadLevelConfig({
             generateInputs: () => [1, 2, 3],
             validateOutput: (output) => output.every((val, idx) => val === idx + 1),
@@ -61,11 +74,6 @@ export class MainScene extends Phaser.Scene {
             ]
         });
 
-        this.setupInputArea();
-        this.setupOutputArea();
-        this.setupConstructionArea();
-        this.setupStonePileArea();
-        this.setupWorkers();
         this.setupLevel(this.currentLevel);
     }
 
@@ -119,15 +127,15 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private setupConstructionArea(): void {
+    private setupConstructionArea(yPosition: number): void {
         const width = this.game.config.width as number;
-        const height = this.game.config.height as number;
 
+        // Create construction slots with fixed Y position
         for (let i = 0; i < 3; i++) {
             const slot: ConstructionSlot = {
                 rect: this.add.rectangle(
                     width / 2 + (i * 60),
-                    height - 100,
+                    yPosition,
                     50,
                     50,
                     0x666666,
@@ -142,50 +150,55 @@ export class MainScene extends Phaser.Scene {
     private setupStonePileArea(): void {
         const stoneTypes: StoneType[] = ['small', 'medium', 'large'];
         stoneTypes.forEach((type, index) => {
+            // 使用矩形替代sprite
+            const stoneRect = this.add.rectangle(100, 300 + (index * 60), 30, 30, 0x00ff00);
             const stone: Stone = {
-                sprite: this.add.sprite(100, 300 + (index * 60), `stone-${type}`),
+                sprite: stoneRect as any, // 临时类型转换
                 type: type
             };
-            stone.sprite.setInteractive();
+            stoneRect.setInteractive();
             this.stones.push(stone);
         });
     }
 
-    private setupWorkers(): void {
-        const worker: Worker = {
-            sprite: this.add.sprite(200, 300, 'worker'),
-            isCarrying: false
-        };
-        worker.sprite.setInteractive();
-        this.workers.push(worker);
-    }
-
     private setupLevel(level: number): void {
-        if (this.levelConfig) {
-            const inputValues = this.levelConfig.generateInputs();
+        if (!this.levelConfig) return;
+        console.log('Setting up level:', level);
 
-            inputValues.forEach((value, index) => {
-                const stone: Stone = {
-                    sprite: this.add.sprite(
-                        this.inputSlots[index].rect.x,
-                        this.inputSlots[index].rect.y,
-                        `stone-small`
-                    ),
-                    type: 'small',
-                    value: value
-                };
-                this.inputSlots[index].stone = stone;
-                this.inputSlots[index].value = value;
+        const inputValues = this.levelConfig.generateInputs();
+        console.log('Input values:', inputValues);
 
-                // 在石头上显示数值
-                this.add.text(
-                    stone.sprite.x - 5,
-                    stone.sprite.y - 8,
-                    value.toString(),
-                    { fontSize: '16px', color: '#ffffff' }
-                ).setOrigin(0.5);
-            });
-        }
+        inputValues.forEach((value, index) => {
+            if (index >= this.inputSlots.length) {
+                console.warn(`Not enough input slots for value ${value}`);
+                return;
+            }
+
+            // 使用矩形替代sprite
+            const stoneRect = this.add.rectangle(
+                this.inputSlots[index].rect.x,
+                this.inputSlots[index].rect.y,
+                30,
+                30,
+                0x00ff00
+            );
+
+            const stone: Stone = {
+                sprite: stoneRect as any,
+                type: 'small',
+                value: value
+            };
+            this.inputSlots[index].stone = stone;
+            this.inputSlots[index].value = value;
+
+            // 在石头上显示数值
+            this.add.text(
+                stone.sprite.x - 5,
+                stone.sprite.y - 8,
+                value.toString(),
+                { fontSize: '16px', color: '#ffffff' }
+            ).setOrigin(0.5);
+        });
     }
 
     public executeCommands(commands: CommandType[]): void {
@@ -258,12 +271,17 @@ export class MainScene extends Phaser.Scene {
             const outputSlot = this.outputSlots.find(slot => !slot.stone);
             if (outputSlot) {
                 this.tweenWorkerTo(worker, outputSlot.rect.x - 60, outputSlot.rect.y, () => {
+                    // 使用矩形替代sprite
+                    const stoneRect = this.add.rectangle(
+                        outputSlot.rect.x,
+                        outputSlot.rect.y,
+                        30,
+                        30,
+                        0x00ff00
+                    );
+
                     const stone: Stone = {
-                        sprite: this.add.sprite(
-                            outputSlot.rect.x,
-                            outputSlot.rect.y,
-                            `stone-${worker.currentStone}`
-                        ),
+                        sprite: stoneRect as any,
                         type: worker.currentStone!,
                         value: worker.carryingValue
                     };
@@ -306,18 +324,21 @@ export class MainScene extends Phaser.Scene {
             if (validSlot) {
                 validSlot.isOccupied = true;
 
-                // Create new stone in the slot
+                // 使用矩形替代sprite
+                const stoneRect = this.add.rectangle(
+                    validSlot.rect.x,
+                    validSlot.rect.y,
+                    30,
+                    30,
+                    0x00ff00
+                );
+
                 const stone: Stone = {
-                    sprite: this.add.sprite(
-                        validSlot.rect.x,
-                        validSlot.rect.y,
-                        `stone-${worker.currentStone}`
-                    ),
+                    sprite: stoneRect as any,
                     type: worker.currentStone!,
                     value: worker.carryingValue
                 };
 
-                // Display the value
                 if (worker.carryingValue !== undefined) {
                     this.add.text(
                         stone.sprite.x - 5,

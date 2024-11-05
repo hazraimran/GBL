@@ -20,7 +20,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       currentScene,
       setCurrentScene,
       instructions,
-      setInstructions
+      setInstructions,
     }}>
       {children}
     </GameContext.Provider>

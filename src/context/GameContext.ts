@@ -18,7 +18,7 @@ const GameContext = createContext<GameContextType>({
     currentScene: 'LANDING',
     setCurrentScene: () => { },
     instructions: [],
-    setInstructions: () => { }
+    setInstructions: () => { },
 });
 
 export default GameContext;

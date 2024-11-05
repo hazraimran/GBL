@@ -9,7 +9,7 @@ const InstructionPanel: React.FC = () => {
 
         // 
         return () => {
-        
+
         };
     }, []);
 
@@ -22,14 +22,14 @@ const InstructionPanel: React.FC = () => {
 
         // console.log(event.deltaY)
         if (instructionPanelRef.current && instructionPanelRef.current.clientHeight > window.innerHeight * 3 / 5) {
-            settranslateY(prevtranslateY => prevtranslateY + event.deltaY/10);
+            settranslateY(prevtranslateY => prevtranslateY + event.deltaY / 10);
 
         }
     };
 
     return (
         <aside
-            className="flex flex-col bg-gray-900 text-white w-96 p-4 space-y-2 absolute right-0 top-1/2"
+            className="flex flex-col bg-gray-900 text-white w-96 p-4 space-y-2 absolute right-0 top-1/2 z-10"
             ref={instructionPanelRef}
             style={{
                 transform: `translateY(-${translateY}%)`,

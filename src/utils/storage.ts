@@ -30,3 +30,7 @@ export const getOrCreateUID = async (): Promise<string> => {
     localStorage.setItem('uid', newUID);
     return newUID;
 };
+
+export const createLevelInfo = () => {
+    
+}

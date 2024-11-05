@@ -1,0 +1,11 @@
+{
+    "id": 1,
+    "title": "Command Post",
+    "description": "You got a new command! SUBtracts the contents of a tile on the floor FROM whatever value you're currently holding.",
+    "generatorFunction": "function (seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    return arr;\n}",
+    "validationFunction": "function (output, seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    output.map(function (val, idx) {\n        if (val !== arr[idx]) {\n            return false;\n        }\n    });\n    return true;\n}",
+    "commands": ["INPUT", "OUTPUT"],
+    "instructionCountAchievement": null,
+    "commandCountAchievement": null,
+    "isLocked": false
+}
