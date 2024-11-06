@@ -1,10 +1,15 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
+import { getOrCreateUID } from "../utils/storage";
 
 const Landing: React.FC = () => {
     const { currentScene, setCurrentScene } = useContext(GameContext);
     const [showPickCharacter, setshowPickCharacter] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
+
+    useEffect(() => {
+        getOrCreateUID();
+    }, []);
 
     const handleClickCharacter = (id: number) => {
         // setshowPickCharacter(true);
@@ -12,7 +17,7 @@ const Landing: React.FC = () => {
     }
 
     const handleDeleteCharacter = (id: number) => {
-
+        
     }
 
     return currentScene === 'LANDING' && (

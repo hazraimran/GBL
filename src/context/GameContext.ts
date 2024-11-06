@@ -1,6 +1,7 @@
 // src/context/GameContext.ts
 import { createContext } from 'react';
 import { CurrentSceneType } from '../types/level';
+import { LevelInfo } from '../types/level';
 
 interface GameContextType {
     level: number;
@@ -9,6 +10,10 @@ interface GameContextType {
     setCurrentScene: (scene: CurrentSceneType) => void;
     instructions: string[];
     setInstructions: (instructions: string[]) => void;
+    showBottomPanel: boolean;
+    setShowBottomPanel: (show: boolean) => void;
+    levelInfo: LevelInfo | null;
+    setLevelInfo: (levelInfo: LevelInfo) => void;
 }
 
 // Create the context with a default value (optional)
@@ -19,6 +24,10 @@ const GameContext = createContext<GameContextType>({
     setCurrentScene: () => { },
     instructions: [],
     setInstructions: () => { },
+    showBottomPanel: false,
+    setShowBottomPanel: () => { },
+    levelInfo: null,
+    setLevelInfo: () => { },
 });
 
 export default GameContext;

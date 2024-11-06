@@ -1,5 +1,7 @@
 // utils/storage.ts
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import FingerprintJS from 'fingerprintjs';
+import levelsInfo from '../assets/levels.json';
+import { LevelInfo } from '../types/level';
 
 // Generate a unique identifier combining device fingerprint and timestamp
 export const generateUID = async (): Promise<string> => {
@@ -7,7 +9,6 @@ export const generateUID = async (): Promise<string> => {
     const baseId = Date.now().toString(36) + Math.random().toString(36).substring(2);
 
     try {
-        
         const fp = await FingerprintJS.load();
         // Get visitor identifier based on browser/device characteristics
         const result = await fp.get();
@@ -23,14 +24,51 @@ export const generateUID = async (): Promise<string> => {
 export const getOrCreateUID = async (): Promise<string> => {
     const storedUID = localStorage.getItem('uid');
     if (storedUID) {
+        console.log('Returning stored UID:', storedUID);
+        console.log('Levels', getLevelsInfo());
         return storedUID;
     }
 
+    // if is the first time the user is playing, generate a new UID
     const newUID = await generateUID();
     localStorage.setItem('uid', newUID);
+    createLevelInfoFromTemplate();
     return newUID;
 };
 
-export const createLevelInfo = () => {
-    
+export const createLevelInfoFromTemplate = () => {
+    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+}
+
+export const getLevelsInfo = ()=> {
+    let levels = localStorage.getItem('levels');
+    if (!levels) {
+        createLevelInfoFromTemplate();
+        return levelsInfo;
+    } else {
+        return JSON.parse(levels);
+    }
+}
+
+export const getLevelInfo = (levelId: number) => {
+    let levels = localStorage.getItem('levels');
+    if (!levels) {
+        createLevelInfoFromTemplate();
+        return levelsInfo[levelId];
+    } else {
+        const levelInfo = JSON.parse(levels);
+        return levelInfo[levelId];
+    }
+}
+
+export const setLevelInfo = (levelId: number, levelInfo: LevelInfo) => {
+    let levels = localStorage.getItem('levels');
+    if (!levels) {
+        createLevelInfoFromTemplate();
+        levels = localStorage.getItem('levels');
+    }
+
+    const levelsInfo = JSON.parse(levels as string);
+    levelsInfo[levelId] = levelInfo;
+    localStorage.setItem('levels', JSON.stringify(levelsInfo));
 }
