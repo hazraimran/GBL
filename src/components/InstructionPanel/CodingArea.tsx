@@ -1,123 +1,120 @@
-import React, { useState, useRef } from 'react';
-import classNames from 'classnames';
-import { CiEraser } from "react-icons/ci";
+import React, { useState } from 'react';
+import { CommandType } from '../../types/game';
+import Command from './Command';
 
-type Instruction = 'inbox' | 'outbox' | 'copyfrom' | 'copyto' | 'add' | 'sub' | 'jump' | 'jumpifzero' | null;
+interface CodingAreaProps {
+    // commandsUsed: CommandType[];
+}
 
-const instructionList: Instruction[] = ['inbox', 'outbox', 'copyfrom', 'copyto', 'add', 'sub', 'jump', 'jumpifzero'];
+interface CommandRowProps {
+    command: CommandType;
+    idx: number;
+    handleDrag: (command: CommandType, from: number | null, to: number) => void;
+}
 
-const CodingArea: React.FC = () => {
-    const [codeLines, setCodeLines] = useState<Array<Instruction>>([null]); // Start with 1 empty line
-    const [hoverIndex, setHoverIndex] = useState<number | null>(null); // For tracking hover effect during drag
+const CommandRow: React.FC<CommandRowProps> = ({
+    command,
+    idx,
+    handleDrag
+}) => {
+    const [isOver, setIsOver] = useState(false);
 
-    const onDragStart = (event: React.DragEvent, instruction: Instruction) => {
-        event.dataTransfer.setData('instruction', instruction as string);
-        // event.currentTarget.classList.add('opacity-50', 'scale-105'); // Floating effect
-    };
-
-    const onDrag = (event: React.DragEvent) => {
-        event.preventDefault(); // Required to allow dropping
+    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsOver(true);
     }
 
-    const onDragEnd = (event: React.DragEvent) => {
-        // event.currentTarget.classList.remove('opacity-50', 'scale-105');
-    };
-
-    const onDrop = (event: React.DragEvent, lineIndex: number) => {
-        const instruction = event.dataTransfer.getData('instruction') as Instruction;
-        const newCodeLines = [...codeLines];
-        newCodeLines[lineIndex] = instruction;
-
-        // If the dropped line is the last one, add a new line for further instructions
-        if (lineIndex === newCodeLines.length - 1) {
-            newCodeLines.push(null);
-        }
-
-        setCodeLines(newCodeLines);
-        setHoverIndex(null); // Remove hover effect after drop
-        event.preventDefault();
-    };
-
-    const onDragOver = (event: React.DragEvent, lineIndex: number) => {
-        event.preventDefault(); // Required to allow dropping
-        setHoverIndex(lineIndex); // Set the hover index for visual feedback
-    };
-
-    const clearLine = (lineIndex: number) => {
-        const newCodeLines = [...codeLines];
-        newCodeLines[lineIndex] = null;
-
-        // Remove trailing empty lines (keep at least one empty line)
-        while (newCodeLines.length > 1 && newCodeLines[newCodeLines.length - 1] === null) {
-            newCodeLines.pop();
-        }
-
-        setCodeLines(newCodeLines);
-    };
-
-    const undo = () => {
-        const newCodeLines = [...codeLines];
-        newCodeLines.pop();
-        setCodeLines(newCodeLines);
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsOver(false);
     }
 
-    const clear = () => {
-        setCodeLines([null]);
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    }
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.getData('idx') !== '') {
+            handleDrag(e.dataTransfer.getData('command') as CommandType, parseInt(e.dataTransfer.getData('idx')), idx);
+        } else {
+            handleDrag(e.dataTransfer.getData('command') as CommandType, null, idx);
+        }
+        setIsOver(false);
     }
 
     return (
-        <div>
-            <div className="flex flex-col items-start space-y-2 p-4 bg-gray-200 rounded-md w-full">
-                {/* Code lines */}
-                {codeLines.map((instruction, index) => (
-                    <div
-                        key={index}
-                        className={classNames(
-                            'flex items-center space-x-2 p-2 bg-white rounded-md shadow-md border border-gray-300 h-10 w-full transition-all duration-200',
-                            { 'border-blue-500 bg-blue-100': hoverIndex === index } // Highlight effect
-                        )}
-                        onDrop={(e) => onDrop(e, index)}
-                        onDragOver={(e) => onDragOver(e, index)}
-                        onDragLeave={() => setHoverIndex(null)} // Remove hover effect when drag leaves
-                    >
-                        {/* Line number */}
-                        {instruction && <span className="text-gray-700">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>}
-                        {/* Instruction */}
-                        <div className="flex-grow text-gray-800">{instruction || 'Drop Instruction Here'}</div>
-                        {/* Clear button for each line */}
-                        {instruction && (
-                            <button
-                                onClick={() => clearLine(index)}
-                                className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
-                            >
-                                <CiEraser />
-                            </button>
-                        )}
-                    </div>
-                ))}
-
-                {/* Draggable instruction buttons */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                    {instructionList.map((instruction, index) => (
-                        <div
-                            key={index}
-                            draggable
-                            onDragStart={(e) => onDragStart(e, instruction)}
-                            onDragEnd={onDragEnd}
-                            className="cursor-pointer p-2 bg-green-500 text-white rounded shadow-md hover:bg-green-400 transition-transform transform hover:scale-105"
-                        >
-                            {instruction}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="flex justify-between space-x-2">
-                <button className="bg-gray-700 p-2 rounded" onClick={undo}>undo</button>
-                <button className="bg-gray-700 p-2 rounded" onClick={clear}>clear</button>
-            </div>
+        <div className={`flex space-x-2 ${isOver ? 'bg-gray-300' : 'bg-gray-200'}`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+        >
+            {idx}
+            <Command idx={idx} value={command} />
         </div>
-    );
-};
+    )
+}
+
+const CodingArea: React.FC<CodingAreaProps> = ({
+}) => {
+    const [commandsUsed, setCommandsused] = useState<Array<CommandType>>();
+    const [isOver, setIsOver] = useState(false);
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        setIsOver(true);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        console.log("outer drop")
+        setCommandsused([...(commandsUsed || []), e.dataTransfer.getData('command') as CommandType]);
+        setIsOver(false);
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsOver(false);
+    }
+
+    const handleDrag = (command: CommandType, from: number | null = null, to: number) => {
+        const newCommands = [...(commandsUsed ?? [])];
+        console.log(newCommands, from === null);
+        if (from === null) {
+            newCommands.splice(to, 0, command);
+        } else {
+            newCommands.splice(from, 1);
+            if (from < to) {
+                to--;
+            }
+            newCommands.splice(to, 0, command);
+        }
+        console.log(newCommands);
+
+        setCommandsused(newCommands);
+    }
+
+    return (
+        <>
+            <div className={`min-h-40 ${isOver ? 'bg-gray-300' : 'bg-gray-200'}`}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragEnter={(e) => e.preventDefault()}
+                onDragLeave={handleDragLeave}
+            >
+                {
+                    commandsUsed &&
+                    commandsUsed.map((command, idx) => {
+                        return <CommandRow command={command} idx={idx} handleDrag={handleDrag} />
+                    })
+                }
+            </div>
+
+        </>
+    )
+}
 
 export default CodingArea;

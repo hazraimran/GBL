@@ -24,7 +24,7 @@ export interface ConstructionSlot {
 }
 
 export type StoneType = 'small' | 'medium' | 'large';
-export type Command =
+export type CommandType =
     'INPUT' | 'OUTPUT' | 'COPYFROM' | 'COPYTO' |
     'ADD' | 'SUB' | 'BUMPUP' | 'BUMPDOWN' |
     'JUMP' | 'JUMPZ' | 'JUMPN' | 'LABEL';

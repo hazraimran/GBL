@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
     "classnames": "^2.5.1",
     "fingerprintjs": "^0.5.3",
     "firebase": "^11.0.1",

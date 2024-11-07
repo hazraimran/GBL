@@ -1,4 +1,4 @@
-import { Command } from './game';
+import { CommandType } from './game';
 
 export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS';
 
@@ -8,8 +8,8 @@ export type LevelInfo = {
     description: string;
     generationFunction: string;
     validationFunction: string;
-    commands: Command[];
-    commandsUsed: Command[];
+    commands: CommandType[];
+    commandsUsed: CommandType[];
     instructionCountAchievement: boolean;
     commandCountAchievement: boolean;
     isLocked: boolean;
