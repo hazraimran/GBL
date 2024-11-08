@@ -25,7 +25,7 @@ const Landing: React.FC = () => {
             <div
                 className={`bg-cover bg-center bg-no-repeat h-screen animate-bg-zoom-loop ${showModal ? 'blur-sm' : ''}`}
                 style={{
-                    backgroundImage: `url('/bg.png')`,
+                    backgroundImage: `url('/landing_bg.png')`,
                     transition: 'filter 500ms ease-out'
                 }}
                 onClick={() => {

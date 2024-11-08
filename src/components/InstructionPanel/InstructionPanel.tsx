@@ -26,18 +26,19 @@ const InstructionPanel: React.FC = () => {
 
     return levelInfo && (
         <aside
-            className="flex flex-col bg-gray-900 text-white w-96 p-4 space-y-2 absolute right-0 top-1/2 z-10"
+            className="bg-cover bg-center bg-no-repeat flex flex-col text-white w-[25rem] h-[35rem] p-4 space-y-2 absolute right-0 top-1/2 z-10"
             ref={instructionPanelRef}
             style={{
+                backgroundImage: `url('/command_bg.png')`,
                 transform: `translateY(-${translateY}%)`,
             }}
             onWheel={handleWheel}>
 
             <InfoArea title={levelInfo.title} description={levelInfo.description} />
 
-            <CommandList />
+            {/* <CommandList />
 
-            <CodingArea />
+            <CodingArea /> */}
 
         </aside>
     );

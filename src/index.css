@@ -2,9 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: 'Papyrus';
   src: url('./assets/fonts/Papyrus-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+} */
+
+@font-face {
+  font-family: 'Papyrus';
+  src: url('./assets/fonts/Papyrus-LET-Bold.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -87,6 +94,7 @@ h1 {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -119,6 +127,7 @@ h1 {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

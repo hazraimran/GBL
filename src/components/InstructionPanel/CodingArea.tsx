@@ -113,8 +113,8 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
                 <ScrollArea
                     className={cn(
                         "min-h-40 rounded-lg transition-colors duration-200 p-2",
-                        isOver ? "bg-secondary/80 border-2 border-dashed border-primary/50" : "bg-secondary/40",
-                        "hover:bg-secondary/60"
+                        isOver ? " border-2 border-dashed border-primary/50" : "",
+                        // "hover:bg-secondary/60"
                     )}
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
