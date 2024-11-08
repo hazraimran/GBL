@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CommandType } from '../../types/game';
 import Command from './Command';
+import GameContext from '../../context/GameContext';
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
-interface CodingAreaProps {
-    // commandsUsed: CommandType[];
-}
+interface CodingAreaProps { }
 
 interface CommandRowProps {
     command: CommandType;
@@ -45,22 +47,34 @@ const CommandRow: React.FC<CommandRowProps> = ({
     }
 
     return (
-        <div className={`flex space-x-2 ${isOver ? 'bg-gray-300' : 'bg-gray-200'}`}
+        <div
+            className={cn(
+                "flex items-center space-x-3 p-2 rounded-lg transition-all duration-200",
+                isOver ? "bg-secondary/80 border-t-2 border-primary" : "bg-secondary/40",
+                "hover:bg-secondary/60"
+            )}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
         >
-            {idx}
+            <span className="min-w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
+                {idx + 1}
+            </span>
             <Command idx={idx} value={command} />
         </div>
     )
 }
 
-const CodingArea: React.FC<CodingAreaProps> = ({
-}) => {
-    const [commandsUsed, setCommandsused] = useState<Array<CommandType>>();
+const CodingArea: React.FC<CodingAreaProps> = () => {
+    const { commandsUsed, setCommandsUsed } = useContext(GameContext);
     const [isOver, setIsOver] = useState(false);
+
+    useEffect(() => {
+        // window.addEventListener('beforeunload', (e) => {
+        //     e.preventDefault();
+        // })
+    }, [])
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -70,8 +84,7 @@ const CodingArea: React.FC<CodingAreaProps> = ({
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        console.log("outer drop")
-        setCommandsused([...(commandsUsed || []), e.dataTransfer.getData('command') as CommandType]);
+        setCommandsUsed([...(commandsUsed || []), e.dataTransfer.getData('command') as CommandType]);
         setIsOver(false);
     };
 
@@ -82,7 +95,6 @@ const CodingArea: React.FC<CodingAreaProps> = ({
 
     const handleDrag = (command: CommandType, from: number | null = null, to: number) => {
         const newCommands = [...(commandsUsed ?? [])];
-        console.log(newCommands, from === null);
         if (from === null) {
             newCommands.splice(to, 0, command);
         } else {
@@ -92,29 +104,37 @@ const CodingArea: React.FC<CodingAreaProps> = ({
             }
             newCommands.splice(to, 0, command);
         }
-        console.log(newCommands);
-
-        setCommandsused(newCommands);
+        setCommandsUsed(newCommands);
     }
 
     return (
-        <>
-            <div className={`min-h-40 ${isOver ? 'bg-gray-300' : 'bg-gray-200'}`}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onDragEnter={(e) => e.preventDefault()}
-                onDragLeave={handleDragLeave}
-            >
-                {
-                    commandsUsed &&
-                    commandsUsed.map((command, idx) => {
-                        return <CommandRow command={command} idx={idx} handleDrag={handleDrag} />
-                    })
-                }
-            </div>
-
-        </>
-    )
+        <Card className="w-full">
+            <CardContent className="p-4">
+                <ScrollArea
+                    className={cn(
+                        "min-h-40 rounded-lg transition-colors duration-200 p-2",
+                        isOver ? "bg-secondary/80 border-2 border-dashed border-primary/50" : "bg-secondary/40",
+                        "hover:bg-secondary/60"
+                    )}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onDragEnter={(e) => e.preventDefault()}
+                    onDragLeave={handleDragLeave}
+                >
+                    <div className="space-y-2">
+                        {commandsUsed?.map((command, idx) => (
+                            <CommandRow
+                                key={idx}
+                                command={command}
+                                idx={idx}
+                                handleDrag={handleDrag}
+                            />
+                        ))}
+                    </div>
+                </ScrollArea>
+            </CardContent>
+        </Card>
+    );
 }
 
 export default CodingArea;

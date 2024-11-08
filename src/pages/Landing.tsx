@@ -17,13 +17,17 @@ const Landing: React.FC = () => {
     }
 
     const handleDeleteCharacter = (id: number) => {
-        
+
     }
 
     return currentScene === 'LANDING' && (
         <>
-            <div className={`bg-cover bg-center bg-no-repeat h-screen animate-bg-zoom-loop ${showModal && 'transition-all duration-500 blur-sm'}`}
-                style={{ backgroundImage: `url('/bg.png')` }}
+            <div
+                className={`bg-cover bg-center bg-no-repeat h-screen animate-bg-zoom-loop ${showModal ? 'blur-sm' : ''}`}
+                style={{
+                    backgroundImage: `url('/bg.png')`,
+                    transition: 'filter 500ms ease-out'
+                }}
                 onClick={() => {
                     setShowModal(true);
                     setTimeout(() => {
@@ -32,8 +36,7 @@ const Landing: React.FC = () => {
                 }}
             >
             </div>
-            
-            
+
             {showPickCharacter && (
                 <div className='fixed inset-0 flex items-center justify-center'>
                     <div className='flex flex-col items-center gap-4'>
