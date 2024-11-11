@@ -1,14 +1,48 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import Phaser from 'phaser';
 import { MainScene } from './MainScene';
 import { CommandType } from '../types/game';
 import BottomPanel from '../components/BottomPanel';
+import GameContext from '../context/GameContext';
+import { ErrorHandler } from '../ErrorHandler';
+import { useToast } from "../hooks/use-toast"
+import { LevelInfo } from '../types/level';
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
-    
+    const { levelInfo, commandsUsed } = useContext(GameContext);
+    const { toast } = useToast();
+
+    const errorHandlerRef = useRef(new ErrorHandler({
+        onError: (error) => {
+            toast({
+                title: "游戏错误",
+                description: error.message,
+                variant: error.level === 'ERROR' ? 'destructive' : 'default',
+                duration: 3000,
+            });
+        }
+    }));
+
+    const parseConfig = (levelInfo: LevelInfo | null) => {
+        if (!levelInfo) return {};
+
+        const generatorFn = new Function('return ' + levelInfo.generatorFunction)();
+        const validationFn = new Function('return ' + levelInfo.validationFunction)();
+
+        return {
+            generatorFn,
+            validationFn,
+            commands: levelInfo.commands,
+            commandsUsed: levelInfo.commandsUsed,
+            instructionCountAchievement: levelInfo.instructionCountAchievement,
+            commandCountAchievement: levelInfo.commandCountAchievement,
+        };
+        return null;
+    }
+
     useEffect(() => {
         if (!gameRef.current) return;
 
@@ -18,7 +52,14 @@ const PhaserGame = () => {
             width: window.innerWidth,
             height: window.innerHeight,
             transparent: true,
-            scene: MainScene,
+            callbacks: {
+                preBoot: (game) => {
+                    game.scene.add('MainScene', MainScene, true, {
+                        errorHandler: errorHandlerRef.current,
+                        sceneConfig: parseConfig(levelInfo),
+                    });
+                }
+            },
             scale: {
                 mode: Phaser.Scale.FIT,
                 autoCenter: Phaser.Scale.CENTER_BOTH
@@ -28,7 +69,8 @@ const PhaserGame = () => {
                 arcade: {
                     debug: false,
                 }
-            }
+            },
+
         };
 
         // Create new game instance
@@ -93,7 +135,7 @@ const PhaserGame = () => {
                 ref={gameRef}
                 className="flex-1 relative"
             />
-            
+
             <BottomPanel
                 onExecute={handleRunCode}
                 onExecuteOneStep={handleExecuteOneStep}

@@ -4,7 +4,7 @@ import { getLevelsInfo } from "../utils/storage";
 import { LevelInfo } from "../types/level";
 
 const Levels: React.FC = () => {
-    const { currentScene, setCurrentScene, setLevel } = useContext(GameContext);
+    const { currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
 
     useEffect(() => {
@@ -14,6 +14,8 @@ const Levels: React.FC = () => {
     const handleClickLevel = (level: LevelInfo) => {
         if (!level.isLocked) {
             setLevel?.(level.id);
+
+            setLevelInfo(level);
             setCurrentScene('GAME');
         }
     }
@@ -35,7 +37,9 @@ const Levels: React.FC = () => {
                                     : 'hover:scale-105 hover:shadow-lg'
                                 }
                             `}
-                            onClick={() => handleClickLevel(level)}
+                            onClick={() => {
+                                handleClickLevel(level)
+                            }}
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <h2 className="text-xl font-semibold text-gray-800">

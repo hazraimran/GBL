@@ -1,444 +1,371 @@
-import { Worker, Stone, ConstructionSlot, StoneType, CommandType } from '../types/game';
+import { Worker, Stone, ConstructionSlot, generatorFn, validationFn, CommandType } from '../types/game';
+import { GameError, GameErrorCodes } from '../types/errors';
+import { ErrorHandler } from '../ErrorHandler';
 
-interface LevelConfig {
-    generateInputs: () => number[];
-    validateOutput: (output: number[]) => boolean;
-    slots: SlotConfig[];
+interface PassedConfig {
+    generatorFn: generatorFn;
+    validationFn: validationFn;
+    constructionSlots: number;
 }
 
-interface SlotConfig {
-    x: number;
-    y: number;
-}
-
-interface InputSlot {
-    rect: Phaser.GameObjects.Rectangle;
-    stone?: Stone;
-    value?: number;
-}
-
-interface OutputSlot {
-    rect: Phaser.GameObjects.Rectangle;
-    stone?: Stone;
-    expectedValue?: StoneType;
-    value?: number;
+interface GameSceneConfig {
+    constructionSlots: number;
+    generatorFn: generatorFn;
+    validationFn: validationFn;
+    slots: { x: number; y: number }[];
+    stoneSize: {
+        width: number;
+        height: number;
+    };
+    workerConfig: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    layout: {
+        inputArea: {
+            x: number;
+            y: number;
+            spacing: number;
+        };
+        outputArea: {
+            x: number;
+            y: number;
+            spacing: number;
+        };
+        constructionArea: {
+            x: number;
+            y: number;
+            spacing: number;
+        };
+    };
+    speed: number;
 }
 
 export class MainScene extends Phaser.Scene {
-    private workers: Worker[] = [];
-    private stones: Stone[] = [];
+    private worker: Worker | null = null;
+    private inputStones: Stone[] = [];
     private constructionSlots: ConstructionSlot[] = [];
-    private inputSlots: InputSlot[] = [];
-    private outputSlots: OutputSlot[] = [];
-    private currentLevel: number;
-    private commandQueue: CommandType[];
-    private levelConfig: LevelConfig | null = null;
+    private config: GameSceneConfig;
+    private inputQueue: number[];
+    private outputQueue: number[];
+    private RANDOM_SEED: number;
+    private errorHandler!: ErrorHandler;
 
     constructor() {
         super({ key: 'MainScene' });
-        this.currentLevel = 1;
-        this.commandQueue = [];
-    }
+        this.inputQueue = [];
+        this.outputQueue = [];
 
-    preload(): void {
-        // Just log for debugging
-        console.log('Preloading assets...');
-    }
+        const date = new Date();
+        this.RANDOM_SEED = Object.freeze(date.getTime());
 
-    create(): void {
-        console.log('Creating scene...');
-
-        // Create worker as a yellow rectangle
-        const workerRect = this.add.rectangle(200, 300, 30, 30, 0xffff00);
-        const worker: Worker = {
-            sprite: workerRect as any,
-            isCarrying: false
-        };
-        worker.sprite.setInteractive();
-        this.workers.push(worker);
-
-        // Setup all areas before loading level config
-        this.setupInputArea();
-        this.setupOutputArea();
-        this.setupConstructionArea(300); // Fixed Y position instead of relative to game height
-        this.setupStonePileArea();
-
-        // Load level configuration
-        this.loadLevelConfig({
-            generateInputs: () => [1, 2, 3],
-            validateOutput: (output) => output.every((val, idx) => val === idx + 1),
+        this.config = {
+            stoneSize: {
+                width: 40,
+                height: 40
+            },
+            workerConfig: {
+                x: 200,
+                y: 300,
+                width: 30,
+                height: 30
+            },
+            constructionSlots: 3,
+            generatorFn: () => [1, 2, 3],
+            validationFn: (output: number[]) => output.every((val, idx) => val === idx + 1),
             slots: [
                 { x: 300, y: 200 },
                 { x: 300, y: 300 },
                 { x: 300, y: 400 }
-            ]
-        });
-
-        this.setupLevel(this.currentLevel);
+            ],
+            layout: {
+                inputArea: {
+                    x: 100,
+                    y: 150,
+                    spacing: 60
+                },
+                outputArea: {
+                    x: 700,
+                    y: 150,
+                    spacing: 60
+                },
+                constructionArea: {
+                    x: 300,
+                    y: 300,
+                    spacing: 60
+                }
+            },
+            speed: 1
+        };
     }
 
-    private setupInputArea(): void {
-        // Create input slots on the left side
-        for (let i = 0; i < 3; i++) {
+    init(data: { errorHandler: ErrorHandler, sceneConfig: PassedConfig }): void {
+        this.errorHandler = data.errorHandler;
+        this.config.generatorFn = data.sceneConfig.generatorFn;
+        this.config.validationFn = data.sceneConfig.validationFn;
+        this.config.constructionSlots = data.sceneConfig.constructionSlots;
+    }
+
+
+    create(): void {
+        this.worker = this.createWorker();
+        this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
+        this.setupConstructionArea(this.config.layout.constructionArea);
+        this.setupOutputArea(this.config.layout.outputArea);
+    }
+
+    modifySpeed(speed: number): void {
+        this.config.speed = speed;
+    }
+
+    executeCommands(commands: CommandType[]): void {
+        let cmdExcCnt = 0;
+        let curLine = 0;
+
+        while (curLine < commands.length) {
+            const command = commands[curLine];
+            switch (command) {
+                case 'INPUT':
+                    this.handlePickupFromInput();
+                    break;
+                case 'OUTPUT':
+                    this.handleDropToOutput();
+                    break;
+                case 'COPYFROM':
+                    break;
+                case 'COPYTO':
+                    break;
+                case 'ADD':
+                    break;
+                case 'SUB':
+                    break;
+                case 'BUMPUP':
+                    break;
+                case 'BUMPDOWN':
+                    break;
+                case 'JUMP':
+
+                    break;
+                case 'JUMPZ':
+                    break;
+                case 'JUMPN':
+                    break;
+                case 'LABEL':
+                    break;
+            }
+        }
+    }
+
+    private createStone(x: number, y: number, value?: number): Stone {
+        const { width, height } = this.config.stoneSize;
+        const stoneRect = this.add.rectangle(x, y, width, height, 0x00ff00);
+        stoneRect.setStrokeStyle(2, 0x333333);
+        stoneRect.setInteractive();
+
+        const stone: Stone = {
+            sprite: stoneRect,
+            value: value
+        };
+
+        if (value !== undefined) {
+            this.add.text(x, y, value.toString(), {
+                fontSize: '16px',
+                color: '#ffffff'
+            }).setOrigin(0.5);
+        }
+
+        return stone;
+    }
+
+    private createWorker(): Worker {
+        const { x, y, width, height } = this.config.workerConfig;
+        const workerRect = this.add.rectangle(x, y, width, height, 0x0000ff);
+        workerRect.setStrokeStyle(2, 0x333333);
+
+        return {
+            sprite: workerRect,
+        };
+    }
+
+    private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
+        this.inputQueue = generatorFn(this.RANDOM_SEED);
+        for (let i = 0; i < this.inputQueue.length; i++) {
             const rect = this.add.rectangle(
-                100,
-                150 + (i * 60),
-                50,
-                50,
+                config.x,
+                config.y + (i * config.spacing),
+                this.config.stoneSize.width,
+                this.config.stoneSize.height,
                 0x00ff00,
                 0.3
             );
             rect.setStrokeStyle(2, 0x00ff00);
 
-            const slot: InputSlot = { rect };
-            this.inputSlots.push(slot);
+            this.inputStones.push({
+                sprite: rect,
+                value: this.inputQueue[i]
+            });
         }
 
-        // Add "INPUT" text
-        this.add.text(70, 100, 'INPUT', {
+        this.add.text(config.x - 30, config.y - 50, 'INPUT', {
             fontSize: '16px',
             color: '#00ff00'
         });
     }
 
-    private setupOutputArea(): void {
+    private setupOutputArea(config: { x: number; y: number; spacing: number }): void {
         const width = this.game.config.width as number;
+        const finalX = config.x > width ? width - 100 : config.x;
 
-        // Create output slots on the right side
-        for (let i = 0; i < 3; i++) {
-            const rect = this.add.rectangle(
-                width - 100,
-                150 + (i * 60),
-                50,
-                50,
-                0xff0000,
-                0.3
-            );
-            rect.setStrokeStyle(2, 0xff0000);
-
-            const slot: OutputSlot = { rect };
-            this.outputSlots.push(slot);
-        }
-
-        // Add "OUTPUT" text
-        this.add.text(width - 130, 100, 'OUTPUT', {
+        this.add.text(finalX - 30, config.y - 50, 'OUTPUT', {
             fontSize: '16px',
             color: '#ff0000'
         });
     }
 
-    private setupConstructionArea(yPosition: number): void {
-        const width = this.game.config.width as number;
-
-        // Create construction slots with fixed Y position
-        for (let i = 0; i < 3; i++) {
+    private setupConstructionArea(config: { x: number; y: number; spacing: number }): void {
+        for (let i = 0; i < this.config.constructionSlots; i++) {
             const slot: ConstructionSlot = {
                 rect: this.add.rectangle(
-                    width / 2 + (i * 60),
-                    yPosition,
-                    50,
-                    50,
+                    config.x + (i * config.spacing),
+                    config.y,
+                    this.config.stoneSize.width + 10,
+                    this.config.stoneSize.height + 10,
                     0x666666,
                     0.5
                 ),
                 isOccupied: false
             };
+            slot.rect.setStrokeStyle(2, 0x666666);
             this.constructionSlots.push(slot);
         }
     }
 
-    private setupStonePileArea(): void {
-        const stoneTypes: StoneType[] = ['small', 'medium', 'large'];
-        stoneTypes.forEach((type, index) => {
-            // 使用矩形替代sprite
-            const stoneRect = this.add.rectangle(100, 300 + (index * 60), 30, 30, 0x00ff00);
-            const stone: Stone = {
-                sprite: stoneRect as any, // 临时类型转换
-                type: type
-            };
-            stoneRect.setInteractive();
-            this.stones.push(stone);
-        });
+    private removeStoneOnHand() {
+        if (!this.worker) return;
+        // Remove stone on hand animation
+
+        // Reset worker state
+        this.worker.stoneCarried = undefined;
     }
 
-    private setupLevel(level: number): void {
-        if (!this.levelConfig) return;
-        console.log('Setting up level:', level);
+    private pickUpStone(stone: Stone): void {
+        if (!this.worker) return;
 
-        const inputValues = this.levelConfig.generateInputs();
-        console.log('Input values:', inputValues);
-
-        inputValues.forEach((value, index) => {
-            if (index >= this.inputSlots.length) {
-                console.warn(`Not enough input slots for value ${value}`);
-                return;
-            }
-
-            // 使用矩形替代sprite
-            const stoneRect = this.add.rectangle(
-                this.inputSlots[index].rect.x,
-                this.inputSlots[index].rect.y,
-                30,
-                30,
-                0x00ff00
-            );
-
-            const stone: Stone = {
-                sprite: stoneRect as any,
-                type: 'small',
-                value: value
-            };
-            this.inputSlots[index].stone = stone;
-            this.inputSlots[index].value = value;
-
-            // 在石头上显示数值
-            this.add.text(
-                stone.sprite.x - 5,
-                stone.sprite.y - 8,
-                value.toString(),
-                { fontSize: '16px', color: '#ffffff' }
-            ).setOrigin(0.5);
-        });
-    }
-
-    public executeCommands(commands: CommandType[]): void {
-        this.commandQueue = [...commands];
-        this.processNextCommand();
-    }
-
-    private processNextCommand(): void {
-        if (this.commandQueue.length === 0) return;
-
-        const command = this.commandQueue.shift();
-        if (command) this.executeCommand(command);
-    }
-
-    private executeCommand(command: CommandType): void {
-        const worker = this.workers[0];
-
-        switch (command) {
-            case 'INPUT':
-                this.handlePickupFromInput(worker);
-                break;
-            case 'OUTPUT':
-                this.handleDropToOutput(worker);
-                break;
-            case 'COPYFROM':
-                this.handlePickup(worker);
-                break;
-            case 'COPYTO':
-                this.handleDrop(worker);
-                break;
-            case 'ADD':
-                break;
-            case 'SUB':
-                break;
-            case 'BUMPUP':
-                break;
-            case 'BUMPDOWN':
-                break;
-            case 'JUMP':
-                break;
-            case 'JUMPZ':
-                break;
-            case 'JUMPN':
-                break;
-            case 'LABEL':
-                break;
+        if (this.worker.stoneCarried) {
+            this.removeStoneOnHand();
         }
 
-        setTimeout(() => this.processNextCommand(), 500);
+        // Pick up stone animation
+
+        this.worker.stoneCarried = stone;
+
     }
 
-    private handlePickupFromInput(worker: Worker): void {
-        if (!worker.isCarrying) {
-            const inputSlot = this.inputSlots.find(slot => slot.stone);
-            if (inputSlot && inputSlot.stone) {
-                worker.isCarrying = true;
-                worker.currentStone = inputSlot.stone.type;
-                worker.carryingValue = inputSlot.value;
-                inputSlot.stone.sprite.setVisible(false);
-                inputSlot.stone = undefined;
-                inputSlot.value = undefined;
+    private handlePickupFromInput(): void {
+        if (!this.worker) return;
 
-                this.tweenWorkerTo(worker, inputSlot.rect.x + 60, inputSlot.rect.y);
-            }
-        }
-    }
-
-    private handleDropToOutput(worker: Worker): void {
-        if (worker.isCarrying) {
-            const outputSlot = this.outputSlots.find(slot => !slot.stone);
-            if (outputSlot) {
-                this.tweenWorkerTo(worker, outputSlot.rect.x - 60, outputSlot.rect.y, () => {
-                    // 使用矩形替代sprite
-                    const stoneRect = this.add.rectangle(
-                        outputSlot.rect.x,
-                        outputSlot.rect.y,
-                        30,
-                        30,
-                        0x00ff00
-                    );
-
-                    const stone: Stone = {
-                        sprite: stoneRect as any,
-                        type: worker.currentStone!,
-                        value: worker.carryingValue
-                    };
-
-                    outputSlot.stone = stone;
-                    outputSlot.value = worker.carryingValue;
-
-                    this.add.text(
-                        stone.sprite.x - 5,
-                        stone.sprite.y - 8,
-                        stone.value?.toString() || '',
-                        { fontSize: '16px', color: '#ffffff' }
-                    ).setOrigin(0.5);
-
-                    worker.isCarrying = false;
-                    worker.currentStone = undefined;
-                    worker.carryingValue = undefined;
-
-                    this.checkOutput();
-                });
-            }
-        }
-    }
-
-    private handlePickup(worker: Worker): void {
-        if (!worker.isCarrying) {
-            const nearbyStone = this.findNearbyStone(worker);
-            if (nearbyStone) {
-                worker.isCarrying = true;
-                worker.currentStone = nearbyStone.type;
-                worker.carryingValue = nearbyStone.value;
-                nearbyStone.sprite.setVisible(false);
-            }
-        }
-    }
-
-    private handleDrop(worker: Worker): void {
-        if (worker.isCarrying) {
-            const validSlot = this.findValidConstructionSlot(worker);
-            if (validSlot) {
-                validSlot.isOccupied = true;
-
-                // 使用矩形替代sprite
-                const stoneRect = this.add.rectangle(
-                    validSlot.rect.x,
-                    validSlot.rect.y,
-                    30,
-                    30,
-                    0x00ff00
-                );
-
-                const stone: Stone = {
-                    sprite: stoneRect as any,
-                    type: worker.currentStone!,
-                    value: worker.carryingValue
-                };
-
-                if (worker.carryingValue !== undefined) {
-                    this.add.text(
-                        stone.sprite.x - 5,
-                        stone.sprite.y - 8,
-                        worker.carryingValue.toString(),
-                        { fontSize: '16px', color: '#ffffff' }
-                    ).setOrigin(0.5);
+        this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y, () => {
+            try {
+                if (!(this.inputStones.length > 0)) {
+                    throw new GameError('No stones in input area', GameErrorCodes.INVALID_MOVE);
                 }
 
-                worker.isCarrying = false;
-                worker.currentStone = undefined;
-                worker.carryingValue = undefined;
+                const stone = this.inputStones.shift() as Stone;
+                this.pickUpStone(stone);
+            } catch (error: any) {
+                if (error instanceof GameError) {
+                    this.errorHandler.handle(error);
+                } else {
+                    this.errorHandler.handle(new GameError(
+                        '发生了意外错误',
+                        GameErrorCodes.INVALID_OPERATION
+                    ));
+                }
+            }
+        });
+    }
+
+    private handleDropToOutput(): void {
+        if (!this.worker) return;
+        if (!this.worker.stoneCarried) return;
+        try {
+            if (!this.worker.stoneCarried) {
+                throw new GameError('No stone carried by worker', GameErrorCodes.INVALID_MOVE);
+            }
+            this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y, () => {
+
+            });
+        } catch (error: any) {
+            if (error instanceof GameError) {
+                this.errorHandler.handle(error);
+            } else {
+                this.errorHandler.handle(new GameError(
+                    '发生了意外错误',
+                    GameErrorCodes.INVALID_OPERATION
+                ));
             }
         }
     }
 
-    private findNearbyStone(worker: Worker): Stone | undefined {
-        return this.stones.find(stone =>
-            Phaser.Math.Distance.Between(
-                worker.sprite.x,
-                worker.sprite.y,
-                stone.sprite.x,
-                stone.sprite.y
-            ) < 50
-        );
+    private handlePickupFrom(from: number): void {
+        // get location
+
+        // goto location
+
+        // pickup stone
+
     }
 
-    private findValidConstructionSlot(worker: Worker): ConstructionSlot | undefined {
-        return this.constructionSlots.find(slot =>
-            !slot.isOccupied &&
-            Phaser.Math.Distance.Between(
-                worker.sprite.x,
-                worker.sprite.y,
-                slot.rect.x,
-                slot.rect.y
-            ) < 50
-        );
+    private handleDropTo(to: number): void {
+
     }
 
-    private tweenWorkerTo(worker: Worker, x: number, y: number, onComplete?: () => void): void {
+    private tweenWorkerTo(x: number, y: number, onComplete?: () => void): void {
+        if (!this.worker) return;
+
+        const distance = Phaser.Math.Distance.Between(
+            this.worker.sprite.x,
+            this.worker.sprite.y,
+            x,
+            y
+        );
+
+        // 设定基础速度（像素/毫秒）
+        const baseSpeed = 0.2 * this.config.speed;
+
+        const duration = distance * baseSpeed;
+
         this.tweens.add({
-            targets: worker.sprite,
+            targets: this.worker.sprite,
             x: x,
             y: y,
-            duration: 500,
+            duration: duration,
             ease: 'Power2',
             onComplete: onComplete
         });
+
+        if (this.worker.stoneCarried) {
+            this.tweens.add({
+                targets: this.worker.stoneCarried.sprite,
+                x: x,
+                y: y,
+                duration: duration,
+                ease: 'Power2'
+            });
+        }
     }
 
     private checkOutput(): void {
-        if (!this.levelConfig) return;
-
-        const outputValues = this.outputSlots
-            .map(slot => slot.value)
-            .filter((value): value is number => value !== undefined);
-
-        const isCorrect = this.levelConfig.validateOutput(outputValues);
+        const isCorrect = this.config.validationFn(this.outputQueue);
 
         if (isCorrect) {
             console.log('Level completed!');
             // You can add level completion logic here
+        } else {
+            console.log('Output is incorrect');
+            // You can add incorrect output logic here
         }
-    }
-
-    public loadLevelConfig(config: LevelConfig): void {
-        this.levelConfig = config;
-        this.clearCurrentLevel();
-        this.setupLevel(this.currentLevel);
-
-        // 设置构造槽
-        config.slots.forEach((slotConfig, index) => {
-            if (index < this.constructionSlots.length) {
-                const slot = this.constructionSlots[index];
-                slot.rect.setPosition(slotConfig.x, slotConfig.y);
-            }
-        });
-    }
-
-    private clearCurrentLevel(): void {
-        // 清除所有石头
-        this.stones.forEach(stone => stone.sprite.destroy());
-        this.stones = [];
-
-        // 清除输入槽中的石头
-        this.inputSlots.forEach(slot => {
-            if (slot.stone) {
-                slot.stone.sprite.destroy();
-                slot.stone = undefined;
-                slot.value = undefined;
-            }
-        });
-
-        // 清除输出槽中的石头
-        this.outputSlots.forEach(slot => {
-            if (slot.stone) {
-                slot.stone.sprite.destroy();
-                slot.stone = undefined;
-                slot.value = undefined;
-            }
-        });
     }
 }
