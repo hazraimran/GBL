@@ -37,16 +37,15 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 
     return showBottomPanel && <footer className="flex items-end absolute bottom-0 w-full">
         {/* Return Button */}
-        <button className="w-[10vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center">
+        {/* <button className="w-[10vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center">
             <RxReset className="w-[5vw] h-[5vw] text-custom-bg-text" />
-        </button>
+        </button> */}
 
         {/* Mute Button */}
-        <button className="w-[6vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center ml-8"
+        {/* <button className="w-[6vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center ml-8"
             onClick={() => setIsMuted(!isMuted)}>
             {isMuted ? <GoMute className="w-[6vw] h-[6vw] text-custom-bg-text" /> : <GoUnmute className="w-[6vw] h-[6vw] text-custom-bg-text" />}
-
-        </button>
+        </button> */}
 
         <div className=" flex items-center space-x-4 p-4 bg-custom-bg rounded-lg translate-x-1/2 ">
             {/* Stop Button */}

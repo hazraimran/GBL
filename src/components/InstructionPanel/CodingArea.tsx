@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CommandType } from '../../types/game';
 import Command from './Command';
 import GameContext from '../../context/GameContext';
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface CodingAreaProps { }
@@ -41,6 +39,7 @@ const CommandRow: React.FC<CommandRowProps> = ({
         if (e.dataTransfer.getData('idx') !== '') {
             handleDrag(e.dataTransfer.getData('command') as CommandType, parseInt(e.dataTransfer.getData('idx')), idx);
         } else {
+
             handleDrag(e.dataTransfer.getData('command') as CommandType, null, idx);
         }
         setIsOver(false);
@@ -59,7 +58,7 @@ const CommandRow: React.FC<CommandRowProps> = ({
             onDragLeave={handleDragLeave}
         >
             <span className="min-w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
-                {idx + 1}
+                {idx + 1}{'.'}
             </span>
             <Command idx={idx} value={command} />
         </div>
@@ -108,32 +107,30 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
     }
 
     return (
-        <Card className="w-full">
-            <CardContent className="p-4">
-                <ScrollArea
-                    className={cn(
-                        "min-h-40 rounded-lg transition-colors duration-200 p-2",
-                        isOver ? " border-2 border-dashed border-primary/50" : "",
-                        // "hover:bg-secondary/60"
-                    )}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    onDragEnter={(e) => e.preventDefault()}
-                    onDragLeave={handleDragLeave}
-                >
-                    <div className="space-y-2">
-                        {commandsUsed?.map((command, idx) => (
-                            <CommandRow
-                                key={idx}
-                                command={command}
-                                idx={idx}
-                                handleDrag={handleDrag}
-                            />
-                        ))}
-                    </div>
-                </ScrollArea>
-            </CardContent>
-        </Card>
+        <div className="p-4 w-full">
+            <div
+                className={cn(
+                    "min-h-40 rounded-lg transition-colors duration-200 p-2 mx-4",
+                    isOver ? "bg-secondary/80 border-2 border-dashed border-primary/50" : "bg-secondary/40",
+                    "hover:bg-secondary/60"
+                )}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragEnter={(e) => e.preventDefault()}
+                onDragLeave={handleDragLeave}
+            >
+                <div className="space-y-2">
+                    {commandsUsed?.map((command, idx) => (
+                        <CommandRow
+                            key={idx}
+                            command={command}
+                            idx={idx}
+                            handleDrag={handleDrag}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 }
 

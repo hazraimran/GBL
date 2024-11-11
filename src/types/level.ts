@@ -6,7 +6,7 @@ export type LevelInfo = {
     id: number;
     title: string;
     description: string;
-    generationFunction: string;
+    generatorFunction: string;
     validationFunction: string;
     commands: CommandType[];
     commandsUsed: CommandType[];
