@@ -1,21 +1,17 @@
-import seedrandom from 'seedrandom';
-
-const inputFn = (seed: number) => {
+const inputFn = () => {
     const len = 5;
     const arr = [];
-    const generator = seedrandom(seed);
     for (let i = 0; i < len; i++) {
-        arr.push(generator());
+        arr.push(Math.random() % 10 + 1);
     }
     return arr;
 }
 
-const validationFn = (output: number[], seed: number) => {
+const validationFn = (output: number[]) => {
     const len = 5;
     const arr: number[] = [];
-    const generator = seedrandom(seed);
     for (let i = 0; i < len; i++) {
-        arr.push(generator());
+        arr.push(Math.random() % 10 + 1);
     }
 
     output.map((val, idx) => {
@@ -27,7 +23,6 @@ const validationFn = (output: number[], seed: number) => {
     return true;
 }
     
-
 const level1 = {
     id: 1,
     title: 'Command Post',

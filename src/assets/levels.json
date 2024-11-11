@@ -1,17 +1,17 @@
 [{
     "id": 1,
-    "title": "",
-    "description": "Basic input and output operations",
-    "generatorFunction": "function (seed) {\n    var len = 1;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    return arr;\n}",
-    "validationFunction": "function (output, seed) {\n    var len = 1;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    output.map(function (val, idx) {\n        if (val !== arr[idx]) {\n            return false;\n        }\n    });\n    return true;\n}",
+    "title": "Supply Chamber",
+    "description": "Each stone is carefully crafted for a specific purpose. Retrieve stones from the ‘Supply Chamber’ and place them in the foundation slots to ensure the structure’s stability.",
+    "generatorFunction": "function () {\n    var len = 1;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.random() % 10 + 1);\n    }\n    return arr;\n}",
+    "validationFunction": "function (output) {\n    var len = 1;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.random() % 10 + 1);\n    }\n    output.map(function (val, idx) {\n        if (val !== arr[idx]) {\n            return false;\n        }\n    });\n    return true;\n}",
     "commands": ["INPUT", "OUTPUT"],
     "instructionCountAchievement": null,
     "commandCountAchievement": null,
     "isLocked": false
 }, {
     "id": 2,
-    "title": "",
-    "description": "Introduce jump instructions",
+    "title": "Laborer’s Choice",
+    "description": "Not all stones fit every part of the foundation. Observe each stone’s shape and size before placing it. Only stones that meet the conditions should be placed.",
     "generatorFunction": "function (seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    return arr;\n}",
     "validationFunction": "function (output, seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    output.map(function (val, idx) {\n        if (val !== arr[idx]) {\n            return false;\n        }\n    });\n    return true;\n}",
     "commands": ["INPUT", "OUTPUT", "JUMP"],
@@ -20,7 +20,7 @@
     "isLocked": true
 }, {
     "id": 3,
-    "title": "",
+    "title": "Replica Slate",
     "description": "Read and duplicate data from the floor.",
     "generatorFunction": "function (seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    return arr;\n}",
     "validationFunction": "function (output, seed) {\n    var len = 5;\n    var arr = [];\n    var generator = (0, seedrandom.default)(seed);\n    for (var i = 0; i < len; i++) {\n        arr.push(generator());\n    }\n    output.map(function (val, idx) {\n        if (val !== arr[idx]) {\n            return false;\n        }\n    });\n    return true;\n}",

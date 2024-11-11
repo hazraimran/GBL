@@ -1,20 +1,16 @@
-"use strict";
-import seedrandom from "seedrandom";
-var inputFn = function (seed) {
+var inputFn = function () {
     var len = 5;
     var arr = [];
-    var generator = (0, seedrandom.default)(seed);
     for (var i = 0; i < len; i++) {
-        arr.push(generator());
+        arr.push(Math.random() % 10 + 1);
     }
     return arr;
 };
-var validationFn = function (output, seed) {
+var validationFn = function (output) {
     var len = 5;
     var arr = [];
-    var generator = (0, seedrandom.default)(seed);
     for (var i = 0; i < len; i++) {
-        arr.push(generator());
+        arr.push(Math.random() % 10 + 1);
     }
     output.map(function (val, idx) {
         if (val !== arr[idx]) {
