@@ -1,7 +1,7 @@
 // src/context/GameContext.ts
 import { createContext } from 'react';
 import { LevelInfo, CurrentSceneType } from '../types/level';
-import { CommandType } from '../types/game';
+import { CommandWithArgType } from '../types/game';
 
 interface GameContextType {
     level: number;
@@ -14,8 +14,8 @@ interface GameContextType {
     setShowBottomPanel: (show: boolean) => void;
     levelInfo: LevelInfo | null;
     setLevelInfo: (levelInfo: LevelInfo) => void;
-    commandsUsed: CommandType[];
-    setCommandsUsed: (commands: CommandType[]) => void;
+    commandsUsed: CommandWithArgType[];
+    setCommandsUsed: (commands: CommandWithArgType[]) => void;
 }
 
 // Create the context with a default value (optional)

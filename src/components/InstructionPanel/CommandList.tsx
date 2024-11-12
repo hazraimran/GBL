@@ -8,7 +8,7 @@ const CommandList: React.FC = () => {
     return (
         <div className="fixed z-[9] right-0 top-20 -translate-x-[20rem] w-36 flex flex-col items-start justify-center gap-4 bg-sky-50">
             {levelInfo?.commands.map((command, index) => (
-                <Command key={index} value={command} />
+                <Command key={index} value={{command: command, args: []}} />
             ))}
         </div>
     );

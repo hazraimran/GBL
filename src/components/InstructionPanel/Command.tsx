@@ -1,9 +1,9 @@
 import React from 'react';
-import { CommandType } from '../../types/game';
+import { CommandWithArgType } from '../../types/game';
 
 interface DraggableItemProps {
     idx?: number
-    value: CommandType;
+    value: CommandWithArgType;
 }
 
 const Command: React.FC<DraggableItemProps> = ({ 
@@ -16,7 +16,8 @@ const Command: React.FC<DraggableItemProps> = ({
         if (idx !== undefined) {
             e.dataTransfer.setData('idx', idx.toString());
         }
-        e.dataTransfer.setData('command', value);
+        e.dataTransfer.setData('command', value.command);
+        e.dataTransfer.setData('args', value.args.toString());
         setDragging(true);
     }
 
@@ -31,7 +32,7 @@ const Command: React.FC<DraggableItemProps> = ({
             onDragEnd={handleDragEnd}
             className={` p-2 bg-lime-400 rounded-md text-white cursor-pointer ${dragging ? 'opacity-50' : ''}`}
         >
-            {value}
+            {value.command} {value.args.join(' ')}
         </div>
     );
 };

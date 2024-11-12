@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { CommandType } from '../../types/game';
+import { CommandType, CommandWithArgType } from '../../types/game';
 import Command from './Command';
 import GameContext from '../../context/GameContext';
 import { cn } from "@/lib/utils";
@@ -7,15 +7,15 @@ import { cn } from "@/lib/utils";
 interface CodingAreaProps { }
 
 interface CommandRowProps {
-    command: CommandType;
+    command: CommandWithArgType;
     idx: number;
-    handleDrag: (command: CommandType, from: number | null, to: number) => void;
+    insert: (command: CommandWithArgType, from: number | null, to: number) => void;
 }
 
 const CommandRow: React.FC<CommandRowProps> = ({
     command,
     idx,
-    handleDrag
+    insert
 }) => {
     const [isOver, setIsOver] = useState(false);
 
@@ -37,10 +37,15 @@ const CommandRow: React.FC<CommandRowProps> = ({
         e.preventDefault();
         e.stopPropagation();
         if (e.dataTransfer.getData('idx') !== '') {
-            handleDrag(e.dataTransfer.getData('command') as CommandType, parseInt(e.dataTransfer.getData('idx')), idx);
+            insert({
+                command: e.dataTransfer.getData('command') as CommandType,
+                args: e.dataTransfer.getData('args').split(',').map(Number)
+            }, parseInt(e.dataTransfer.getData('idx')), idx);
         } else {
-
-            handleDrag(e.dataTransfer.getData('command') as CommandType, null, idx);
+            insert({
+                command: e.dataTransfer.getData('command') as CommandType,
+                args: e.dataTransfer.getData('args').split(',').map(Number)
+            }, null, idx);
         }
         setIsOver(false);
     }
@@ -81,9 +86,42 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
         setIsOver(true);
     };
 
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+        console.log('drop outer')
         e.preventDefault();
-        setCommandsUsed([...(commandsUsed || []), e.dataTransfer.getData('command') as CommandType]);
+        const command = e.dataTransfer.getData('command');
+
+        if (e.dataTransfer.getData('idx') !== '') {
+            insert({
+                command: e.dataTransfer.getData('command') as CommandType,
+                args: e.dataTransfer.getData('args').split(',').map(Number)
+            }, parseInt(e.dataTransfer.getData('idx')), commandsUsed?.length ?? 0);
+        } else {
+            if (command === 'COPYFROM' || command === 'COPYTO') {
+                const newCommands = [...(commandsUsed ?? []), {
+                    command: e.dataTransfer.getData('command') as CommandType,
+                    args: [0]
+                }];
+                setCommandsUsed(newCommands);
+            } else if (command === 'JUMP' || command === 'JUMPZ' || command === 'JUMPN') {
+                const newCommands = [...(commandsUsed ?? []), {
+                    command: e.dataTransfer.getData('command') as CommandType,
+                    args: [0]
+                }];
+                setCommandsUsed(newCommands);
+            } else {
+                const newCommands = [...(commandsUsed ?? []), {
+                    command: e.dataTransfer.getData('command') as CommandType,
+                    args: []
+                }];
+                setCommandsUsed(newCommands);
+            }
+            insert({
+                command: e.dataTransfer.getData('command') as CommandType,
+                args: e.dataTransfer.getData('args').split(',').map(Number)
+            }, null, 0);
+
+        }
         setIsOver(false);
     };
 
@@ -92,12 +130,15 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
         setIsOver(false);
     }
 
-    const handleDrag = (command: CommandType, from: number | null = null, to: number) => {
+    const insert = (command: CommandWithArgType, from: number | null = null, to: number) => {
+        console.log('drag' + from + to);
         const newCommands = [...(commandsUsed ?? [])];
         if (from === null) {
             newCommands.splice(to, 0, command);
         } else {
+            console.log(newCommands);
             newCommands.splice(from, 1);
+            console.log(newCommands);
             if (from < to) {
                 to--;
             }
@@ -125,7 +166,7 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
                             key={idx}
                             command={command}
                             idx={idx}
-                            handleDrag={handleDrag}
+                            insert={insert}
                         />
                     ))}
                 </div>
