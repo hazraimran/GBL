@@ -4,10 +4,10 @@ import InfoArea from './InfoArea';
 import CodingArea from './CodingArea';
 
 const InstructionPanel: React.FC = () => {
-    const { levelInfo } = useContext(GameContext);
+    const { levelInfo, setCommandsUsed } = useContext(GameContext);
 
     useEffect(() => {
-        // setLevelInfo(getLevelInfo(level));
+        setCommandsUsed(levelInfo.commandsUsed);
     }, []);
 
     const instructionPanelRef = useRef<HTMLDivElement>(null);

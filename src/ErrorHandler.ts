@@ -19,7 +19,7 @@ export class ErrorHandler {
         } else {
             console.error('[UnexpectedError]', error);
             this.onError?.(new GameError(
-                '发生了意外错误',
+                'Unexpected Error Happened',
                 'UNEXPECTED_ERROR'
             ));
         }
