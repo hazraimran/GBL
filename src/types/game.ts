@@ -15,9 +15,20 @@ export interface ConstructionSlot {
 }
 
 export type generatorFn = (seed: number) => number[];
+
 export type validationFn = (output: number[]) => boolean;
 
 export type CommandType =
     'INPUT' | 'OUTPUT' | 'COPYFROM' | 'COPYTO' |
     'ADD' | 'SUB' | 'BUMPUP' | 'BUMPDOWN' |
     'JUMP' | 'JUMPZ' | 'JUMPN' | 'LABEL';
+
+export type CommandWithArgType = {
+    command: CommandType;
+    args: number[];
+}
+
+export type GameStatus = {
+    commandCnt: number;
+    executeCnt: number;
+};

@@ -30,8 +30,12 @@ const level1 = {
     generatorFunction: inputFn.toString(),
     validationFunction: validationFn.toString(),
     commands: ['INPUT', 'OUTPUT'],
-    instructionCountAchievement: null,
+    commandsUsed: [],
+    constructionSlots: 3,
+    expectedCommandCnt: 8,
+    expectedExecuteCnt: 25,
     commandCountAchievement: null,
+    executeCountAchievement: null,
     isLocked: false
 }
 

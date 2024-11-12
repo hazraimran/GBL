@@ -1,7 +1,7 @@
 // src/context/GameContext.ts
 import { createContext } from 'react';
 import { LevelInfo, CurrentSceneType } from '../types/level';
-import { CommandWithArgType } from '../types/game';
+import { CommandWithArgType, GameStatus } from '../types/game';
 
 interface GameContextType {
     level: number;
@@ -12,10 +12,14 @@ interface GameContextType {
     setInstructions: (instructions: string[]) => void;
     showBottomPanel: boolean;
     setShowBottomPanel: (show: boolean) => void;
-    levelInfo: LevelInfo | null;
+    levelInfo: LevelInfo;
     setLevelInfo: (levelInfo: LevelInfo) => void;
     commandsUsed: CommandWithArgType[];
     setCommandsUsed: (commands: CommandWithArgType[]) => void;
+    gameStatus: GameStatus;
+    setGameStatus: (gameStatus: GameStatus) => void;
+    showPopup: boolean;
+    setShowPopup: (show: boolean) => void;
 }
 
 // Create the context with a default value (optional)
@@ -28,10 +32,31 @@ const GameContext = createContext<GameContextType>({
     setInstructions: () => { },
     showBottomPanel: false,
     setShowBottomPanel: () => { },
-    levelInfo: null,
+    levelInfo: {
+        id: -1,
+        title: '',
+        description: '',
+        generatorFunction: '',
+        validationFunction: '',
+        commands: [],
+        commandsUsed: [],
+        constructionSlots: 0,
+        expectedCommandCnt: 0,
+        expectedExecuteCnt: 0,
+        commandCountAchievement: null,
+        executeCountAchievement: null,
+        isLocked: false
+    },
     setLevelInfo: () => { },
     commandsUsed: [],
     setCommandsUsed: () => { },
+    gameStatus: {
+        commandCnt: 0,
+        executeCnt: 0
+    },
+    setGameStatus: () => { },
+    showPopup: false,
+    setShowPopup: () => { },
 });
 
 export default GameContext;
