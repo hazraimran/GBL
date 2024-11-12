@@ -1,11 +1,13 @@
-import { Worker, Stone, ConstructionSlot, generatorFn, validationFn, CommandType } from '../types/game';
+import { Worker, Stone, ConstructionSlot, generatorFn, validationFn, CommandWithArgType } from '../types/game';
 import { GameError, GameErrorCodes } from '../types/errors';
 import { ErrorHandler } from '../ErrorHandler';
+import EventManager from '../EventManager';
 
 interface PassedConfig {
     generatorFn: generatorFn;
     validationFn: validationFn;
     constructionSlots: number;
+    currentLevel: number;
 }
 
 interface GameSceneConfig {
@@ -28,11 +30,15 @@ interface GameSceneConfig {
             x: number;
             y: number;
             spacing: number;
+            x_origin: number;
+            y_origin: number;
         };
         outputArea: {
             x: number;
             y: number;
             spacing: number;
+            x_origin: number;
+            y_origin: number;
         };
         constructionArea: {
             x: number;
@@ -41,6 +47,7 @@ interface GameSceneConfig {
         };
     };
     speed: number;
+    currentLevel: number | null;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -84,12 +91,16 @@ export class MainScene extends Phaser.Scene {
                 inputArea: {
                     x: 100,
                     y: 150,
-                    spacing: 60
+                    spacing: 60,
+                    x_origin: 100,
+                    y_origin: 600
                 },
                 outputArea: {
                     x: 700,
                     y: 150,
-                    spacing: 60
+                    spacing: 60,
+                    x_origin: 700,
+                    y_origin: 600
                 },
                 constructionArea: {
                     x: 300,
@@ -97,7 +108,8 @@ export class MainScene extends Phaser.Scene {
                     spacing: 60
                 }
             },
-            speed: 1
+            speed: 1,
+            currentLevel: null
         };
     }
 
@@ -106,87 +118,19 @@ export class MainScene extends Phaser.Scene {
         this.config.generatorFn = data.sceneConfig.generatorFn;
         this.config.validationFn = data.sceneConfig.validationFn;
         this.config.constructionSlots = data.sceneConfig.constructionSlots;
+        this.config.currentLevel = data.sceneConfig.currentLevel;
+        console.log('Initializing MainScene with config:', this.config.constructionSlots);
     }
 
+    restart(): void {
+        this.scene.restart();
+    }
 
     create(): void {
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
-        this.setupConstructionArea(this.config.layout.constructionArea);
+        this.setupConstructionArea();
         this.setupOutputArea(this.config.layout.outputArea);
-    }
-
-    modifySpeed(speed: number): void {
-        this.config.speed = speed;
-    }
-
-    executeCommands(commands: CommandType[]): void {
-        let cmdExcCnt = 0;
-        let curLine = 0;
-
-        while (curLine < commands.length) {
-            const command = commands[curLine];
-            switch (command) {
-                case 'INPUT':
-                    this.handlePickupFromInput();
-                    break;
-                case 'OUTPUT':
-                    this.handleDropToOutput();
-                    break;
-                case 'COPYFROM':
-                    break;
-                case 'COPYTO':
-                    break;
-                case 'ADD':
-                    break;
-                case 'SUB':
-                    break;
-                case 'BUMPUP':
-                    break;
-                case 'BUMPDOWN':
-                    break;
-                case 'JUMP':
-
-                    break;
-                case 'JUMPZ':
-                    break;
-                case 'JUMPN':
-                    break;
-                case 'LABEL':
-                    break;
-            }
-        }
-    }
-
-    private createStone(x: number, y: number, value?: number): Stone {
-        const { width, height } = this.config.stoneSize;
-        const stoneRect = this.add.rectangle(x, y, width, height, 0x00ff00);
-        stoneRect.setStrokeStyle(2, 0x333333);
-        stoneRect.setInteractive();
-
-        const stone: Stone = {
-            sprite: stoneRect,
-            value: value
-        };
-
-        if (value !== undefined) {
-            this.add.text(x, y, value.toString(), {
-                fontSize: '16px',
-                color: '#ffffff'
-            }).setOrigin(0.5);
-        }
-
-        return stone;
-    }
-
-    private createWorker(): Worker {
-        const { x, y, width, height } = this.config.workerConfig;
-        const workerRect = this.add.rectangle(x, y, width, height, 0x0000ff);
-        workerRect.setStrokeStyle(2, 0x333333);
-
-        return {
-            sprite: workerRect,
-        };
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
@@ -224,30 +168,129 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private setupConstructionArea(config: { x: number; y: number; spacing: number }): void {
+    private setupConstructionArea(): void {
         for (let i = 0; i < this.config.constructionSlots; i++) {
+            const initialPos = { x: 300, y: 300 };
+            const spacing = 60;
+
             const slot: ConstructionSlot = {
                 rect: this.add.rectangle(
-                    config.x + (i * config.spacing),
-                    config.y,
+                    initialPos.x + ((i % 3) * spacing),
+                    initialPos.y + (Math.floor(i / 3) * spacing),
                     this.config.stoneSize.width + 10,
                     this.config.stoneSize.height + 10,
                     0x666666,
-                    0.5
+                    0.8
                 ),
                 isOccupied: false
             };
-            slot.rect.setStrokeStyle(2, 0x666666);
+
+            slot.rect.setStrokeStyle(4, 0x000000);
+
             this.constructionSlots.push(slot);
         }
     }
 
-    private removeStoneOnHand() {
+    private createWorker(): Worker {
+        const { x, y, width, height } = this.config.workerConfig;
+        const workerRect = this.add.rectangle(x, y, width, height, 0x0000ff);
+        workerRect.setStrokeStyle(2, 0x333333);
+
+        return {
+            sprite: workerRect,
+        };
+    }
+
+    modifySpeed(speed: number): void {
+        console.log("Modifying speed to", speed);
+        this.config.speed = speed;
+    }
+
+    async pickSlot(): Promise<void> {
+
+    }
+
+    async executeCommands(commandsWithArg: CommandWithArgType[]): Promise<void> {
+        console.log('Executing commands:', commandsWithArg);
+        let cmdExcCnt = 0;
+        let curLine = 0;
+
+        const jumpto = (line: number) => {
+            curLine = line;
+        }
+
+        while (curLine < commandsWithArg.length) {
+            const commandWithArg = commandsWithArg[curLine];
+            console.log(commandWithArg)
+            curLine++;
+            cmdExcCnt++;
+            switch (commandWithArg.command) {
+                case 'INPUT':
+                    await this.handlePickupFromInput();
+                    break;
+                case 'OUTPUT':
+                    await this.handleDropToOutput();
+                    break;
+                case 'COPYFROM':
+                    await this.handleCopyFrom(commandWithArg.args);
+                    break;
+                case 'COPYTO':
+                    await this.handleCopyTo(commandWithArg.args);
+                    break;
+                case 'ADD':
+                    await this.handleAdd(commandWithArg.args);
+                    break;
+                case 'SUB':
+                    await this.handleSub(commandWithArg.args);
+                    break;
+                case 'JUMP':
+                    await this.handleJump(commandWithArg.args, jumpto);
+                    break;
+                case 'JUMPZ':
+                    break;
+                case 'JUMPN':
+                    break;
+                case 'LABEL':
+                    break;
+            }
+        }
+
+        this.validateOutput(commandsWithArg.length, cmdExcCnt);
+    }
+
+    async executeOneStep(): Promise<void> {
+        console.log('Executing one step');
+    }
+
+    private async handleCopyFrom(args: number[]): Promise<void> {
+        console.log('Copying from', args);
+    }
+
+    private async handleCopyTo(args: number[]): Promise<void> {
+        console.log('Copying to', args);
+    }
+
+    private async handleAdd(args: number[]): Promise<void> {
+        console.log('Adding', args);
+    }
+
+    private async handleSub(args: number[]): Promise<void> {
+        console.log('Subtracting', args);
+    }
+
+    private async handleJump(args: number[], jumpto: () => {}): Promise<void> {
+        console.log('Jumping', args);
+    }
+
+    private removeStoneOnHand(): Stone | undefined {
         if (!this.worker) return;
         // Remove stone on hand animation
 
+        const stone = this.worker.stoneCarried;
+
         // Reset worker state
         this.worker.stoneCarried = undefined;
+        return stone;
     }
 
     private pickUpStone(stone: Stone): void {
@@ -263,109 +306,143 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    private handlePickupFromInput(): void {
+    private async handlePickupFromInput(): Promise<void> {
+        console.log('Picking up stone from input area');
         if (!this.worker) return;
 
-        this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y, () => {
-            try {
-                if (!(this.inputStones.length > 0)) {
-                    throw new GameError('No stones in input area', GameErrorCodes.INVALID_MOVE);
-                }
-
-                const stone = this.inputStones.shift() as Stone;
-                this.pickUpStone(stone);
-            } catch (error: any) {
-                if (error instanceof GameError) {
-                    this.errorHandler.handle(error);
-                } else {
-                    this.errorHandler.handle(new GameError(
-                        '发生了意外错误',
-                        GameErrorCodes.INVALID_OPERATION
-                    ));
-                }
-            }
-        });
-    }
-
-    private handleDropToOutput(): void {
-        if (!this.worker) return;
-        if (!this.worker.stoneCarried) return;
+        await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
         try {
-            if (!this.worker.stoneCarried) {
-                throw new GameError('No stone carried by worker', GameErrorCodes.INVALID_MOVE);
+            if (!(this.inputStones.length > 0)) {
+                throw new GameError('No stones in input area', GameErrorCodes.INVALID_MOVE);
             }
-            this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y, () => {
 
-            });
+            const stone = this.inputStones.shift() as Stone;
+            this.pickUpStone(stone);
+            console.log(this.worker?.stoneCarried);
         } catch (error: any) {
             if (error instanceof GameError) {
                 this.errorHandler.handle(error);
             } else {
                 this.errorHandler.handle(new GameError(
-                    '发生了意外错误',
+                    'Unexpected Error Happened',
                     GameErrorCodes.INVALID_OPERATION
                 ));
             }
         }
     }
 
-    private handlePickupFrom(from: number): void {
-        // get location
-
-        // goto location
-
-        // pickup stone
-
-    }
-
-    private handleDropTo(to: number): void {
-
-    }
-
-    private tweenWorkerTo(x: number, y: number, onComplete?: () => void): void {
+    private async handleDropToOutput(): Promise<void> {
+        console.log('Dropping stone to output area', this.worker, this.worker?.stoneCarried);
         if (!this.worker) return;
+        try {
+            if (!this.worker.stoneCarried) {
+                throw new GameError('No stone carried by worker', GameErrorCodes.INVALID_MOVE);
+            }
+            await this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y);
 
-        const distance = Phaser.Math.Distance.Between(
-            this.worker.sprite.x,
-            this.worker.sprite.y,
-            x,
-            y
-        );
+            // Drop stone animation
 
-        // 设定基础速度（像素/毫秒）
-        const baseSpeed = 0.2 * this.config.speed;
+            const stone = this.removeStoneOnHand();
+            this.handleStoneToOutput(stone as Stone);
+            this.outputQueue.push(stone?.value as number);
 
-        const duration = distance * baseSpeed;
-
-        this.tweens.add({
-            targets: this.worker.sprite,
-            x: x,
-            y: y,
-            duration: duration,
-            ease: 'Power2',
-            onComplete: onComplete
-        });
-
-        if (this.worker.stoneCarried) {
-            this.tweens.add({
-                targets: this.worker.stoneCarried.sprite,
-                x: x,
-                y: y,
-                duration: duration,
-                ease: 'Power2'
-            });
+        } catch (error: any) {
+            if (error instanceof GameError) {
+                this.errorHandler.handle(error);
+            } else {
+                this.errorHandler.handle(new GameError(
+                    'Unexpected Error Happened',
+                    GameErrorCodes.INVALID_OPERATION
+                ));
+            }
         }
     }
 
-    private checkOutput(): void {
+    private handleStoneToOutput(stone: Stone): void {
+        stone.sprite.x = this.config.layout.outputArea.x;
+        stone.sprite.y = this.config.layout.outputArea.y;
+
+        this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin).then(() => {
+            stone.sprite.destroy();
+        });
+    }
+
+    private async tweenStoneTo(stone: Stone, x: number, y: number): Promise<void> {
+        return new Promise((resolve) => {
+            if (!stone) return;
+
+            const distance = Phaser.Math.Distance.Between(
+                stone.sprite.x,
+                stone.sprite.y,
+                x,
+                y
+            );
+
+            const baseSpeed = 6 * this.config.speed;
+
+            const duration = distance * baseSpeed;
+
+            this.tweens.add({
+                targets: stone.sprite,
+                x: x,
+                y: y,
+                duration: duration,
+                ease: 'Power2',
+                onComplete: () => resolve()
+            });
+        });
+    }
+
+    private async tweenWorkerTo(x: number, y: number): Promise<void> {
+        return new Promise((resolve) => {
+            if (!this.worker) return;
+
+            const distance = Phaser.Math.Distance.Between(
+                this.worker.sprite.x,
+                this.worker.sprite.y,
+                x,
+                y
+            );
+
+            const baseSpeed = 4 * this.config.speed;
+
+            const duration = distance * baseSpeed;
+
+            this.tweens.add({
+                targets: this.worker.sprite,
+                x: x,
+                y: y,
+                duration: duration,
+                ease: 'Power2',
+                onComplete: () => resolve()
+            });
+
+            if (this.worker.stoneCarried) {
+                this.tweens.add({
+                    targets: this.worker.stoneCarried.sprite,
+                    x: x,
+                    y: y,
+                    duration: duration,
+                    ease: 'Power2'
+                });
+            }
+        });
+    }
+
+    private validateOutput(commandCnt: number, executeCnt: number): void {
         const isCorrect = this.config.validationFn(this.outputQueue);
 
         if (isCorrect) {
-            console.log('Level completed!');
-            // You can add level completion logic here
+            console.log('Output is correct');
+            // show popup
+            EventManager.emit('levelCompleted', {
+                executeCnt,
+                commandCnt
+            });
+
         } else {
             console.log('Output is incorrect');
-            // You can add incorrect output logic here
+            // show popup
         }
     }
 }

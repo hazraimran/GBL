@@ -9,7 +9,7 @@ const Levels: React.FC = () => {
 
     useEffect(() => {
         setLevelsInfo(getLevelsInfo());
-    }, []);
+    }, [currentScene]);
 
     const handleClickLevel = (level: LevelInfo) => {
         if (!level.isLocked) {

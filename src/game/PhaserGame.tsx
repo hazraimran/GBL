@@ -1,24 +1,26 @@
 import { useEffect, useRef, useContext } from 'react';
 import Phaser from 'phaser';
 import { MainScene } from './MainScene';
-import { CommandType } from '../types/game';
 import BottomPanel from '../components/BottomPanel';
 import GameContext from '../context/GameContext';
 import { ErrorHandler } from '../ErrorHandler';
 import { useToast } from "../hooks/use-toast"
 import { LevelInfo } from '../types/level';
+import { saveCommandsUsed } from '../utils/storage';
+import EventManager from '../EventManager';
+import { unlockNextLevel } from '../utils/storage';
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
-    const gameInstanceRef = useRef<Phaser.Game | null>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
-    const { levelInfo, commandsUsed } = useContext(GameContext);
+    const gameInstanceRef = useRef<Phaser.Game | null>(null);
+    const { levelInfo, commandsUsed, setGameStatus, setShowPopup } = useContext(GameContext);
     const { toast } = useToast();
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
             toast({
-                title: "游戏错误",
+                title: "Error Occured",
                 description: error.message,
                 variant: error.level === 'ERROR' ? 'destructive' : 'default',
                 duration: 3000,
@@ -31,17 +33,38 @@ const PhaserGame = () => {
 
         const generatorFn = new Function('return ' + levelInfo.generatorFunction)();
         const validationFn = new Function('return ' + levelInfo.validationFunction)();
+        const constructionSlots = levelInfo.constructionSlots
+        const currentLevel = levelInfo.id;
 
         return {
             generatorFn,
             validationFn,
-            commands: levelInfo.commands,
-            commandsUsed: levelInfo.commandsUsed,
-            instructionCountAchievement: levelInfo.instructionCountAchievement,
-            commandCountAchievement: levelInfo.commandCountAchievement,
+            constructionSlots,
+            currentLevel
         };
-        return null;
     }
+
+    useEffect(() => {
+        const levelCompleted = (data: {
+            executeCnt: number;
+            commandCnt: number;
+        }) => {
+            setGameStatus({
+                executeCnt: data.executeCnt,
+                commandCnt: data.commandCnt
+            });
+            setShowPopup(true);
+
+            // unlock next level
+            unlockNextLevel(levelInfo.id);
+
+        }
+        EventManager.on('levelCompleted', levelCompleted);
+
+        return () => {
+            EventManager.remove('levelCompleted', levelCompleted);
+        }
+    }, []);
 
     useEffect(() => {
         if (!gameRef.current) return;
@@ -94,13 +117,13 @@ const PhaserGame = () => {
     }, []);
 
     const handleRunCode = () => {
+        saveCommandsUsed(levelInfo!.id, commandsUsed);
         if (!mainSceneRef.current) {
             console.warn('Main scene not initialized');
             return;
         }
 
-        const commands: CommandType[] = ['INPUT', 'OUTPUT'];
-        mainSceneRef.current.executeCommands(commands);
+        mainSceneRef.current.executeCommands(commandsUsed);
     };
 
     const handleExecuteOneStep = () => {
@@ -109,9 +132,7 @@ const PhaserGame = () => {
             return;
         }
 
-        // Add single step execution logic here
-        const command: CommandType = 'INPUT';
-        mainSceneRef.current.executeCommands([command]);
+        mainSceneRef.current.executeOneStep();
     };
 
     const handleReset = () => {
@@ -122,11 +143,11 @@ const PhaserGame = () => {
 
         // Add reset logic here
         // You might want to restart the scene
-        gameInstanceRef.current?.scene.restart('MainScene');
+        gameInstanceRef.current?.scene.start('MainScene');
     };
 
     const handleDrag = (speed: number) => {
-        console.log('Drag speed:', speed);
+        mainSceneRef.current?.modifySpeed(speed);
     };
 
     return (

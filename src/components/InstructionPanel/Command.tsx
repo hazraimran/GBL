@@ -6,7 +6,7 @@ interface DraggableItemProps {
     value: CommandWithArgType;
 }
 
-const Command: React.FC<DraggableItemProps> = ({ 
+const Command: React.FC<DraggableItemProps> = ({
     idx,
     value,
 }) => {
@@ -17,7 +17,7 @@ const Command: React.FC<DraggableItemProps> = ({
             e.dataTransfer.setData('idx', idx.toString());
         }
         e.dataTransfer.setData('command', value.command);
-        e.dataTransfer.setData('args', value.args.toString());
+        e.dataTransfer.setData('args', JSON.stringify(value.args));
         setDragging(true);
     }
 

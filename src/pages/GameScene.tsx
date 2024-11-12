@@ -3,6 +3,7 @@ import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import GameContext from '../context/GameContext';
 import PhaserGame from '../game/PhaserGame';
 import CommandList from '../components/InstructionPanel/CommandList';
+import Popup from '../components/Popup';
 
 const GameScene: React.FC = () => {
     const { currentScene } = useContext(GameContext);
@@ -13,6 +14,7 @@ const GameScene: React.FC = () => {
             <InstructionPanel />
             <CommandList />
             <PhaserGame />
+            <Popup />
         </div>
     )
 }

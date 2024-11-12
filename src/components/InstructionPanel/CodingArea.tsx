@@ -39,12 +39,12 @@ const CommandRow: React.FC<CommandRowProps> = ({
         if (e.dataTransfer.getData('idx') !== '') {
             insert({
                 command: e.dataTransfer.getData('command') as CommandType,
-                args: e.dataTransfer.getData('args').split(',').map(Number)
+                args: JSON.parse(e.dataTransfer.getData('args'))
             }, parseInt(e.dataTransfer.getData('idx')), idx);
         } else {
             insert({
                 command: e.dataTransfer.getData('command') as CommandType,
-                args: e.dataTransfer.getData('args').split(',').map(Number)
+                args: JSON.parse(e.dataTransfer.getData('args'))
             }, null, idx);
         }
         setIsOver(false);
@@ -87,14 +87,13 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
     };
 
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-        console.log('drop outer')
         e.preventDefault();
         const command = e.dataTransfer.getData('command');
 
         if (e.dataTransfer.getData('idx') !== '') {
             insert({
                 command: e.dataTransfer.getData('command') as CommandType,
-                args: e.dataTransfer.getData('args').split(',').map(Number)
+                args: JSON.parse(e.dataTransfer.getData('args'))
             }, parseInt(e.dataTransfer.getData('idx')), commandsUsed?.length ?? 0);
         } else {
             if (command === 'COPYFROM' || command === 'COPYTO') {
@@ -118,7 +117,7 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
             }
             insert({
                 command: e.dataTransfer.getData('command') as CommandType,
-                args: e.dataTransfer.getData('args').split(',').map(Number)
+                args: JSON.parse(e.dataTransfer.getData('args'))
             }, null, 0);
 
         }
@@ -131,14 +130,11 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
     }
 
     const insert = (command: CommandWithArgType, from: number | null = null, to: number) => {
-        console.log('drag' + from + to);
         const newCommands = [...(commandsUsed ?? [])];
         if (from === null) {
             newCommands.splice(to, 0, command);
         } else {
-            console.log(newCommands);
             newCommands.splice(from, 1);
-            console.log(newCommands);
             if (from < to) {
                 to--;
             }

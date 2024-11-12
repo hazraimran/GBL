@@ -2,6 +2,7 @@
 import FingerprintJS from 'fingerprintjs';
 import levelsInfo from '../assets/levels.json';
 import { LevelInfo } from '../types/level';
+import { CommandWithArgType } from '../types/game';
 
 // Generate a unique identifier combining device fingerprint and timestamp
 export const generateUID = async (): Promise<string> => {
@@ -40,7 +41,7 @@ export const createLevelInfoFromTemplate = () => {
     localStorage.setItem('levels', JSON.stringify(levelsInfo));
 }
 
-export const getLevelsInfo = ()=> {
+export const getLevelsInfo = () => {
     let levels = localStorage.getItem('levels');
     if (!levels) {
         createLevelInfoFromTemplate();
@@ -71,4 +72,32 @@ export const setLevelInfo = (levelId: number, levelInfo: LevelInfo) => {
     const levelsInfo = JSON.parse(levels as string);
     levelsInfo[levelId] = levelInfo;
     localStorage.setItem('levels', JSON.stringify(levelsInfo));
+}
+
+export const unlockNextLevel = (currentLevel: number) => {
+    // since currentLevel is 0-based, the next level is currentLevel
+    const nextLevel = currentLevel;
+    let levels = localStorage.getItem('levels');
+    if (!levels) {
+        createLevelInfoFromTemplate();
+        levels = localStorage.getItem('levels');
+    }
+
+    const levelsInfo = JSON.parse(levels as string);
+    levelsInfo[nextLevel].isLocked = false;
+    console.log('next level', levelsInfo[nextLevel]);
+    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+}
+
+export const saveCommandsUsed = (levelId: number, commandsUsed: CommandWithArgType[]) => {
+    let levels = localStorage.getItem('levels');
+    if (!levels) {
+        createLevelInfoFromTemplate();
+        levels = localStorage.getItem('levels');
+    }
+
+    const levelsInfo = JSON.parse(levels as string);
+    levelsInfo[levelId - 1].commandsUsed = commandsUsed;
+    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+    console.log('levels stored', levelsInfo)
 }
