@@ -1,77 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useRef, useEffect, useState } from 'react';
 import { CommandType, CommandWithArgType } from '../../types/game';
-import Command from './Command';
 import GameContext from '../../context/GameContext';
 import { cn } from "@/lib/utils";
+import CommandRow from './CommandRow';
+import EmptyRow from './EmptyRow';
+import FlowConnect from './FlowConnect';
 
-interface CodingAreaProps { }
-
-interface CommandRowProps {
-    command: CommandWithArgType;
-    idx: number;
-    insert: (command: CommandWithArgType, from: number | null, to: number) => void;
-}
-
-const CommandRow: React.FC<CommandRowProps> = ({
-    command,
-    idx,
-    insert
-}) => {
-    const [isOver, setIsOver] = useState(false);
-
-    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsOver(true);
-    }
-
-    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsOver(false);
-    }
-
-    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-    }
-
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.dataTransfer.getData('idx') !== '') {
-            insert({
-                command: e.dataTransfer.getData('command') as CommandType,
-                args: JSON.parse(e.dataTransfer.getData('args'))
-            }, parseInt(e.dataTransfer.getData('idx')), idx);
-        } else {
-            insert({
-                command: e.dataTransfer.getData('command') as CommandType,
-                args: JSON.parse(e.dataTransfer.getData('args'))
-            }, null, idx);
-        }
-        setIsOver(false);
-    }
-
-    return (
-        <div
-            className={cn(
-                "flex items-center space-x-3 p-2 rounded-lg transition-all duration-200",
-                isOver ? "bg-secondary/80 border-t-2 border-primary" : "bg-secondary/40",
-                "hover:bg-secondary/60"
-            )}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-        >
-            <span className="min-w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
-                {idx + 1}{'.'}
-            </span>
-            <Command idx={idx} value={command} />
-        </div>
-    )
-}
-
-const CodingArea: React.FC<CodingAreaProps> = () => {
-    const { commandsUsed, setCommandsUsed } = useContext(GameContext);
+const CodingArea: React.FC = () => {
+    const { commandsUsed, setCommandsUsed, setShowBottomPanel } = useContext(GameContext);
     const [isOver, setIsOver] = useState(false);
 
     useEffect(() => {
@@ -79,6 +15,14 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
         //     e.preventDefault();
         // })
     }, [])
+
+    useEffect(() => {
+        if (commandsUsed && commandsUsed.length === 0) {
+            setShowBottomPanel(false);
+        } else {
+            setShowBottomPanel(true);
+        }
+    }, [commandsUsed])
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -118,7 +62,7 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
             insert({
                 command: e.dataTransfer.getData('command') as CommandType,
                 args: JSON.parse(e.dataTransfer.getData('args'))
-            }, null, 0);
+            }, null, commandsUsed?.length ?? 0);
 
         }
         setIsOver(false);
@@ -143,13 +87,19 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
         setCommandsUsed(newCommands);
     }
 
+    const deleteCommand = (idx: number) => {
+        const newCommands = [...(commandsUsed ?? [])];
+        newCommands.splice(idx, 1);
+        setCommandsUsed(newCommands);
+    }
+
     return (
         <div className="p-4 w-full">
             <div
                 className={cn(
-                    "min-h-40 rounded-lg transition-colors duration-200 p-2 mx-4",
-                    isOver ? "bg-secondary/80 border-2 border-dashed border-primary/50" : "bg-secondary/40",
-                    "hover:bg-secondary/60"
+                    "min-h-40 rounded-lg transition-colors duration-200 p-2 mx-8 border-2 border-transparent",
+                    isOver ? "bg-secondary/10 border-2 border-dashed border-primary/50" : "bg-secondary/40",
+                    "hover:bg-secondary/20"
                 )}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -163,8 +113,10 @@ const CodingArea: React.FC<CodingAreaProps> = () => {
                             command={command}
                             idx={idx}
                             insert={insert}
+                            onDelete={deleteCommand}
                         />
                     ))}
+                    <EmptyRow commandsUsed={commandsUsed} />
                 </div>
             </div>
         </div>

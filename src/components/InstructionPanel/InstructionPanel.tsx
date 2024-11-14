@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import GameContext from '../../context/GameContext';
 import InfoArea from './InfoArea';
 import CodingArea from './CodingArea';
+import CommandList from './CommandList';
 
 const InstructionPanel: React.FC = () => {
     const { levelInfo, setCommandsUsed } = useContext(GameContext);
@@ -24,7 +25,7 @@ const InstructionPanel: React.FC = () => {
 
     return levelInfo && (
         <aside
-            className="bg-cover bg-center bg-no-repeat flex flex-col text-white w-[25rem] 
+            className="bg-cover bg-center bg-no-repeat flex flex-col items-center text-white w-[25rem] 
             h-[35rem] p-4 space-y-2 absolute right-0 top-1/2 z-10"
             ref={instructionPanelRef}
             style={{
@@ -35,8 +36,8 @@ const InstructionPanel: React.FC = () => {
 
             <InfoArea title={levelInfo.title} description={levelInfo.description} />
 
-            <hr className='m-auto w-2/3 bg-black border-none h-[0.125rem] rounded-lg' />
-
+            {/* <hr className='m-auto w-2/3 bg-slate-700 border-none h-[0.125rem] rounded-lg' /> */}
+            <CommandList />
             <CodingArea />
 
         </aside>
