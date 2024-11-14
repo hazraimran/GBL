@@ -3,6 +3,7 @@ import { GoMute, GoUnmute } from "react-icons/go";
 import { RxReset } from "react-icons/rx"; // go back icon
 import { Play, MoveRight, Square } from 'lucide-react';
 import GameContext from '../context/GameContext';
+import { saveCommandsUsed } from '../utils/storage';
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -20,7 +21,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showBottomPanel } = useContext(GameContext);
+    const { showBottomPanel, setCurrentScene, levelInfo, commandsUsed } = useContext(GameContext);
 
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const bar = progressRef.current;
@@ -37,9 +38,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 
     return showBottomPanel && <footer className="flex items-end absolute bottom-0 w-full">
         {/* Return Button */}
-        {/* <button className="w-[10vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center">
+        <button className="w-[10vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center" 
+        onClick={() => {
+            setCurrentScene('LEVELS');
+            saveCommandsUsed(levelInfo!.id, commandsUsed);
+        }}>
             <RxReset className="w-[5vw] h-[5vw] text-custom-bg-text" />
-        </button> */}
+        </button>
 
         {/* Mute Button */}
         {/* <button className="w-[6vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center ml-8"
