@@ -10,7 +10,6 @@ export class GameError extends Error {
     }
 }
 
-
 export const GameErrorCodes = {
     INVALID_MOVE: 'INVALID_MOVE',
     WORKER_BUSY: 'WORKER_BUSY',
@@ -20,7 +19,7 @@ export const GameErrorCodes = {
     INVALID_OPERATION: 'INVALID_OPERATION',
 } as const;
 
-// 错误信息映射
+
 export const ErrorMessages = {
     [GameErrorCodes.INVALID_MOVE]: '无效的移动',
     [GameErrorCodes.WORKER_BUSY]: '工人正在忙碌',
