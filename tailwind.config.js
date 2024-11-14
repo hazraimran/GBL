@@ -15,11 +15,17 @@ export default {
 					'50%': {
 						transform: 'scale(1.1)'
 					}
-				}
+				},
+				wiggle: {
+					'0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+					'25%': { transform: 'rotate(5deg) scale(1.05)' },
+					'50%': { transform: 'rotate(0deg) scale(1)' },
+					'75%': { transform: 'rotate(-5deg) scale(1.05)' },
+				},
 			},
 			animation: {
-				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite'
-				
+				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite',
+				wiggle: 'wiggle 1s ease-in-out infinite',
 			},
 			colors: {
 				'custom-bg': '#2D2622',
