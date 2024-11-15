@@ -21,11 +21,11 @@ export type validationFn = (output: number[]) => boolean;
 export type CommandType =
     'INPUT' | 'OUTPUT' | 'COPYFROM' | 'COPYTO' |
     'ADD' | 'SUB' | 'BUMPUP' | 'BUMPDOWN' |
-    'JUMP' | 'JUMPZ' | 'JUMPN' | 'LABEL';
+    'JUMP' | 'JUMPZ' | 'JUMPN' | 'LABEL' | "";
 
 export type CommandWithArgType = {
     command: CommandType;
-    args: number[];
+    arg?: number | CommandWithArgType;
 }
 
 export type GameStatus = {

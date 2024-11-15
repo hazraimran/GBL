@@ -22,10 +22,19 @@ export default {
 					'50%': { transform: 'rotate(0deg) scale(1)' },
 					'75%': { transform: 'rotate(-5deg) scale(1.05)' },
 				},
+				flowDash: {
+					'from': {
+						'stroke-dashoffset': '20'
+					},
+					'to': {
+						'stroke-dashoffset': '0'
+					}
+				}
 			},
 			animation: {
 				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite',
 				wiggle: 'wiggle 1s ease-in-out infinite',
+				flow: 'flowDash 1s linear infinite'
 			},
 			colors: {
 				'custom-bg': '#2D2622',

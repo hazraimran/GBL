@@ -152,7 +152,6 @@ const PhaserGame = () => {
     };
 
     const handleDrag = (speed: number) => {
-        console.log(speed + 0.5)
         mainSceneRef.current?.modifySpeed(speed + 0.5);
     };
 

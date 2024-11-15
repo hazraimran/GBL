@@ -3,9 +3,12 @@ import GameContext from '../../context/GameContext';
 import InfoArea from './InfoArea';
 import CodingArea from './CodingArea';
 import CommandList from './CommandList';
+import FlowConnect from './FlowConnect';
 
 const InstructionPanel: React.FC = () => {
     const { levelInfo, setCommandsUsed } = useContext(GameContext);
+    const CommandListRef = useRef<HTMLDivElement>(null);
+    const CodingAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setCommandsUsed(levelInfo.commandsUsed);
@@ -36,10 +39,14 @@ const InstructionPanel: React.FC = () => {
 
             <InfoArea title={levelInfo.title} description={levelInfo.description} />
 
-            {/* <hr className='m-auto w-2/3 bg-slate-700 border-none h-[0.125rem] rounded-lg' /> */}
-            <CommandList />
-            <CodingArea />
-
+            <hr className='m-auto w-2/3 bg-slate-700 border-none h-[0.125rem] rounded-lg' />
+            <CommandList ref={CommandListRef} />
+            <CodingArea ref={CodingAreaRef} />
+            {/* {
+                levelInfo.id === 1 && (
+                    <FlowConnect refA={CommandListRef} refB={CodingAreaRef} />
+                )
+            } */}
         </aside>
     );
 }

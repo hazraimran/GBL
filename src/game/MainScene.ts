@@ -59,11 +59,18 @@ export class MainScene extends Phaser.Scene {
     private outputQueue: number[];
     private RANDOM_SEED: number;
     private errorHandler!: ErrorHandler;
+    private cmdExcCnt: number;
+    private curLine: number;
+    private commandsToExecute: CommandWithArgType[] | null = null;
+    private stopped: boolean = true;
 
     constructor() {
         super({ key: 'MainScene' });
         this.inputQueue = [];
         this.outputQueue = [];
+        this.cmdExcCnt = 0;
+        this.curLine = 0;
+        this.commandsToExecute = null;
 
         const date = new Date();
         this.RANDOM_SEED = Object.freeze(date.getTime());
@@ -122,8 +129,13 @@ export class MainScene extends Phaser.Scene {
         console.log('Initializing MainScene with config:', this.config.constructionSlots);
     }
 
-    restart(): void {
+    reset(): void {
         this.scene.restart();
+        this.inputQueue = [];
+        this.outputQueue = [];
+        this.cmdExcCnt = 0;
+        this.curLine = 0;
+        this.commandsToExecute = null;
     }
 
     create(): void {
@@ -202,7 +214,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     modifySpeed(speed: number): void {
-        console.log("Modifying speed to", speed);
         this.config.speed = speed;
     }
 
@@ -210,20 +221,43 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    async executeCommands(commandsWithArg: CommandWithArgType[]): Promise<void> {
-        console.log('Executing commands:', commandsWithArg);
-        let cmdExcCnt = 0;
-        let curLine = 0;
-
-        const jumpto = (line: number) => {
-            curLine = line;
+    private preProcessCommands(commands: CommandWithArgType[]): void {
+        for (let i = 0; i < commands.length; i++) {
+            const command = commands[i];
+            if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
+                const ext = command.arg as CommandWithArgType;
+                const pos = commands.indexOf(ext);
+                command.arg = pos;
+            }
         }
+    }
 
-        while (curLine < commandsWithArg.length) {
-            const commandWithArg = commandsWithArg[curLine];
+    private setCommandsToExecute(commands: CommandWithArgType[]): void {
+        this.commandsToExecute = commands;
+    }
+
+    stopExecution(): void {
+        this.stopped = true;
+    }
+
+    resumeExecution(): void {
+        this.stopped = false;
+    }
+
+    async executeCommands(commandsWithArg: CommandWithArgType[]): Promise<void> {
+        this.setCommandsToExecute(commandsWithArg);
+        this.preProcessCommands(commandsWithArg);
+        console.log('Executing commands:', commandsWithArg);
+        const jumpto = (line: number) => {
+            this.curLine = line;
+        }
+        this.stopped = false;
+
+        while (this.curLine < commandsWithArg.length && !this.stopped) {
+            const commandWithArg = commandsWithArg[this.curLine];
             console.log(commandWithArg)
-            curLine++;
-            cmdExcCnt++;
+            this.curLine++;
+            this.cmdExcCnt++;
             switch (commandWithArg.command) {
                 case 'INPUT':
                     await this.handlePickupFromInput();
@@ -232,54 +266,54 @@ export class MainScene extends Phaser.Scene {
                     await this.handleDropToOutput();
                     break;
                 case 'COPYFROM':
-                    await this.handleCopyFrom(commandWithArg.args);
+                    await this.handleCopyFrom(commandWithArg.arg as number);
                     break;
                 case 'COPYTO':
-                    await this.handleCopyTo(commandWithArg.args);
+                    await this.handleCopyTo(commandWithArg.arg as number);
                     break;
                 case 'ADD':
-                    await this.handleAdd(commandWithArg.args);
+                    await this.handleAdd(commandWithArg.arg as number);
                     break;
                 case 'SUB':
-                    await this.handleSub(commandWithArg.args);
+                    await this.handleSub(commandWithArg.arg as number);
                     break;
                 case 'JUMP':
-                    await this.handleJump(commandWithArg.args, jumpto);
+                    await this.handleJump(commandWithArg.arg as number, jumpto);
                     break;
                 case 'JUMPZ':
                     break;
                 case 'JUMPN':
                     break;
-                case 'LABEL':
+                case '':
                     break;
             }
         }
-
-        this.validateOutput(commandsWithArg.length, cmdExcCnt);
+        this.validateOutput();
     }
 
     async executeOneStep(): Promise<void> {
         console.log('Executing one step');
     }
 
-    private async handleCopyFrom(args: number[]): Promise<void> {
-        console.log('Copying from', args);
+    private async handleCopyFrom(arg: number): Promise<void> {
+        console.log('Copying from', arg);
     }
 
-    private async handleCopyTo(args: number[]): Promise<void> {
-        console.log('Copying to', args);
+    private async handleCopyTo(arg: number): Promise<void> {
+        console.log('Copying to', arg);
     }
 
-    private async handleAdd(args: number[]): Promise<void> {
-        console.log('Adding', args);
+    private async handleAdd(arg: number): Promise<void> {
+        console.log('Adding', arg);
     }
 
-    private async handleSub(args: number[]): Promise<void> {
-        console.log('Subtracting', args);
+    private async handleSub(arg: number): Promise<void> {
+        console.log('Subtracting', arg);
     }
 
-    private async handleJump(args: number[], jumpto: () => {}): Promise<void> {
-        console.log('Jumping', args);
+    private async handleJump(arg: number, jumpto: (line: number) => void): Promise<void> {
+        console.log('Jumping', arg);
+        jumpto(arg);
     }
 
     private removeStoneOnHand(): Stone | undefined {
@@ -345,6 +379,7 @@ export class MainScene extends Phaser.Scene {
             const stone = this.removeStoneOnHand();
             this.handleStoneToOutput(stone as Stone);
             this.outputQueue.push(stone?.value as number);
+            this.validateOutput();
 
         } catch (error: any) {
             if (error instanceof GameError) {
@@ -367,32 +402,6 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private async tweenStoneTo(stone: Stone, x: number, y: number): Promise<void> {
-        return new Promise((resolve) => {
-            if (!stone) return;
-
-            const distance = Phaser.Math.Distance.Between(
-                stone.sprite.x,
-                stone.sprite.y,
-                x,
-                y
-            );
-
-            const baseSpeed = 6 * this.config.speed;
-
-            const duration = distance * baseSpeed;
-
-            this.tweens.add({
-                targets: stone.sprite,
-                x: x,
-                y: y,
-                duration: duration,
-                ease: 'Power2',
-                onComplete: () => resolve()
-            });
-        });
-    }
-
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
         return new Promise((resolve) => {
             if (!this.worker) return;
@@ -404,9 +413,9 @@ export class MainScene extends Phaser.Scene {
                 y
             );
 
-            const baseSpeed = 4 * this.config.speed;
-
-            const duration = distance * baseSpeed;
+            // 基础速度除以当前速度系数来降低duration
+            const baseSpeed = 4;
+            const duration = (distance * baseSpeed) / this.config.speed;
 
             this.tweens.add({
                 targets: this.worker.sprite,
@@ -429,20 +438,50 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private validateOutput(commandCnt: number, executeCnt: number): void {
+    private async tweenStoneTo(stone: Stone, x: number, y: number): Promise<void> {
+        return new Promise((resolve) => {
+            if (!stone) return;
+
+            const distance = Phaser.Math.Distance.Between(
+                stone.sprite.x,
+                stone.sprite.y,
+                x,
+                y
+            );
+
+            // 基础速度除以当前速度系数来降低duration
+            const baseSpeed = 6;
+            const duration = (distance * baseSpeed) / this.config.speed;
+
+            this.tweens.add({
+                targets: stone.sprite,
+                x: x,
+                y: y,
+                duration: duration,
+                ease: 'Power2',
+                onComplete: () => resolve()
+            });
+        });
+    }
+
+    private validateOutput(): void {
+        console.log(this.outputQueue);
+        console.log(this.config.validationFn)
         const isCorrect = this.config.validationFn(this.outputQueue);
 
         if (isCorrect) {
             console.log('Output is correct');
+            this.stopped = true;
             // show popup
             EventManager.emit('levelCompleted', {
-                executeCnt,
-                commandCnt
+                executeCnt: this.cmdExcCnt,
+                commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
             });
 
         } else {
             console.log('Output is incorrect');
             // show popup
         }
+        console.log('stopped', this.stopped)
     }
 }
