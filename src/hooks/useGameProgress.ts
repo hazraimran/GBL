@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getOrCreateUID } from '../utils/storage';
 import { LevelProgress, UserProgress } from '../types/user';
+import CircularJSON from 'circular-json';
 
 export const useGameProgress = () => {
     // Track loading state and progress data
@@ -20,7 +21,7 @@ export const useGameProgress = () => {
                     // Update UID if stored one doesn't match current
                     if (parsedProgress.uid !== uid) {
                         parsedProgress.uid = uid;
-                        localStorage.setItem('game_progress', JSON.stringify(parsedProgress));
+                        localStorage.setItem('game_progress', CircularJSON.stringify(parsedProgress));
                     }
                     setProgress(parsedProgress);
                 } else {
@@ -36,7 +37,7 @@ export const useGameProgress = () => {
                             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         }
                     };
-                    localStorage.setItem('game_progress', JSON.stringify(newProgress));
+                    localStorage.setItem('game_progress', CircularJSON.stringify(newProgress));
                     setProgress(newProgress);
                 }
             } catch (error) {
@@ -77,7 +78,7 @@ export const useGameProgress = () => {
 
         try {
             // Save to localStorage first
-            localStorage.setItem('game_progress', JSON.stringify(updatedProgress));
+            localStorage.setItem('game_progress', CircularJSON.stringify(updatedProgress));
             setProgress(updatedProgress);
 
             // Sync with server

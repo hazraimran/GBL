@@ -3,6 +3,7 @@ import FingerprintJS from 'fingerprintjs';
 import levelsInfo from '../assets/levels.json';
 import { LevelInfo } from '../types/level';
 import { CommandWithArgType } from '../types/game';
+import CircularJSON from 'circular-json';
 
 // Generate a unique identifier combining device fingerprint and timestamp
 export const generateUID = async (): Promise<string> => {
@@ -38,7 +39,7 @@ export const getOrCreateUID = async (): Promise<string> => {
 };
 
 export const createLevelInfoFromTemplate = () => {
-    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+    localStorage.setItem('levels', CircularJSON.stringify(levelsInfo));
 }
 
 export const getLevelsInfo = () => {
@@ -47,7 +48,7 @@ export const getLevelsInfo = () => {
         createLevelInfoFromTemplate();
         return levelsInfo;
     } else {
-        return JSON.parse(levels);
+        return CircularJSON.parse(levels);
     }
 }
 
@@ -57,7 +58,7 @@ export const getLevelInfo = (levelId: number) => {
         createLevelInfoFromTemplate();
         return levelsInfo[levelId];
     } else {
-        const levelInfo = JSON.parse(levels);
+        const levelInfo = CircularJSON.parse(levels);
         return levelInfo[levelId];
     }
 }
@@ -69,9 +70,9 @@ export const setLevelInfo = (levelId: number, levelInfo: LevelInfo) => {
         levels = localStorage.getItem('levels');
     }
 
-    const levelsInfo = JSON.parse(levels as string);
+    const levelsInfo = CircularJSON.parse(levels as string);
     levelsInfo[levelId] = levelInfo;
-    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+    localStorage.setItem('levels', CircularJSON.stringify(levelsInfo));
 }
 
 export const unlockNextLevel = (currentLevel: number) => {
@@ -83,10 +84,10 @@ export const unlockNextLevel = (currentLevel: number) => {
         levels = localStorage.getItem('levels');
     }
 
-    const levelsInfo = JSON.parse(levels as string);
+    const levelsInfo = CircularJSON.parse(levels as string);
     levelsInfo[nextLevel].isLocked = false;
     console.log('next level', levelsInfo[nextLevel]);
-    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+    localStorage.setItem('levels', CircularJSON.stringify(levelsInfo));
 }
 
 export const saveCommandsUsed = (levelId: number, commandsUsed: CommandWithArgType[]) => {
@@ -96,8 +97,8 @@ export const saveCommandsUsed = (levelId: number, commandsUsed: CommandWithArgTy
         levels = localStorage.getItem('levels');
     }
 
-    const levelsInfo = JSON.parse(levels as string);
+    const levelsInfo = CircularJSON.parse(levels as string);
     levelsInfo[levelId - 1].commandsUsed = commandsUsed;
-    localStorage.setItem('levels', JSON.stringify(levelsInfo));
+    localStorage.setItem('levels', CircularJSON.stringify(levelsInfo));
     console.log('levels stored', levelsInfo)
 }
