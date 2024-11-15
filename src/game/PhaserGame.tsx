@@ -14,7 +14,7 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { levelInfo, commandsUsed, setGameStatus, setShowPopup } = useContext(GameContext);
+    const { levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
     const { toast } = useToast();
 
     const errorHandlerRef = useRef(new ErrorHandler({
@@ -122,6 +122,7 @@ const PhaserGame = () => {
             console.warn('Main scene not initialized');
             return;
         }
+        setExecuting(true);
 
         mainSceneRef.current.executeCommands(commandsUsed);
     };
@@ -141,13 +142,18 @@ const PhaserGame = () => {
             return;
         }
 
+        setExecuting(false);
+        mainSceneRef.current.reset();
+        setExecuting(false);
+
         // Add reset logic here
         // You might want to restart the scene
         gameInstanceRef.current?.scene.start('MainScene');
     };
 
     const handleDrag = (speed: number) => {
-        mainSceneRef.current?.modifySpeed(speed);
+        console.log(speed + 0.5)
+        mainSceneRef.current?.modifySpeed(speed + 0.5);
     };
 
     return (

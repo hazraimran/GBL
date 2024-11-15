@@ -35,6 +35,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     executeCnt: 0
   });
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [exectuting, setExecuting] = useState<boolean>(false);
 
   return (
     <GameContext.Provider value={{
@@ -53,7 +54,9 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       gameStatus,
       setGameStatus,
       showPopup,
-      setShowPopup
+      setShowPopup,
+      exectuting,
+      setExecuting
     }}>
       {children}
     </GameContext.Provider>

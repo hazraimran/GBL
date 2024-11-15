@@ -20,6 +20,8 @@ interface GameContextType {
     setGameStatus: (gameStatus: GameStatus) => void;
     showPopup: boolean;
     setShowPopup: (show: boolean) => void;
+    exectuting: boolean;
+    setExecuting: (executing: boolean) => void;
 }
 
 // Create the context with a default value (optional)
@@ -57,6 +59,8 @@ const GameContext = createContext<GameContextType>({
     setGameStatus: () => { },
     showPopup: false,
     setShowPopup: () => { },
+    exectuting: false,
+    setExecuting: () => { }
 });
 
 export default GameContext;
