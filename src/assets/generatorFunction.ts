@@ -2,7 +2,7 @@ const inputFn = () => {
     const len = 5;
     const arr = [];
     for (let i = 0; i < len; i++) {
-        arr.push(Math.random() % 10 + 1);
+        arr.push(Math.floor(Math.random() % 10 + 1));
     }
     return arr;
 }
@@ -11,16 +11,19 @@ const validationFn = (output: number[]) => {
     const len = 5;
     const arr: number[] = [];
     for (let i = 0; i < len; i++) {
-        arr.push(Math.random() % 10 + 1);
+        arr.push(Math.floor(Math.random() % 10 + 1));
     }
-
-    output.map((val, idx) => {
-        if (val !== arr[idx]) {
-            return false;
-        }
-    });
     
-    return true;
+    const expected = arr;
+    console.log(expected)
+    let isValid = true;
+    expected.forEach((val, idx) => {
+        if (val !== output[idx]) {
+            isValid = false;
+        }
+    })
+
+    return isValid;
 }
     
 const level1 = {
