@@ -14,7 +14,7 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
+    const { registerPickSlot, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
     const { toast } = useToast();
 
     const errorHandlerRef = useRef(new ErrorHandler({
@@ -104,6 +104,10 @@ const PhaserGame = () => {
         game.events.once('ready', () => {
             mainSceneRef.current = game.scene.getScene('MainScene') as MainScene;
             console.log('Game scene ready:', mainSceneRef.current);
+            // if (!mainSceneRef.current) {
+            console.log("foooooo", mainSceneRef.current);
+            registerPickSlot(mainSceneRef.current.pickSlot);
+            console.log('Pick slot registered');
         });
 
         // Cleanup

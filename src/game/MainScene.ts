@@ -64,6 +64,9 @@ export class MainScene extends Phaser.Scene {
     private commandsToExecute: CommandWithArgType[] | null = null;
     private stopped: boolean = true;
 
+    private clickPromiseResolve: ((value: number) => void) | null = null;
+    private gameButtons: Phaser.GameObjects.Rectangle[] = [];
+
     constructor() {
         super({ key: 'MainScene' });
         this.inputQueue = [];
@@ -143,6 +146,7 @@ export class MainScene extends Phaser.Scene {
         this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
         this.setupConstructionArea();
         this.setupOutputArea(this.config.layout.outputArea);
+        this.events.emit('sceneReady');
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
@@ -217,9 +221,96 @@ export class MainScene extends Phaser.Scene {
         this.config.speed = speed;
     }
 
-    async pickSlot(): Promise<void> {
+    // 创建游戏按钮
+    private createGameButton = (x: number, y: number, value: number): Phaser.GameObjects.Rectangle => {
+        const button = this.add.rectangle(x, y, 60, 60, 0x4ade80);  // 使用绿色作为按钮颜色
+        button.setInteractive({ useHandCursor: true });
 
+        // 添加悬停效果
+        button.on('pointerover', () => {
+            button.setScale(1.1);
+            button.setFillStyle(0x34d399);  // 悬停时颜色变深
+        });
+
+        button.on('pointerout', () => {
+            button.setScale(1);
+            button.setFillStyle(0x4ade80);
+        });
+
+        // 点击效果和处理
+        button.on('pointerdown', () => {
+            button.setScale(0.9);
+            button.setFillStyle(0x059669);
+        });
+
+        button.on('pointerup', () => {
+            button.setScale(1);
+            button.setFillStyle(0x4ade80);
+            if (this.clickPromiseResolve) {
+                this.clickPromiseResolve(value);
+                this.clickPromiseResolve = null;
+                this.hideGameButtons(); // 隐藏所有按钮
+            }
+        });
+
+        return button;
     }
+
+    // 显示所有按钮
+    private showGameButtons = (positions: { x: number, y: number, value: number }[]): void => {
+        this.hideGameButtons(); // 先清除现有按钮
+
+        positions.forEach(pos => {
+            const button = this.createGameButton(pos.x, pos.y, pos.value);
+            // 添加按钮上的文本
+            const text = this.add.text(pos.x, pos.y, pos.value.toString(), {
+                color: '#000000',
+                fontSize: '24px'
+            }).setOrigin(0.5);
+
+            this.gameButtons.push(button);
+        });
+    }
+
+    // 隐藏所有按钮
+    private hideGameButtons = (): void => {
+        this.gameButtons.forEach(button => button.destroy());
+        this.gameButtons = [];
+    }
+
+    // 等待用户点击的异步函数
+    waitForButtonClick = async (buttonPositions: { x: number, y: number, value: number }[]): Promise<number> => {
+        return new Promise((resolve) => {
+            this.clickPromiseResolve = resolve;
+            this.showGameButtons(buttonPositions);
+        });
+    }
+
+    // pickSlot = async (): Promise<void> => {
+
+    //     if (!this.scene.isActive('MainScene')) {
+    //         await new Promise<void>(resolve => {
+    //             this.events.once('sceneReady', resolve);
+    //         });
+    //     }
+        
+    //     try {
+    //         // 定义按钮位置和对应的值
+    //         const positions = [
+    //             { x: 200, y: 300, value: 1 },
+    //             { x: 300, y: 300, value: 2 },
+    //             { x: 400, y: 300, value: 3 }
+    //         ];
+    //         console.log(this.waitForButtonClick)
+
+    //         const selectedValue = await this.waitForButtonClick(positions);
+    //         console.log('User selected:', selectedValue);
+    //         // 这里可以处理用户的选择
+
+    //     } catch (error) {
+    //         console.error('Error in pickSlot:', error);
+    //     }
+    // }
 
     private preProcessCommands(commands: CommandWithArgType[]): void {
         for (let i = 0; i < commands.length; i++) {
@@ -337,7 +428,6 @@ export class MainScene extends Phaser.Scene {
         // Pick up stone animation
 
         this.worker.stoneCarried = stone;
-
     }
 
     private async handlePickupFromInput(): Promise<void> {
@@ -413,7 +503,6 @@ export class MainScene extends Phaser.Scene {
                 y
             );
 
-            // 基础速度除以当前速度系数来降低duration
             const baseSpeed = 4;
             const duration = (distance * baseSpeed) / this.config.speed;
 
@@ -449,7 +538,6 @@ export class MainScene extends Phaser.Scene {
                 y
             );
 
-            // 基础速度除以当前速度系数来降低duration
             const baseSpeed = 6;
             const duration = (distance * baseSpeed) / this.config.speed;
 

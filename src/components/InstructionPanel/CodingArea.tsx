@@ -5,11 +5,37 @@ import { cn } from "@/lib/utils";
 import CommandRow from './CommandRow';
 import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';
+import JumpConnector from './JumpConnector';
 
 const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
-    const { commandsUsed, setCommandsUsed, setShowBottomPanel } = useContext(GameContext);
+    const { commandsUsed, setCommandsUsed, setShowBottomPanel, pickSlotFn, connection, setConnection } = useContext(GameContext);
     const [isOver, setIsOver] = useState(false);
     const commandRefs = useRef<(HTMLElement | null)[]>([]);
+
+    // 在 useEffect 中更新连接
+    useEffect(() => {
+        const jumpConnections: Array<{ start: HTMLElement; end: HTMLElement }> = [];
+        console.log("commands used updated", commandsUsed)
+
+        commandsUsed?.forEach((command, idx) => {
+            if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
+                const jumpElement = commandRefs.current[idx];
+                const extElement = commandRefs.current[commandsUsed.indexOf(command.arg as CommandWithArgType)];
+                if (jumpElement && extElement) {
+                    jumpConnections.push({
+                        start: jumpElement,
+                        end: extElement
+                    });
+                }
+            }
+        });
+        console.log("jumpConnections", jumpConnections);
+        setConnection(jumpConnections);
+    }, [commandsUsed]);
+
+    useEffect(() => {
+        console.log(connection)
+    }, [connection])
 
     useEffect(() => {
         // window.addEventListener('beforeunload', (e) => {
@@ -46,11 +72,6 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
             from = parseInt(e.dataTransfer.getData('idx'));
         }
         insert(obj, from, commandsUsed?.length ?? 0);
-        // if (e.dataTransfer.getData('idx') !== '') {
-        //     insert(obj, parseInt(e.dataTransfer.getData('idx')), commandsUsed?.length ?? 0);
-        // } else {
-        //     insert(obj, null, commandsUsed?.length ?? 0);
-        // }
 
         setIsOver(false);
     };
@@ -60,53 +81,20 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
         setIsOver(false);
     }
 
-    // const handleDragOverJump = (arg: number, from: number, to: number) => {
-    //     if (from === to) return;
-    //     const newCommands = [...(commandsUsed ?? [])];
-
-    //     // calculate the new index of the jump command
-    //     let newPos;
-    //     let toPos;
-    //     console.log(arg, from, to)
-    //     if (from < to) {
-    //         toPos = to - 1;
-    //     } else {
-    //         toPos = to;
-    //     }
-
-    //     if (arg === toPos) {
-    //         newPos = arg - 1;
-    //     } else if ((arg > from && arg > toPos) || (arg < from && arg < toPos)) {
-    //         newPos = arg;
-    //     } else {
-    //         if (from < arg) {
-    //             newPos = arg - 1;
-    //         } else {
-    //             newPos = arg + 1;
-    //         }
-    //     }
-
-    //     console.log(from - 1, newPos)
-    //     console.log(arg - 1, toPos)
-    //     console.log(newCommands)
-    //     console.log(newCommands[arg - 1].arg)
-    //     newCommands[arg - 1].arg = [toPos];
-    //     newCommands[from - 1].arg = [newPos];
-    //     console.log(newCommands[arg - 1].arg)
-    //     console.log(newCommands)
-    //     return newCommands;
-    //     // setCommandsUsed(newCommands);
-    // }
-
     const insert = (commandWithArg: CommandWithArgType, from: number | null = null, to: number) => {
         if (from === null) {
-            if (commandWithArg.command === 'COPYFROM' || commandWithArg.command === 'COPYTO') {
-                // await user selction
-                // const newCommands = [...(commandsUsed ?? []), {
-                //     command: commandWithArg.command as CommandType,
-                //     arg: [0]
-                // }];
-
+            if (commandWithArg.command === 'COPYFROM' || commandWithArg.command === 'COPYTO'
+                || commandWithArg.command === 'ADD' || commandWithArg.command === 'SUB') {
+                console.log('here', pickSlotFn);
+                if (!pickSlotFn) return;
+                let slot: number = pickSlotFn();
+                const newCommands = [...(commandsUsed ?? [])];
+                const newCommand: CommandWithArgType = {
+                    command: commandWithArg.command,
+                    arg: slot,
+                }
+                newCommands.splice(to, 0, newCommand);
+                setCommandsUsed(newCommands);
             } else if (commandWithArg.command === 'JUMP' || commandWithArg.command === 'JUMPZ' || commandWithArg.command === 'JUMPN') {
                 const newCommands = [...(commandsUsed ?? [])];
 
@@ -125,18 +113,12 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
                 setCommandsUsed(newCommands);
             } else {
                 const newCommands = [...(commandsUsed ?? [])];
-                //     command: e.dataTransfer.getData('command') as CommandType,
-                //     arg: []
-                // }];
+
                 newCommands.splice(to, 0, commandWithArg);
                 setCommandsUsed(newCommands);
             }
         } else {
             let newCommands = [...(commandsUsed ?? [])];
-            // if (commandWithArg.command === 'JUMP' || commandWithArg.command === 'JUMPZ'
-            //     || commandWithArg.command === 'JUMPN' || commandWithArg.command === "") {
-            //     newCommands = handleDragOverJump(commandWithArg.arg[0], from + 1, to + 1) || [];
-            // }
 
             let command = newCommands.splice(from, 1);
             if (from < to) {
@@ -170,6 +152,8 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
 
     return (
         <div className="p-4 w-full">
+            <JumpConnector connection={connection} />
+
             <div
                 className={cn(
                     " rounded-lg transition-colors duration-200 p-2 mx-8 border-2 border-transparent",

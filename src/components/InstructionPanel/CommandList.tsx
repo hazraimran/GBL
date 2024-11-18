@@ -9,7 +9,7 @@ const CommandList = forwardRef<HTMLDivElement>((props, ref) => {
         <>
             <h4 className='text-black'>Available Commands</h4>
             <div
-                className="w-2/3 flex flex-row items-center justify-center gap-2 overflow-visible">
+                className="w-2/3 flex flex-row flex-wrap items-center justify-center gap-2 overflow-visible">
                 {levelInfo?.commands.map((command, index) => (
                     index === levelInfo.commands.length - 1 ?
                         <Command

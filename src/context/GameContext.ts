@@ -22,6 +22,11 @@ interface GameContextType {
     setShowPopup: (show: boolean) => void;
     exectuting: boolean;
     setExecuting: (executing: boolean) => void;
+    pickSlotFn?: Function;
+    setPickSlotFn?: (fn: Function) => void;
+    registerPickSlot: (fn: Function) => void;
+    connection: Array<{ start: HTMLElement; end: HTMLElement }>;
+    setConnection: (connection: Array<{ start: HTMLElement; end: HTMLElement }>) => void;
 }
 
 // Create the context with a default value (optional)
@@ -60,7 +65,12 @@ const GameContext = createContext<GameContextType>({
     showPopup: false,
     setShowPopup: () => { },
     exectuting: false,
-    setExecuting: () => { }
+    setExecuting: () => { },
+    pickSlotFn: undefined,
+    setPickSlotFn: () => { },
+    registerPickSlot: () => { },
+    connection: [],
+    setConnection: () => { }
 });
 
 export default GameContext;

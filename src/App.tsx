@@ -3,6 +3,7 @@ import Landing from './pages/Landing';
 import GameProvider from './context/GameProvider';
 import Levels from './pages/Levels';
 import { Toaster } from "./components/ui/toaster"
+import JumpConnector from './components/InstructionPanel/JumpConnector';
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
         <Landing />
         <GameScene />
         <Levels />
+        <JumpConnector />
       </div>
     </GameProvider >
   )

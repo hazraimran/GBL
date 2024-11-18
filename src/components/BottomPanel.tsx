@@ -38,7 +38,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (exectuting) return; // 执行时禁止拖动
+        if (exectuting) return; 
 
         const bar = progressRef.current;
         if (bar && isDragging) {
@@ -82,6 +82,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 onClick={() => {
                     setCurrentScene('LEVELS');
                     saveCommandsUsed(levelInfo!.id, commandsUsed);
+                    onReset();
                 }}
             >
                 <RxReset className="w-[5vw] h-[5vw] text-custom-bg-text" />

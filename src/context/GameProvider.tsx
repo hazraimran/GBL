@@ -1,5 +1,5 @@
 // src/context/GameProvider.tsx
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useCallback } from 'react';
 import GameContext from './GameContext';
 import { CurrentSceneType, LevelInfo } from '../types/level';
 import { CommandWithArgType } from '../types/game';
@@ -36,6 +36,12 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   });
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [exectuting, setExecuting] = useState<boolean>(false);
+  const [connection, setConnection] = useState<Array<{ start: HTMLElement; end: HTMLElement }>>([]);
+
+  const [pickSlotFn, setPickSlotFn] = useState<Function>();
+  const registerPickSlot = useCallback((fn: Function) => {
+    setPickSlotFn(fn);
+  }, []);
 
   return (
     <GameContext.Provider value={{
@@ -56,7 +62,12 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       showPopup,
       setShowPopup,
       exectuting,
-      setExecuting
+      setExecuting,
+      pickSlotFn,
+      setPickSlotFn,
+      registerPickSlot,
+      connection,
+      setConnection
     }}>
       {children}
     </GameContext.Provider>
