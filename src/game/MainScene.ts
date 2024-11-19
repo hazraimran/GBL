@@ -339,7 +339,8 @@ export class MainScene extends Phaser.Scene {
             x: 300 + arg % 3 * 60 + 30,
             y: 300 + Math.floor(arg / 3) * 60 - 60
         }
-        this.removeStoneOnHand();
+        const stone = this.removeStoneOnHand();
+        stone?.sprite.destroy();
         await this.tweenWorkerTo(slotPos.x, slotPos.y);
         this.pickStoneFromSlot(arg);
     }
@@ -381,7 +382,8 @@ export class MainScene extends Phaser.Scene {
         if (!this.worker) return;
 
         if (this.worker.stoneCarried) {
-            this.removeStoneOnHand();
+            const stone = this.removeStoneOnHand();
+            stone?.sprite.destroy();
         }
 
         // Pick up stone animation
