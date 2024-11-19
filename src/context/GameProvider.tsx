@@ -37,11 +37,8 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [exectuting, setExecuting] = useState<boolean>(false);
   const [connection, setConnection] = useState<Array<{ start: HTMLElement; end: HTMLElement }>>([]);
-
-  const [pickSlotFn, setPickSlotFn] = useState<Function>();
-  const registerPickSlot = useCallback((fn: Function) => {
-    setPickSlotFn(fn);
-  }, []);
+  const [readyToPickSlot, setReadyToPickSlot] = useState<boolean>(false);
+  const [slotPicked, setSlotPicked] = useState<number | undefined>(undefined);
 
   return (
     <GameContext.Provider value={{
@@ -63,11 +60,12 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       setShowPopup,
       exectuting,
       setExecuting,
-      pickSlotFn,
-      setPickSlotFn,
-      registerPickSlot,
       connection,
-      setConnection
+      setConnection,
+      readyToPickSlot,
+      setReadyToPickSlot,
+      slotPicked,
+      setSlotPicked
     }}>
       {children}
     </GameContext.Provider>

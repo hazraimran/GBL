@@ -64,9 +64,6 @@ export class MainScene extends Phaser.Scene {
     private commandsToExecute: CommandWithArgType[] | null = null;
     private stopped: boolean = true;
 
-    private clickPromiseResolve: ((value: number) => void) | null = null;
-    private gameButtons: Phaser.GameObjects.Rectangle[] = [];
-
     constructor() {
         super({ key: 'MainScene' });
         this.inputQueue = [];
@@ -123,25 +120,66 @@ export class MainScene extends Phaser.Scene {
         };
     }
 
+    private resetGameState(): void {
+        this.inputQueue = [];
+        this.outputQueue = [];
+        this.cmdExcCnt = 0;
+        this.curLine = 0;
+        this.commandsToExecute = null;
+        this.stopped = true;
+
+        // 清理现有的游戏对象
+        if (this.worker) {
+            this.worker.sprite.destroy();
+            this.worker = null;
+        }
+
+        this.inputStones.forEach(stone => {
+            if (stone.sprite) {
+                stone.sprite.destroy();
+            }
+        });
+        this.inputStones = [];
+
+        this.constructionSlots.forEach(slot => {
+            if (slot.rect) {
+                slot.rect.destroy();
+            }
+            if (slot.stone?.sprite) {
+                slot.stone.sprite.destroy();
+            }
+        });
+        this.constructionSlots = [];
+    }
+
+    // 修改reset方法
+    reset(): void {
+        console.log('Resetting scene');
+        this.resetGameState();
+        this.scene.restart();
+    }
+
+    // 在init中确保状态被正确初始化
     init(data: { errorHandler: ErrorHandler, sceneConfig: PassedConfig }): void {
         this.errorHandler = data.errorHandler;
         this.config.generatorFn = data.sceneConfig.generatorFn;
         this.config.validationFn = data.sceneConfig.validationFn;
         this.config.constructionSlots = data.sceneConfig.constructionSlots;
         this.config.currentLevel = data.sceneConfig.currentLevel;
-        console.log('Initializing MainScene with config:', this.config.constructionSlots);
-    }
 
-    reset(): void {
-        this.scene.restart();
+        // 确保基础状态被重置
         this.inputQueue = [];
         this.outputQueue = [];
         this.cmdExcCnt = 0;
         this.curLine = 0;
         this.commandsToExecute = null;
+        this.stopped = true;
+
+        console.log('Initializing MainScene with config:', this.config.constructionSlots);
     }
 
     create(): void {
+        console.log("create")
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
         this.setupConstructionArea();
@@ -150,6 +188,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
+        console.log('x initial pos', config.x)
         this.inputQueue = generatorFn(this.RANDOM_SEED);
         for (let i = 0; i < this.inputQueue.length; i++) {
             const rect = this.add.rectangle(
@@ -187,7 +226,7 @@ export class MainScene extends Phaser.Scene {
     private setupConstructionArea(): void {
         for (let i = 0; i < this.config.constructionSlots; i++) {
             const initialPos = { x: 300, y: 300 };
-            const spacing = 60;
+            const spacing = 90;
 
             const slot: ConstructionSlot = {
                 rect: this.add.rectangle(
@@ -198,7 +237,7 @@ export class MainScene extends Phaser.Scene {
                     0x666666,
                     0.8
                 ),
-                isOccupied: false
+                stone: null
             };
 
             slot.rect.setStrokeStyle(4, 0x000000);
@@ -220,97 +259,6 @@ export class MainScene extends Phaser.Scene {
     modifySpeed(speed: number): void {
         this.config.speed = speed;
     }
-
-    // 创建游戏按钮
-    private createGameButton = (x: number, y: number, value: number): Phaser.GameObjects.Rectangle => {
-        const button = this.add.rectangle(x, y, 60, 60, 0x4ade80);  // 使用绿色作为按钮颜色
-        button.setInteractive({ useHandCursor: true });
-
-        // 添加悬停效果
-        button.on('pointerover', () => {
-            button.setScale(1.1);
-            button.setFillStyle(0x34d399);  // 悬停时颜色变深
-        });
-
-        button.on('pointerout', () => {
-            button.setScale(1);
-            button.setFillStyle(0x4ade80);
-        });
-
-        // 点击效果和处理
-        button.on('pointerdown', () => {
-            button.setScale(0.9);
-            button.setFillStyle(0x059669);
-        });
-
-        button.on('pointerup', () => {
-            button.setScale(1);
-            button.setFillStyle(0x4ade80);
-            if (this.clickPromiseResolve) {
-                this.clickPromiseResolve(value);
-                this.clickPromiseResolve = null;
-                this.hideGameButtons(); // 隐藏所有按钮
-            }
-        });
-
-        return button;
-    }
-
-    // 显示所有按钮
-    private showGameButtons = (positions: { x: number, y: number, value: number }[]): void => {
-        this.hideGameButtons(); // 先清除现有按钮
-
-        positions.forEach(pos => {
-            const button = this.createGameButton(pos.x, pos.y, pos.value);
-            // 添加按钮上的文本
-            const text = this.add.text(pos.x, pos.y, pos.value.toString(), {
-                color: '#000000',
-                fontSize: '24px'
-            }).setOrigin(0.5);
-
-            this.gameButtons.push(button);
-        });
-    }
-
-    // 隐藏所有按钮
-    private hideGameButtons = (): void => {
-        this.gameButtons.forEach(button => button.destroy());
-        this.gameButtons = [];
-    }
-
-    // 等待用户点击的异步函数
-    waitForButtonClick = async (buttonPositions: { x: number, y: number, value: number }[]): Promise<number> => {
-        return new Promise((resolve) => {
-            this.clickPromiseResolve = resolve;
-            this.showGameButtons(buttonPositions);
-        });
-    }
-
-    // pickSlot = async (): Promise<void> => {
-
-    //     if (!this.scene.isActive('MainScene')) {
-    //         await new Promise<void>(resolve => {
-    //             this.events.once('sceneReady', resolve);
-    //         });
-    //     }
-        
-    //     try {
-    //         // 定义按钮位置和对应的值
-    //         const positions = [
-    //             { x: 200, y: 300, value: 1 },
-    //             { x: 300, y: 300, value: 2 },
-    //             { x: 400, y: 300, value: 3 }
-    //         ];
-    //         console.log(this.waitForButtonClick)
-
-    //         const selectedValue = await this.waitForButtonClick(positions);
-    //         console.log('User selected:', selectedValue);
-    //         // 这里可以处理用户的选择
-
-    //     } catch (error) {
-    //         console.error('Error in pickSlot:', error);
-    //     }
-    // }
 
     private preProcessCommands(commands: CommandWithArgType[]): void {
         for (let i = 0; i < commands.length; i++) {
@@ -387,11 +335,22 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handleCopyFrom(arg: number): Promise<void> {
-        console.log('Copying from', arg);
+        const slotPos = {
+            x: 300 + arg % 3 * 60 + 30,
+            y: 300 + Math.floor(arg / 3) * 60 - 60
+        }
+        this.removeStoneOnHand();
+        await this.tweenWorkerTo(slotPos.x, slotPos.y);
+        this.pickStoneFromSlot(arg);
     }
 
     private async handleCopyTo(arg: number): Promise<void> {
-        console.log('Copying to', arg);
+        const slotPos = {
+            x: 300 + arg % 3 * 60 + 30,
+            y: 300 + Math.floor(arg / 3) * 60 - 60
+        }
+        await this.tweenWorkerTo(slotPos.x, slotPos.y);
+        this.putStoneToSlot(arg)
     }
 
     private async handleAdd(arg: number): Promise<void> {
@@ -437,10 +396,12 @@ export class MainScene extends Phaser.Scene {
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
         try {
             if (!(this.inputStones.length > 0)) {
-                throw new GameError('No stones in input area', GameErrorCodes.INVALID_MOVE);
+                throw new GameError('No stones in the input area', GameErrorCodes.INVALID_MOVE);
             }
 
             const stone = this.inputStones.shift() as Stone;
+            console.log(this.inputStones)
+            console.log('stone picked:', stone);
             this.pickUpStone(stone);
             console.log(this.worker?.stoneCarried);
         } catch (error: any) {
@@ -453,6 +414,41 @@ export class MainScene extends Phaser.Scene {
                 ));
             }
         }
+    }
+
+    private pickStoneFromSlot(slot: number) {
+        console.log('Picking stone from slot', slot);
+        if (!this.worker) return;
+
+        const slotStone = this.constructionSlots[slot];
+        if (!slotStone.stone) {
+            throw new GameError('Slot is empty', GameErrorCodes.INVALID_MOVE);
+        }
+
+        this.pickUpStone(slotStone.stone as Stone);
+    }
+
+    private putStoneToSlot(slot: number) {
+        console.log('Put stone to slot', slot);
+        if (!this.worker) return;
+
+        const stone = this.worker.stoneCarried;
+        console.log(stone)
+        if (!stone) {
+            throw new GameError('Worker is not carrying stone', GameErrorCodes.INVALID_MOVE);
+        }
+
+        this.constructionSlots[slot].stone = {
+            sprite: this.add.rectangle(
+                this.constructionSlots[slot].rect.x,
+                this.constructionSlots[slot].rect.y,
+                this.config.stoneSize.width,
+                this.config.stoneSize.height,
+                0x00ff00,
+                0.3
+            ),
+            value: stone.value
+        };
     }
 
     private async handleDropToOutput(): Promise<void> {
@@ -514,7 +510,7 @@ export class MainScene extends Phaser.Scene {
                 ease: 'Power2',
                 onComplete: () => resolve()
             });
-
+            console.log("does carry stone? " + this.worker.stoneCarried)
             if (this.worker.stoneCarried) {
                 this.tweens.add({
                     targets: this.worker.stoneCarried.sprite,
@@ -553,23 +549,23 @@ export class MainScene extends Phaser.Scene {
     }
 
     private validateOutput(): void {
-        console.log(this.outputQueue);
-        console.log(this.config.validationFn)
-        const isCorrect = this.config.validationFn(this.outputQueue);
+        // console.log(this.outputQueue);
+        // console.log(this.config.validationFn)
+        // const isCorrect = this.config.validationFn(this.outputQueue);
 
-        if (isCorrect) {
-            console.log('Output is correct');
-            this.stopped = true;
-            // show popup
-            EventManager.emit('levelCompleted', {
-                executeCnt: this.cmdExcCnt,
-                commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
-            });
+        // if (isCorrect) {
+        //     console.log('Output is correct');
+        //     this.stopped = true;
+        //     // show popup
+        //     EventManager.emit('levelCompleted', {
+        //         executeCnt: this.cmdExcCnt,
+        //         commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
+        //     });
 
-        } else {
-            console.log('Output is incorrect');
-            // show popup
-        }
-        console.log('stopped', this.stopped)
+        // } else {
+        //     console.log('Output is incorrect');
+        //     // show popup
+        // }
+        // console.log('stopped', this.stopped)
     }
 }

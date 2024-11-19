@@ -11,7 +11,7 @@ export interface Worker {
 
 export interface ConstructionSlot {
     rect: Phaser.GameObjects.Rectangle;
-    isOccupied: boolean;
+    stone: Stone | null;
 }
 
 export type generatorFn = (seed: number) => number[];

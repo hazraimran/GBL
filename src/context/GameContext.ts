@@ -22,11 +22,12 @@ interface GameContextType {
     setShowPopup: (show: boolean) => void;
     exectuting: boolean;
     setExecuting: (executing: boolean) => void;
-    pickSlotFn?: Function;
-    setPickSlotFn?: (fn: Function) => void;
-    registerPickSlot: (fn: Function) => void;
     connection: Array<{ start: HTMLElement; end: HTMLElement }>;
     setConnection: (connection: Array<{ start: HTMLElement; end: HTMLElement }>) => void;
+    readyToPickSlot: boolean;
+    setReadyToPickSlot: (ready: boolean) => void;
+    slotPicked: number | undefined;
+    setSlotPicked: (slot: number | undefined) => void;
 }
 
 // Create the context with a default value (optional)
@@ -66,11 +67,12 @@ const GameContext = createContext<GameContextType>({
     setShowPopup: () => { },
     exectuting: false,
     setExecuting: () => { },
-    pickSlotFn: undefined,
-    setPickSlotFn: () => { },
-    registerPickSlot: () => { },
     connection: [],
-    setConnection: () => { }
+    setConnection: () => { },
+    readyToPickSlot: false,
+    setReadyToPickSlot: () => { },
+    slotPicked: undefined,
+    setSlotPicked: () => { }
 });
 
 export default GameContext;

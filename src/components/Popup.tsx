@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import GameContext from '../context/GameContext';
 import { HelpCircle } from 'lucide-react';
 
@@ -7,9 +7,6 @@ const Popup: React.FC = () => {
     const getStatusColor = (current: number, target: number) => {
         return current <= target ? 'bg-lime-300' : 'bg-amber-600';
     };
-    useEffect(() => {
-        console.log(levelInfo, levelInfo.title, levelInfo.expectedCommandCnt, levelInfo.expectedExecuteCnt);
-    }, []);
 
     return showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

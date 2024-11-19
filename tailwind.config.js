@@ -29,12 +29,21 @@ export default {
 					'to': {
 						'stroke-dashoffset': '0'
 					}
+				},
+				breath: {
+					'0%, 100%': {
+						transform: 'scale(1)'
+					},
+					'50%': {
+						transform: 'scale(1.2)'
+					}
 				}
 			},
 			animation: {
 				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite',
 				wiggle: 'wiggle 1s ease-in-out infinite',
-				flow: 'flowDash 1s linear infinite'
+				flow: 'flowDash 1s linear infinite',
+				breath: 'breath 1.5s ease-in-out infinite'
 			},
 			colors: {
 				'custom-bg': '#2D2622',

@@ -8,14 +8,15 @@ import CircularJSON from 'circular-json';
 import JumpConnector from './JumpConnector';
 
 const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
-    const { commandsUsed, setCommandsUsed, setShowBottomPanel, pickSlotFn, connection, setConnection } = useContext(GameContext);
+    const { setReadyToPickSlot, slotPicked, commandsUsed, setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
+    const [waitingForResult, setWaitingForResult] = useState(false);
     const [isOver, setIsOver] = useState(false);
     const commandRefs = useRef<(HTMLElement | null)[]>([]);
 
-    // 在 useEffect 中更新连接
+    const commandRef = useRef<CommandWithArgType | null>(null);
+
     useEffect(() => {
         const jumpConnections: Array<{ start: HTMLElement; end: HTMLElement }> = [];
-        console.log("commands used updated", commandsUsed)
 
         commandsUsed?.forEach((command, idx) => {
             if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
@@ -29,13 +30,18 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
                 }
             }
         });
-        console.log("jumpConnections", jumpConnections);
         setConnection(jumpConnections);
     }, [commandsUsed]);
 
     useEffect(() => {
-        console.log(connection)
-    }, [connection])
+        if (!slotPicked || !commandRef.current) return;
+        let idx = commandsUsed.indexOf(commandRef.current);
+
+        commandRef.current.arg = slotPicked;
+        const copy = JSON.parse(JSON.stringify(commandsUsed));
+        setCommandsUsed(copy);
+        // commandRef.current = null;
+    }, [slotPicked])
 
     useEffect(() => {
         // window.addEventListener('beforeunload', (e) => {
@@ -71,7 +77,7 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
         if (e.dataTransfer.getData('idx') !== '') {
             from = parseInt(e.dataTransfer.getData('idx'));
         }
-        insert(obj, from, commandsUsed?.length ?? 0);
+        await insert(obj, from, commandsUsed?.length ?? 0);
 
         setIsOver(false);
     };
@@ -81,18 +87,20 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
         setIsOver(false);
     }
 
-    const insert = (commandWithArg: CommandWithArgType, from: number | null = null, to: number) => {
+    const insert = async (commandWithArg: CommandWithArgType, from: number | null = null, to: number) => {
         if (from === null) {
             if (commandWithArg.command === 'COPYFROM' || commandWithArg.command === 'COPYTO'
                 || commandWithArg.command === 'ADD' || commandWithArg.command === 'SUB') {
-                console.log('here', pickSlotFn);
-                if (!pickSlotFn) return;
-                let slot: number = pickSlotFn();
+
+                setReadyToPickSlot(true);
+                setWaitingForResult(true);
+
                 const newCommands = [...(commandsUsed ?? [])];
                 const newCommand: CommandWithArgType = {
                     command: commandWithArg.command,
-                    arg: slot,
+                    arg: 0,
                 }
+                commandRef.current = newCommand;
                 newCommands.splice(to, 0, newCommand);
                 setCommandsUsed(newCommands);
             } else if (commandWithArg.command === 'JUMP' || commandWithArg.command === 'JUMPZ' || commandWithArg.command === 'JUMPN') {
@@ -178,7 +186,8 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
                             insert={insert}
                             onDelete={deleteCommand}
                         />
-                    ))}
+                    )
+                    )}
                     <EmptyRow commandsUsed={commandsUsed} onDrop={handleDrop} ref={ref} />
                 </div>
             </div>

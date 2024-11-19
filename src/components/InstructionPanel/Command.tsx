@@ -50,11 +50,10 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             className={`px-2 py-1 bg-primary/20 hover:bg-primary/30 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
-            hover:cursor - pointer ${dragging ? 'opacity-50' : ''}`}
+             space-x-2 hover:cursor - pointer ${dragging ? 'opacity-50' : ''}`}
         >
-            {value.command} {(value.arg instanceof Number) && value.arg as number}
-
-            {/* {value.command} {value.args.join(' ')} */}
+            <span>{value.command}</span>
+            {(typeof value.arg === 'number') && <span>{value.arg + 1}</span>}
         </div>
     )
 
