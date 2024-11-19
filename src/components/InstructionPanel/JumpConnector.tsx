@@ -20,8 +20,6 @@ const JumpConnector: React.FC = () => {
         };
     };
 
-    
-
     const drawCurvedLine = (
         ctx: CanvasRenderingContext2D,
         startX: number,
@@ -98,7 +96,6 @@ const JumpConnector: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log('connection changed', connections)
         drawCanvas();
 
         const handleResize = () => {
@@ -117,6 +114,7 @@ const JumpConnector: React.FC = () => {
 
     return currentScene === 'GAME' &&
         <canvas
+            id='jump-connector'
             ref={canvasRef}
             className={`fixed inset-0 w-[100vw] h-[100vh] pointer-events-none`}
             style={{ zIndex: 0 }}
