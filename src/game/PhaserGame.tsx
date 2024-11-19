@@ -14,7 +14,7 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { registerPickSlot, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
+    const { levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
     const { toast } = useToast();
 
     const errorHandlerRef = useRef(new ErrorHandler({
@@ -104,10 +104,6 @@ const PhaserGame = () => {
         game.events.once('ready', () => {
             mainSceneRef.current = game.scene.getScene('MainScene') as MainScene;
             console.log('Game scene ready:', mainSceneRef.current);
-            // if (!mainSceneRef.current) {
-            console.log("foooooo", mainSceneRef.current);
-            registerPickSlot(mainSceneRef.current.pickSlot);
-            console.log('Pick slot registered');
         });
 
         // Cleanup
@@ -160,10 +156,10 @@ const PhaserGame = () => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col">
+        <div className="fixed left-0 top-0 w-full h-full flex flex-col">
             <div
                 ref={gameRef}
-                className="flex-1 relative"
+                className="fixed inset-0"
             />
 
             <BottomPanel
