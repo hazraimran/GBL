@@ -7,7 +7,7 @@ type InfoAreaProps = {
 
 const InfoArea: React.FC<InfoAreaProps> = ({ title, description }) => {
     return (
-        <div className=" px-8 py-2 rounded-lg w-full text-black mt-14 flex justify-center flex-col">
+        <div className="px-10 rounded-lg w-full text-black mt-14 flex justify-center flex-col">
             <h1 className="m-auto text-xl font-bold mb-2 ">{title}</h1>
             <p
                 style={{ fontWeight: 'bold' }}

@@ -82,7 +82,8 @@ const CommandRow = forwardRef<HTMLDivElement, CommandRowProps>((props, ref) => {
                         className="absolute right-4 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity ml-auto hover:bg-destructive/20 hover:text-destructive"
                         onClick={handleDelete}
                     >
-                        <Eraser className="h-4 w-4 text-red-500" />
+                        x
+                        {/* <Eraser className="h-4 w-4 text-red-500" /> */}
                     </Button>
                 )
             }

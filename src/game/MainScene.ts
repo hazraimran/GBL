@@ -128,7 +128,6 @@ export class MainScene extends Phaser.Scene {
         this.commandsToExecute = null;
         this.stopped = true;
 
-        // 清理现有的游戏对象
         if (this.worker) {
             this.worker.sprite.destroy();
             this.worker = null;
@@ -548,23 +547,23 @@ export class MainScene extends Phaser.Scene {
     }
 
     private validateOutput(): void {
-        // console.log(this.outputQueue);
-        // console.log(this.config.validationFn)
-        // const isCorrect = this.config.validationFn(this.outputQueue);
+        console.log(this.outputQueue);
+        console.log(this.config.validationFn)
+        const isCorrect = this.config.validationFn(this.outputQueue);
 
-        // if (isCorrect) {
-        //     console.log('Output is correct');
-        //     this.stopped = true;
-        //     // show popup
-        //     EventManager.emit('levelCompleted', {
-        //         executeCnt: this.cmdExcCnt,
-        //         commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
-        //     });
+        if (isCorrect) {
+            console.log('Output is correct');
+            this.stopped = true;
+            // show popup
+            EventManager.emit('levelCompleted', {
+                executeCnt: this.cmdExcCnt,
+                commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
+            });
 
-        // } else {
-        //     console.log('Output is incorrect');
-        //     // show popup
-        // }
-        // console.log('stopped', this.stopped)
+        } else {
+            console.log('Output is incorrect');
+            // show popup
+        }
+        console.log('stopped', this.stopped)
     }
 }

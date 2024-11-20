@@ -19,7 +19,6 @@ const ButtonConnector: React.FC<ConnectorProps> = ({
     style = {}
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const animationFrameRef = useRef<number>();
 
     const getRefRightCenter = (ref: RefObject<HTMLElement>): Position | null => {

@@ -7,7 +7,12 @@ import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';
 import JumpConnector from './JumpConnector';
 
-const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
+interface CodingAreaProps {
+    setClearCommandsRef: (fn: () => void) => void;
+}
+
+const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
+    const { setClearCommandsRef } = props;
     const { setReadyToPickSlot, slotPicked, commandsUsed, setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
     const [waitingForResult, setWaitingForResult] = useState(false);
     const [isOver, setIsOver] = useState(false);
@@ -42,6 +47,10 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
         setCommandsUsed(copy);
         // commandRef.current = null;
     }, [slotPicked])
+
+    useEffect(() => {
+        setClearCommandsRef(clearCommands);
+    }, [])
 
     useEffect(() => {
         // window.addEventListener('beforeunload', (e) => {
@@ -85,6 +94,10 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setIsOver(false);
+    }
+
+    const clearCommands = () => {
+        setCommandsUsed([]);
     }
 
     const insert = async (commandWithArg: CommandWithArgType, from: number | null = null, to: number) => {
@@ -159,7 +172,7 @@ const CodingArea = forwardRef<HTMLDivElement>((props, ref) => {
     }
 
     return (
-        <div className="p-4 w-full">
+        <div className="px-4 w-full">
             <JumpConnector connection={connection} />
 
             <div

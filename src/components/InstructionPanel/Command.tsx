@@ -39,8 +39,8 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
             draggable
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            className={`px-2 py-1 w-8 h-8 bg-primary/20 hover:bg-primary/30 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
-            hover:cursor-pointer ${dragging ? 'opacity-50' : ''}`}
+            className={`z-[100] px-2 py-1 w-8 h-8 bg-primary/5 hover:bg-primary/10 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
+            cursor-pointer ${dragging ? 'opacity-50' : ''}`}
         >
         </div>
     ) : (
@@ -49,11 +49,11 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
             draggable
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            className={`px-2 py-1 bg-primary/20 hover:bg-primary/30 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
-             space-x-2 hover:cursor - pointer ${dragging ? 'opacity-50' : ''}`}
+            className={`flex flex-row justify-center items-center z-[100] px-2 py-1  hover:bg-primary/5 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
+             space-x-2 cursor-pointer ${dragging ? 'opacity-50' : ''}`}
         >
-            <span>{value.command}</span>
-            {(typeof value.arg === 'number') && <span>{value.arg + 1}</span>}
+            <span className='pt-[0.2rem]'>{value.command}</span>
+            {(typeof value.arg === 'number') && <span className=' text-center text-orange-500 text-xl bg-amber-200 rounded w-6 h-6 '>{value.arg + 1}</span>}
         </div>
     )
 
