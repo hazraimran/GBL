@@ -152,14 +152,11 @@ export class MainScene extends Phaser.Scene {
         this.constructionSlots = [];
     }
 
-    // 修改reset方法
     reset(): void {
-        console.log('Resetting scene');
         this.resetGameState();
         this.scene.restart();
     }
 
-    // 在init中确保状态被正确初始化
     init(data: { errorHandler: ErrorHandler, sceneConfig: PassedConfig }): void {
         this.errorHandler = data.errorHandler;
         this.config.generatorFn = data.sceneConfig.generatorFn;
@@ -167,7 +164,6 @@ export class MainScene extends Phaser.Scene {
         this.config.constructionSlots = data.sceneConfig.constructionSlots;
         this.config.currentLevel = data.sceneConfig.currentLevel;
 
-        // 确保基础状态被重置
         this.inputQueue = [];
         this.outputQueue = [];
         this.cmdExcCnt = 0;
@@ -179,7 +175,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     create(): void {
-        console.log("create")
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
         this.setupConstructionArea();
@@ -188,7 +183,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
-        console.log('x initial pos', config.x)
         this.inputQueue = generatorFn(this.RANDOM_SEED);
         for (let i = 0; i < this.inputQueue.length; i++) {
             const rect = this.add.rectangle(
@@ -392,7 +386,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handlePickupFromInput(): Promise<void> {
-        console.log('Picking up stone from input area');
         if (!this.worker) return;
 
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
@@ -402,10 +395,8 @@ export class MainScene extends Phaser.Scene {
             }
 
             const stone = this.inputStones.shift() as Stone;
-            console.log(this.inputStones)
-            console.log('stone picked:', stone);
             this.pickUpStone(stone);
-            console.log(this.worker?.stoneCarried);
+            this.handleInqueueMoveForward();
         } catch (error: any) {
             if (error instanceof GameError) {
                 this.errorHandler.handle(error);
@@ -418,8 +409,18 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    private async handleInqueueMoveForward(): Promise<void> {
+        const tasks = [];
+
+        for (let i = 0; i < this.inputStones.length; i++) {
+            const stone = this.inputStones[i];
+            tasks.push(this.tweenStoneTo(stone, this.config.layout.inputArea.x, this.config.layout.inputArea.y + i * this.config.layout.inputArea.spacing));
+        }
+
+        await Promise.all(tasks);
+    }
+
     private pickStoneFromSlot(slot: number) {
-        console.log('Picking stone from slot', slot);
         if (!this.worker) return;
 
         const slotStone = this.constructionSlots[slot];
@@ -431,11 +432,9 @@ export class MainScene extends Phaser.Scene {
     }
 
     private putStoneToSlot(slot: number) {
-        console.log('Put stone to slot', slot);
         if (!this.worker) return;
 
         const stone = this.worker.stoneCarried;
-        console.log(stone)
         if (!stone) {
             throw new GameError('Worker is not carrying stone', GameErrorCodes.INVALID_MOVE);
         }
@@ -454,7 +453,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handleDropToOutput(): Promise<void> {
-        console.log('Dropping stone to output area', this.worker, this.worker?.stoneCarried);
         if (!this.worker) return;
         try {
             if (!this.worker.stoneCarried) {
@@ -512,7 +510,6 @@ export class MainScene extends Phaser.Scene {
                 ease: 'Power2',
                 onComplete: () => resolve()
             });
-            console.log("does carry stone? " + this.worker.stoneCarried)
             if (this.worker.stoneCarried) {
                 this.tweens.add({
                     targets: this.worker.stoneCarried.sprite,
@@ -536,7 +533,7 @@ export class MainScene extends Phaser.Scene {
                 y
             );
 
-            const baseSpeed = 6;
+            const baseSpeed = 2;
             const duration = (distance * baseSpeed) / this.config.speed;
 
             this.tweens.add({
