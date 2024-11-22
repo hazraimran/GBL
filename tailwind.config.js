@@ -37,13 +37,32 @@ export default {
 					'50%': {
 						transform: 'scale(1.2)'
 					}
-				}
+				},
+				float: {
+					'0%, 100%': {
+						transform: 'translateY(0)'
+					},
+					'50%': {
+						transform: 'translateY(-10px)'
+					}
+				},
+				shake: {
+					'0%': { transform: 'rotate(5deg) scale(1)' },
+					'15%': { transform: 'rotate(-5deg) scale(1.05)' },
+					'30%': { transform: 'rotate(5deg) scale(1)' },
+					'45%': { transform: 'rotate(-5deg) scale(1)' },
+					'60%': { transform: 'rotate(5deg) scale(1.05)' },
+					'75%': { transform: 'rotate(-5deg) scale(1)' },
+					'90%': { transform: 'rotate(5deg) scale(1)' },
+				},
 			},
 			animation: {
 				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite',
 				wiggle: 'wiggle 1s ease-in-out infinite',
 				flow: 'flowDash 1s linear infinite',
-				breath: 'breath 1.5s ease-in-out infinite'
+				breath: 'breath 1.5s ease-in-out infinite',
+				shake: 'shake 0.7s ease-in-out',
+				float: 'float 2s ease-in-out infinite',
 			},
 			colors: {
 				'custom-bg': '#2D2622',

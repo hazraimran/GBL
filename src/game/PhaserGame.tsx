@@ -14,17 +14,19 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
-    const { toast } = useToast();
+    const { setShowFailurePrompt, setFailurePromptMessage, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
+    // const { toast } = useToast();
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
-            toast({
-                title: "Error Occured",
-                description: error.message,
-                variant: error.level === 'ERROR' ? 'destructive' : 'default',
-                duration: 3000,
-            });
+            setShowFailurePrompt(true);
+            setFailurePromptMessage(error.message);
+            // toast({
+            //     title: "Error Occured",
+            //     description: error.message,
+            //     variant: error.level === 'ERROR' ? 'destructive' : 'default',
+            //     duration: 3000,
+            // });
         }
     }));
 
@@ -57,9 +59,18 @@ const PhaserGame = () => {
 
             // unlock next level
             unlockNextLevel(levelInfo.id);
-
         }
+
+        const levelFailed = (data: {
+            message: string;
+        }) => {
+            console.log('Level failed:', data);
+            setShowFailurePrompt(true);
+            setFailurePromptMessage(data.message);
+        }
+
         EventManager.on('levelCompleted', levelCompleted);
+        EventManager.on('levelFailed', levelFailed);
 
         return () => {
             EventManager.remove('levelCompleted', levelCompleted);
@@ -137,6 +148,7 @@ const PhaserGame = () => {
     };
 
     const handleReset = () => {
+        setShowFailurePrompt(false);
         if (!mainSceneRef.current) {
             console.warn('Main scene not initialized');
             return;

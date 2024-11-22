@@ -3,6 +3,7 @@ import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import GameContext from '../context/GameContext';
 import PhaserGame from '../game/PhaserGame';
 import Popup from '../components/Popup';
+import PromptScene from './PromptScene';
 
 const GameScene: React.FC = () => {
     const { currentScene } = useContext(GameContext);
@@ -10,8 +11,9 @@ const GameScene: React.FC = () => {
     return currentScene === 'GAME' && (
         <div className={`fixed bg-cover bg-center bg-no-repeat h-[100vh] w-[100vw]`}
             style={{ backgroundImage: `url('/game_bg.png')` }}>
-            <InstructionPanel />
+            <PromptScene />
             <PhaserGame />
+            <InstructionPanel />
             <Popup />
         </div>
     )

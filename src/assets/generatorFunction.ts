@@ -34,7 +34,20 @@ const level1 = {
     validationFunction: validationFn.toString(),
     commands: ['INPUT', 'OUTPUT'],
     commandsUsed: [],
-    constructionSlots: 3,
+    constructionSlots: [
+        {
+            "x": 300,
+            "y": 200
+        },
+        {
+            "x": 300,
+            "y": 300
+        },
+        {
+            "x": 300,
+            "y": 400
+        }
+    ],
     expectedCommandCnt: 8,
     expectedExecuteCnt: 25,
     commandCountAchievement: null,
