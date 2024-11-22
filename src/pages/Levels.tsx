@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { getLevelsInfo } from "../utils/storage";
 import { LevelInfo } from "../types/level";
+import { RxReset } from "react-icons/rx";
 
 const Levels: React.FC = () => {
     const { currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
@@ -22,6 +23,14 @@ const Levels: React.FC = () => {
 
     return currentScene === 'LEVELS' && (
         <div className="fixed inset-0 bg-gray-100 flex flex-col p-8">
+            <button
+                className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
+                onClick={() => {
+                    setCurrentScene('LANDING');
+                }}
+            >
+                <RxReset className="w-[7rem] h-[4rem] text-custom-bg-text" />
+            </button>
             <div className="max-w-4xl mx-auto w-full">
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Select Level</h1>
 

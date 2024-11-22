@@ -12,7 +12,8 @@ const Landing: React.FC = () => {
     }, []);
 
     const handleClickCharacter = (id: number) => {
-        // setshowPickCharacter(true);
+        setshowPickCharacter(false);
+        setShowModal(false);
         setCurrentScene('LEVELS');
     }
 
@@ -85,9 +86,6 @@ const Landing: React.FC = () => {
                                             </div>
                                             <div className='text-center'>
                                                 <p className='text-blue-600 font-semibold'>Foreman {id}</p>
-                                                {/* <p className='text-blue-600/80 text-sm'>
-                                                    {id === 1 ? '15 years' : '0 years'}
-                                                </p> */}
                                             </div>
                                         </div>
                                     </div>
