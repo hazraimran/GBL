@@ -21,7 +21,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     validationFunction: '',
     commands: [],
     commandsUsed: [],
-    constructionSlots: 0,
+    constructionSlots: [],
     expectedCommandCnt: 0,
     expectedExecuteCnt: 0,
     commandCountAchievement: null,
@@ -39,6 +39,10 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [connection, setConnection] = useState<Array<{ start: HTMLElement; end: HTMLElement }>>([]);
   const [readyToPickSlot, setReadyToPickSlot] = useState<boolean>(false);
   const [slotPicked, setSlotPicked] = useState<number | undefined>(undefined);
+  const [showReadyPrompt, setShowReadyPrompt] = useState<boolean>(false);
+  const [showFailurePrompt, setShowFailurePrompt] = useState<boolean>(false);
+  const [failurePromptMessage, setFailurePromptMessage] = useState<string>('');
+  const [showPickSlotPrompt, setShowPickSlotPrompt] = useState<boolean>(false);
 
   return (
     <GameContext.Provider value={{
@@ -65,7 +69,15 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       readyToPickSlot,
       setReadyToPickSlot,
       slotPicked,
-      setSlotPicked
+      setSlotPicked,
+      showReadyPrompt,
+      setShowReadyPrompt,
+      showFailurePrompt,
+      setShowFailurePrompt,
+      failurePromptMessage,
+      setFailurePromptMessage,
+      showPickSlotPrompt,
+      setShowPickSlotPrompt
     }}>
       {children}
     </GameContext.Provider>

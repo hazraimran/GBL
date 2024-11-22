@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import { GoMute, GoUnmute } from "react-icons/go";
 import { RxReset } from "react-icons/rx";
 import { Play, MoveRight, Square, Gauge, Lock } from 'lucide-react';
@@ -18,13 +18,26 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     onReset,
     onDrag
 }) => {
-    const [isMuted, setIsMuted] = useState(false);
+    // const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(50);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showBottomPanel, setCurrentScene, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
+    const { showFailurePrompt, showBottomPanel, setCurrentScene, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
+
+    const [isShaking, setIsShaking] = useState(false);
+    // , playHint, hintMessage
+
+    useEffect(() => {
+        if (showFailurePrompt) {
+            console.log('failure')
+            setIsShaking(true);
+            setTimeout(() => {
+                setIsShaking(false);
+            }, 1000);
+        }
+    }, [showFailurePrompt])
 
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (exectuting) return; // 执行时禁止拖动
+        if (exectuting) return;
 
         const bar = progressRef.current;
         if (bar) {
@@ -38,7 +51,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (exectuting) return; 
+        if (exectuting) return;
 
         const bar = progressRef.current;
         if (bar && isDragging) {
@@ -69,33 +82,32 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
         };
     }, [isDragging, exectuting]);
 
-    // 将进度值转换为速度显示
     const getSpeedText = (progress: number) => {
         const speed = (progress / 100 + 0.5).toFixed(1);
         return `${speed}x`;
     };
 
     return (
-        <footer className="flex items-end absolute bottom-0 w-full">
+        <footer className={`flex items-end absolute bottom-0 w-full `}>
             <button
-                className="w-[10vw] h-[6vw] bg-custom-bg rounded-lg flex items-center justify-center"
+                className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
                 onClick={() => {
                     setCurrentScene('LEVELS');
                     saveCommandsUsed(levelInfo!.id, commandsUsed);
                     onReset();
                 }}
             >
-                <RxReset className="w-[5vw] h-[5vw] text-custom-bg-text" />
+                <RxReset className="w-[7rem] h-[4rem] text-custom-bg-text" />
             </button>
 
             {showBottomPanel && (
-                <div className="flex items-center space-x-4 p-4 bg-custom-bg rounded-lg translate-x-1/2">
+                <div className={`flex items-center space-x-4 p-4 bg-custom-bg rounded-lg m-auto ${isShaking && 'animate-shake'}`}>
                     <button
-                        className={`w-[6vw] h-[6vw] ${exectuting ? 'bg-custom-red hover:scale-105' : 'bg-custom-gray'} rounded-lg flex items-center justify-center transition-transform duration-200`}
+                        className={`w-[4rem] h-[4rem] ${exectuting ? 'bg-custom-red hover:scale-105' : 'bg-custom-gray'} rounded-lg flex items-center justify-center transition-transform duration-200`}
                         onClick={onReset}
                     >
                         <Square
-                            className="w-[3vw] h-[3vw] opacity-50"
+                            className="w-[2rem] h-[2rem] opacity-50"
                             strokeWidth={2}
                             fill="black"
                             color="black"
@@ -103,7 +115,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                     </button>
 
                     <button
-                        className={`w-[6vw] h-[6vw] ${exectuting ? 'bg-custom-gray' : 'bg-custom-green hover:scale-105'} rounded-lg flex items-center justify-center transition-transform duration-200`}
+                        className={`w-[4rem] h-[4rem] ${exectuting ? 'bg-custom-gray' : 'bg-custom-green hover:scale-105'} rounded-lg flex items-center justify-center transition-transform duration-200`}
                         onClick={!exectuting ? onExecute : () => { }}
                         disabled={exectuting}
                     >
@@ -115,7 +127,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                     </button>
 
                     <button
-                        className="w-[6vw] h-[6vw] bg-custom-green hover:scale-105 rounded-lg flex items-center justify-center transition-transform duration-200"
+                        className="w-[4rem] h-[4rem] bg-custom-green hover:scale-105 rounded-lg flex items-center justify-center transition-transform duration-200"
                         onClick={onExecuteOneStep}
                     >
                         <MoveRight
@@ -125,15 +137,15 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                         />
                     </button>
 
-                    <div className={`relative flex flex-col items-center w-[12vw] ${exectuting ? 'opacity-50' : ''}`}>
+                    <div className={`relative flex flex-col items-center w-[10rem] ${exectuting ? 'opacity-50' : ''}`}>
                         {/* Speed indicator */}
-                        <div className="flex items-center mb-2 text-custom-bg-text">
+                        <div className="w-full flex flex-row justify-between mb-2 text-custom-bg-text">
                             {exectuting ? (
-                                <Lock className="w-4 h-4 mr-1 text-gray-500" />
+                                <Lock className="ml-[2.5rem] w-8 h-8 text-gray-500" />
                             ) : (
-                                <Gauge className="w-4 h-4 mr-1" />
+                                <Gauge className="ml-[2.5rem] w-8 h-8" />
                             )}
-                            <span className="text-sm font-medium">{getSpeedText(progress)}</span>
+                            <span className="text-xl mt-[0.25rem] mr-[2.5rem]">{getSpeedText(progress)}</span>
                         </div>
 
                         {/* Progress bar container */}
@@ -149,7 +161,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                         >
                             {/* Progress bar fill */}
                             <div
-                                className={`absolute top-0 left-0 h-2 rounded-full transition-all duration-100 ${exectuting ? 'bg-gray-500' : 'bg-custom-green'}`}
+                                className={`absolute top-0 left-0 h-2 rounded-full transition-all duration-75 ${exectuting ? 'bg-gray-500' : 'bg-custom-green'}`}
                                 style={{ width: `${progress}%` }}
                             />
 

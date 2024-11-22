@@ -7,7 +7,7 @@ const CommandList = forwardRef<HTMLDivElement>((props, ref) => {
 
     return (
         <>
-            <h4 className='text-black'>Available Commands</h4>
+            <h4 className='text-black select-none'>Available Commands</h4>
             <div
                 className="w-2/3 flex flex-row flex-wrap items-center justify-center gap-2 overflow-visible">
                 {levelInfo?.commands.map((command, index) => (

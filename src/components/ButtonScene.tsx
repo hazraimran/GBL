@@ -19,7 +19,7 @@ const ButtonScene: React.FC = () => {
                         left: `${initPos.x + (idx % 3) * 90}px`,
                         top: `${initPos.y + Math.floor(idx / 3) * 90}px`
                     }}
-                    className={`fixed border-8 border-white w-[70px] h-[70px] animate-breath scale-110
+                    className={`fixed border-8 border-lime-600 w-[70px] h-[70px] animate-breath scale-110
                     bg-transparent rounded-md text-black`}
                     onClick={(e) => {
                         e.stopPropagation();

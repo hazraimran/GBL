@@ -177,7 +177,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
             <div
                 className={cn(
-                    " rounded-lg transition-colors duration-200 p-2 mx-8 border-2 border-transparent",
+                    "mt-2 rounded-lg transition-colors duration-200 p-2 mx-8 border-2 border-transparent",
                     isOver ? "bg-secondary/10 border-2 border-dashed border-primary/50" : "bg-secondary/40",
                     "hover:bg-secondary/20"
                 )}

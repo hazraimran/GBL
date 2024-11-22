@@ -2,19 +2,19 @@ import { Worker, Stone, ConstructionSlot, generatorFn, validationFn, CommandWith
 import { GameError, GameErrorCodes } from '../types/errors';
 import { ErrorHandler } from '../ErrorHandler';
 import EventManager from '../EventManager';
+import { ConstructtionSlotConfig } from '../types/level';
 
 interface PassedConfig {
     generatorFn: generatorFn;
     validationFn: validationFn;
-    constructionSlots: number;
+    constructionSlots: ConstructtionSlotConfig[];
     currentLevel: number;
 }
 
 interface GameSceneConfig {
-    constructionSlots: number;
+    constructionSlots: ConstructtionSlotConfig[];
     generatorFn: generatorFn;
     validationFn: validationFn;
-    slots: { x: number; y: number }[];
     stoneSize: {
         width: number;
         height: number;
@@ -53,6 +53,7 @@ interface GameSceneConfig {
 export class MainScene extends Phaser.Scene {
     private worker: Worker | null = null;
     private inputStones: Stone[] = [];
+    private outputStones: Stone[] = [];
     private constructionSlots: ConstructionSlot[] = [];
     private config: GameSceneConfig;
     private inputQueue: number[];
@@ -86,14 +87,9 @@ export class MainScene extends Phaser.Scene {
                 width: 30,
                 height: 30
             },
-            constructionSlots: 3,
+            constructionSlots: [],
             generatorFn: () => [1, 2, 3],
             validationFn: (output: number[]) => output.every((val, idx) => val === idx + 1),
-            slots: [
-                { x: 300, y: 200 },
-                { x: 300, y: 300 },
-                { x: 300, y: 400 }
-            ],
             layout: {
                 inputArea: {
                     x: 100,
@@ -139,6 +135,13 @@ export class MainScene extends Phaser.Scene {
             }
         });
         this.inputStones = [];
+
+        this.outputStones.forEach(stone => {
+            if (stone.sprite) {
+                stone.sprite.destroy();
+            }
+        });
+        this.outputStones = [];
 
         this.constructionSlots.forEach(slot => {
             if (slot.rect) {
@@ -217,7 +220,35 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupConstructionArea(): void {
-        for (let i = 0; i < this.config.constructionSlots; i++) {
+        this.config.constructionSlots.forEach((slot, idx) => {
+            const rect = this.add.rectangle(
+                slot.x,
+                slot.y,
+                this.config.stoneSize.width,
+                this.config.stoneSize.height,
+                0x666666,
+                0.8
+            );
+            rect.setStrokeStyle(4, 0x000000);
+
+            if (slot.value) {
+                const text = this.add.text(
+                    slot.x,
+                    slot.y,
+                    slot.value,
+                    {
+                        color: '#000000',
+                        fontSize: '20px'
+                    }
+                );
+            }
+            this.constructionSlots.push({
+                rect,
+                stone: null
+            });
+        })
+
+        for (let i = 0; i < this.config.constructionSlots.length; i++) {
             const initialPos = { x: 300, y: 300 };
             const spacing = 90;
 
@@ -390,7 +421,7 @@ export class MainScene extends Phaser.Scene {
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
         try {
             if (!(this.inputStones.length > 0)) {
-                throw new GameError('No stones in the input area', GameErrorCodes.INVALID_MOVE);
+                throw new GameError('No stones in the input area', GameErrorCodes.INPUT_EMPTY);
             }
 
             const stone = this.inputStones.shift() as Stone;
@@ -424,7 +455,7 @@ export class MainScene extends Phaser.Scene {
 
         const slotStone = this.constructionSlots[slot];
         if (!slotStone.stone) {
-            throw new GameError('Slot is empty', GameErrorCodes.INVALID_MOVE);
+            throw new GameError('Failed to pick up from an empty slot!', GameErrorCodes.SLOT_EMPTY);
         }
 
         this.pickUpStone(slotStone.stone as Stone);
@@ -435,7 +466,7 @@ export class MainScene extends Phaser.Scene {
 
         const stone = this.worker.stoneCarried;
         if (!stone) {
-            throw new GameError('Worker is not carrying stone', GameErrorCodes.INVALID_MOVE);
+            throw new GameError('Worker is not carrying stone!', GameErrorCodes.WORKER_NOT_CARRYING);
         }
 
         this.constructionSlots[slot].stone = {
@@ -455,7 +486,7 @@ export class MainScene extends Phaser.Scene {
         if (!this.worker) return;
         try {
             if (!this.worker.stoneCarried) {
-                throw new GameError('No stone carried by worker', GameErrorCodes.INVALID_MOVE);
+                throw new GameError('No stone carried by worker', GameErrorCodes.WORKER_NOT_CARRYING);
             }
             await this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y);
 
@@ -479,6 +510,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private handleStoneToOutput(stone: Stone): void {
+
         stone.sprite.x = this.config.layout.outputArea.x;
         stone.sprite.y = this.config.layout.outputArea.y;
 
@@ -552,7 +584,6 @@ export class MainScene extends Phaser.Scene {
         const isCorrect = this.config.validationFn(this.outputQueue);
 
         if (isCorrect) {
-            console.log('Output is correct');
             this.stopped = true;
             // show popup
             EventManager.emit('levelCompleted', {
@@ -561,9 +592,9 @@ export class MainScene extends Phaser.Scene {
             });
 
         } else {
-            console.log('Output is incorrect');
-            // show popup
+            EventManager.emit('levelFailed', {
+                "message": "Output is incorrect"
+            })
         }
-        console.log('stopped', this.stopped)
     }
 }

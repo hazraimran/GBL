@@ -5,7 +5,8 @@ import CodingArea from './CodingArea';
 import CommandList from './CommandList';
 import { Button } from '../ui/button';
 import ButtonConnector from './ButtonConnector';
-
+import Divider from './Divider';
+// import 
 const InstructionPanel: React.FC = () => {
     const { levelInfo, setCommandsUsed } = useContext(GameContext);
     const CommandListRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ const InstructionPanel: React.FC = () => {
     const handleWheel = (event: React.WheelEvent) => {
         // event.preventDefault();
         event.stopPropagation();
+        console.log("wheel", event.deltaY);
 
         if (instructionPanelRef.current && instructionPanelRef.current.clientHeight > window.innerHeight * 3 / 5) {
             settranslateY(prevtranslateY => prevtranslateY + event.deltaY / 10);
@@ -44,8 +46,8 @@ const InstructionPanel: React.FC = () => {
 
     return levelInfo && (
         <aside
-            className="bg-cover bg-center bg-no-repeat flex flex-col items-center text-white w-[25rem] 
-            h-[35rem] p-4 absolute right-0 top-1/2 z-10"
+            className="bg-contain bg-center bg-no-repeat flex flex-col items-center text-white w-[25rem]
+             p-4 absolute right-0 top-1/2 z-10"
             ref={instructionPanelRef}
             style={{
                 backgroundImage: `url('/command_bg.png')`,
@@ -55,7 +57,8 @@ const InstructionPanel: React.FC = () => {
 
             <InfoArea title={levelInfo.title} description={levelInfo.description} />
 
-            <hr className='my-2 w-2/3 bg-slate-700 border-none h-[0.125rem] rounded-lg' />
+            <Divider />
+
             <CommandList ref={CommandListRef} />
             <CodingArea ref={CodingAreaRef} setClearCommandsRef={setClearCommandsRef} />
 
@@ -64,7 +67,6 @@ const InstructionPanel: React.FC = () => {
                 onClick={() => clearCommandsRef.current?.()}
             >
                 X
-                {/* <Trash className='w-6 h-6 hover:animate-wiggle' /> */}
             </Button>
 
         </aside>

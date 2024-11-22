@@ -1,8 +1,14 @@
 import { CommandType, CommandWithArgType } from './game';
 
+export interface ConstructtionSlotConfig {
+    x: number;
+    y: number;
+    value?: string;
+}
+
 export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS';
 
-export type LevelInfo = {
+export interface LevelInfo {
     id: number;
     title: string;
     description: string;
@@ -10,7 +16,7 @@ export type LevelInfo = {
     validationFunction: string;
     commands: CommandType[];
     commandsUsed: CommandWithArgType[];
-    constructionSlots: number;
+    constructionSlots: ConstructtionSlotConfig[];
     expectedCommandCnt: number,
     expectedExecuteCnt: number,
     commandCountAchievement: null,
