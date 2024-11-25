@@ -195,16 +195,14 @@ export class MainScene extends Phaser.Scene {
 
     create(): void {
         this.worker = this.createWorker();
-        this.setupInputArea(this.config.layout.inputArea, this.config.generatorFn);
+        this.setupInputArea(this.config.layout.inputArea);
         this.setupConstructionArea();
         this.setupOutputArea(this.config.layout.outputArea);
         this.events.emit('sceneReady');
     }
 
-    private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
+    private setupInputArea(config: { x: number; y: number; spacing: number }): void {
         this.inputQueue = this.config.generatorFn(this.generator1.nextInt.bind(this.generator1));
-        console.log(generatorFn.toString());
-        console.log(this.inputQueue);
         for (let i = 0; i < this.inputQueue.length; i++) {
             const rect = this.add.rectangle(
                 config.x,
@@ -478,7 +476,7 @@ export class MainScene extends Phaser.Scene {
 
         for (let i = 0; i < this.inputStones.length; i++) {
             const stone = this.inputStones[i];
-            tasks.push(this.tweenStoneTo(stone, this.config.layout.inputArea.x, this.config.layout.inputArea.y + i * this.config.layout.inputArea.spacing));
+            tasks.push(this.tweenStoneTo(stone, this.config.layout.inputArea.x, this.config.layout.inputArea.y + i * this.config.layout.inputArea.spacing, 8, 'linear'));
         }
 
         await Promise.all(tasks);
@@ -563,7 +561,6 @@ export class MainScene extends Phaser.Scene {
     private async handleStoneToOutput(stone: Stone): Promise<void> {
         for (let i = 0; i < this.outputStones.length; i++) {
             const stone = this.outputStones[i];
-            console.log(stone);
             await this.tweenStoneTo(stone, this.config.layout.outputArea.x, this.config.layout.outputArea.y + (i + 1) * this.config.layout.outputArea.spacing);
         }
 
@@ -574,10 +571,6 @@ export class MainScene extends Phaser.Scene {
         stone.text.y = this.config.layout.outputArea.y
 
         this.outputStones.push(stone);
-        // this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin).then(() => {
-        //     stone.sprite.destroy();
-        //     stone.text.destroy();
-        // });
     }
 
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
@@ -621,7 +614,7 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private async tweenStoneTo(stone: Stone, x: number, y: number): Promise<void> {
+    private async tweenStoneTo(stone: Stone, x: number, y: number, baseSpeed: number = 2, ease: string = 'Power2'): Promise<void> {
         return new Promise((resolve) => {
             if (!stone) return;
 
@@ -632,7 +625,7 @@ export class MainScene extends Phaser.Scene {
                 y
             );
 
-            const baseSpeed = 2;
+            // const baseSpeed = 2;
             const duration = (distance * baseSpeed) / this.config.speed;
 
             let tweensCompleted = 0;
@@ -648,7 +641,7 @@ export class MainScene extends Phaser.Scene {
                 x: x,
                 y: y,
                 duration: duration,
-                ease: 'Power2',
+                ease: ease,
                 onComplete: onComplete
             });
 
@@ -657,13 +650,13 @@ export class MainScene extends Phaser.Scene {
                 x: x,
                 y: y,
                 duration: duration,
-                ease: 'Power2',
+                ease: ease,
                 onComplete: onComplete
             });
         });
     }
 
-    private preValidateOutput(): void {
+    private async preValidateOutput(): Promise<void> {
         if (this.ans.length !== this.outputQueue.length) {
             return;
         }
@@ -677,6 +670,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
+            await this.gameDoneAnimation();
             this.stopped = true;
             // show popup
             EventManager.emit('levelCompleted', {
@@ -686,7 +680,21 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private validateOutput(): void {
+    private async gameDoneAnimation(): Promise<void> {
+        let tasks = [];
+        for (let i = 0; i < this.outputStones.length; i++) {
+            let stone = this.outputStones[i];
+            console.log(stone)
+            tasks.push(this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin, 8, 'linear').then(() => {
+                stone.sprite.destroy();
+                stone.text.destroy();
+            }))
+        }
+        await Promise.all(tasks);
+        console.log("all tasks done")
+    }
+
+    private async validateOutput(): Promise<void> {
         if (this.ans.length !== this.outputQueue.length) {
             EventManager.emit('levelFailed', {
                 "message": "Not enough stones in the output area, this.ans " + this.ans.length + " but got " + this.outputQueue.length + "!"
@@ -704,6 +712,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
+            await this.gameDoneAnimation();
             this.stopped = true;
             // show popup
             EventManager.emit('levelCompleted', {
