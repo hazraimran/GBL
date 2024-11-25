@@ -43,19 +43,14 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
                             borderLeft: '12px solid transparent',
                             borderRight: '12px solid transparent',
                             borderTop: `16px solid ${backgroundColor}`,
-                            // transform: 'rotate(-45deg)',
-                            // animation: `float ${animationDuration}s ease-in-out infinite`
                         }}
                     /> :
                     <div
-                        className="absolute -right-4 top-0 w-0 h-0 animate-float"
+                        className="absolute -right-4 top-4 animate-float"
                         style={{
-                            top: `${arrowOffset}px`,
                             borderTop: '12px solid transparent',
                             borderBottom: '12px solid transparent',
                             borderLeft: `16px solid ${backgroundColor}`,
-                            // transform: 'rotate(-45deg)',
-                            // animation: `float ${animationDuration}s ease-in-out infinite`
                         }}
                     />
             }
