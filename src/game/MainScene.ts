@@ -225,7 +225,7 @@ export class MainScene extends Phaser.Scene {
 
             this.inputStones.push({
                 sprite: rect,
-                text: text, 
+                text: text,
                 value: this.inputQueue[i]
             });
         }
@@ -305,15 +305,17 @@ export class MainScene extends Phaser.Scene {
         this.config.speed = speed;
     }
 
-    private preProcessCommands(commands: CommandWithArgType[]): void {
+    private preProcessCommands(commands: CommandWithArgType[]): CommandWithArgType[] {
+        let processedCommands = structuredClone(commands);
         for (let i = 0; i < commands.length; i++) {
             const command = commands[i];
             if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
                 const ext = command.arg as CommandWithArgType;
                 const pos = commands.indexOf(ext);
-                command.arg = pos;
+                processedCommands[i].arg = pos;
             }
         }
+        return processedCommands;
     }
 
     private setCommandsToExecute(commands: CommandWithArgType[]): void {
@@ -330,7 +332,7 @@ export class MainScene extends Phaser.Scene {
 
     async executeCommands(commandsWithArg: CommandWithArgType[]): Promise<void> {
         this.setCommandsToExecute(commandsWithArg);
-        this.preProcessCommands(commandsWithArg);
+        const processedCommands = this.preProcessCommands(commandsWithArg);
         console.log('Executing commands:', commandsWithArg);
         const jumpto = (line: number) => {
             this.curLine = line;
@@ -338,9 +340,9 @@ export class MainScene extends Phaser.Scene {
         this.stopped = false;
         let jumpCnt = 0;
 
-        while (this.curLine < commandsWithArg.length && !this.stopped) {
+        while (this.curLine < processedCommands.length && !this.stopped) {
             if (this.detectInfiniteLoop(jumpCnt)) return;
-            const commandWithArg = commandsWithArg[this.curLine];
+            const commandWithArg = processedCommands[this.curLine];
             console.log(commandWithArg)
             this.curLine++;
             this.cmdExcCnt++;
@@ -377,7 +379,9 @@ export class MainScene extends Phaser.Scene {
                     break;
             }
         }
+
         if (!this.stopped) {
+            console.log('not stopped')
             this.validateOutput();
         }
     }
@@ -461,7 +465,8 @@ export class MainScene extends Phaser.Scene {
 
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
         try {
-            if (!(this.inputStones.length > 0)) {
+            console.log(this.inputStones)
+            if (this.inputStones.length === 0) {
                 this.validateOutput();
                 return;
             }
@@ -669,6 +674,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async preValidateOutput(): Promise<void> {
+        console.log("prevalidate")
         if (this.ans.length !== this.outputQueue.length) {
             return;
         }
@@ -706,6 +712,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async validateOutput(): Promise<void> {
+        console.log("validate")
+
         if (this.ans.length !== this.outputQueue.length) {
             if (this.ans.length < this.outputQueue.length) {
                 EventManager.emit('levelFailed', {
