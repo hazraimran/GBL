@@ -190,12 +190,9 @@ export class MainScene extends Phaser.Scene {
         this.curLine = 0;
         this.commandsToExecute = null;
         this.stopped = true;
-
-        console.log('Initializing MainScene with config:', this.config.constructionSlots);
     }
 
     create(): void {
-        console.log('create scene')
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea);
         this.setupConstructionArea();
@@ -228,7 +225,7 @@ export class MainScene extends Phaser.Scene {
 
             this.inputStones.push({
                 sprite: rect,
-                text: text, // 将text保存到stones数组中
+                text: text, 
                 value: this.inputQueue[i]
             });
         }
@@ -339,8 +336,10 @@ export class MainScene extends Phaser.Scene {
             this.curLine = line;
         }
         this.stopped = false;
+        let jumpCnt = 0;
 
         while (this.curLine < commandsWithArg.length && !this.stopped) {
+            if (this.detectInfiniteLoop(jumpCnt)) return;
             const commandWithArg = commandsWithArg[this.curLine];
             console.log(commandWithArg)
             this.curLine++;
@@ -365,20 +364,33 @@ export class MainScene extends Phaser.Scene {
                     await this.handleSub(commandWithArg.arg as number);
                     break;
                 case 'JUMP':
+                    jumpCnt++;
                     await this.handleJump(commandWithArg.arg as number, jumpto);
                     break;
                 case 'JUMPZ':
+                    jumpCnt++;
                     break;
                 case 'JUMPN':
+                    jumpCnt++;
                     break;
                 case '':
                     break;
             }
         }
         if (!this.stopped) {
-            console.log('not stopped, validating output')
             this.validateOutput();
         }
+    }
+
+    private detectInfiniteLoop(jumpCnt: number) {
+        if (jumpCnt > 50) {
+            EventManager.emit('levelFailed', {
+                "message": "Infinite loop detected!"
+            });
+            return true;
+        }
+        return false;
+
     }
 
     async executeOneStep(): Promise<void> {
@@ -657,13 +669,11 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async preValidateOutput(): Promise<void> {
-        console.log(this.outputQueue, this.ans)
         if (this.ans.length !== this.outputQueue.length) {
             return;
         }
 
         let isCorrect = true;
-        console.log(this.ans, this.outputQueue)
 
         for (let i = 0; i < this.ans.length; i++) {
             if (this.ans[i] !== this.outputQueue[i]) {
@@ -712,7 +722,6 @@ export class MainScene extends Phaser.Scene {
         }
 
         let isCorrect = true;
-        console.log(this.ans, this.outputQueue)
         for (let i = 0; i < this.ans.length; i++) {
             if (this.ans[i] !== this.outputQueue[i]) {
                 isCorrect = false;
