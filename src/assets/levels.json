@@ -2,8 +2,8 @@
     "id": 1,
     "title": "Supply Chamber",
     "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each thing from the INBOX, and drop it into the OUTBOX.",
-    "generatorFunction": "function () {\n    var len = 2;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    var len = 2;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    var expected = arr;\n    return expected;\n}",
+    "generatorFunction": "function (generatorFn) {\n    var len = 2;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 2;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    return expected;\n}",
     "commands": ["INPUT", "OUTPUT"],
     "commandsUsed": [],
     "constructionSlots": [],
@@ -16,8 +16,8 @@
     "id": 2,
     "title": "Busy Supply Chamber",
     "description": "Grab each thing from the INBOX, and drop each one into the OUTBOX.\n\n You got a new command!You can drag JUMP 's arrow to jump to different lines within your program.\n\n With this new ability, you can complete this assignment using only 3 total commands.",
-    "generatorFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    var expected = arr;\n    return expected;\n}",
+    "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 6;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    return expected;\n}",
     "commands": ["INPUT", "OUTPUT", "JUMP"],
     "commandsUsed": [],
     "constructionSlots": [],
@@ -29,27 +29,24 @@
 }, {
     "id": 3,
     "title": "Replica Slate",
-    "description": "Ignore the INBOX for now, and just send the following 3 letters to the OUTBOX: \n\nBUG\n\nThe Facilities Management staff has placed some items over there on the carpet for you.If only there were a way you could pick them up...",
-    "generatorFunction": "function () {\n    var len = 5;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    return [5, 2, 0];\n}",
+    "description": "Ignore the INBOX for now, and just send the following 3 numbers to the OUTBOX: \n\n520\n\nThe Facilities Management staff has placed some items over there on the carpet for you.If only there were a way you could pick them up...",
+    "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    return [5, 2, 0];\n}",
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM"],
     "commandsUsed": [],
     "constructionSlots": [{
-            "x": 300,
-            "y": 300,
-            "value": 5
-        },
-        {
-            "x": 400,
-            "y": 300,
-            "value": 2
-        },
-        {
-            "x": 500,
-            "y": 300,
-            "value": 0
-        }
-    ],
+        "x": 300,
+        "y": 300,
+        "value": 5
+    }, {
+        "x": 400,
+        "y": 300,
+        "value": 2
+    }, {
+        "x": 500,
+        "y": 300,
+        "value": 0
+    }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
@@ -59,23 +56,20 @@
     "id": 4,
     "title": "Scrambler Handler",
     "description": "Grab the first TWO things from the INBOX and drop them into the OUTBOX in the reverse order.Repeat until the INBOX is empty.\n\nYou got a new command!Feel free to COPYTO wherever you like on the carpet.It will be cleaned later.",
-    "generatorFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    for (var i = 0; i < 3; i++) {\n        var tmp = arr[i * 2];\n        arr[i * 2] = arr[i * 2 + 1];\n        arr[i * 2 + 1] = tmp;\n    }\n    return arr;\n}",
+    "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 6;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    for (var i = 0; i < 3; i++) {\n        var tmp = expected[i * 2];\n        expected[i * 2] = expected[i * 2 + 1];\n        expected[i * 2 + 1] = tmp;\n    }\n    return expected;\n}",
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO"],
     "commandsUsed": [],
     "constructionSlots": [{
-            "x": 300,
-            "y": 300
-        },
-        {
-            "x": 400,
-            "y": 300
-        },
-        {
-            "x": 500,
-            "y": 300
-        }
-    ],
+        "x": 300,
+        "y": 300
+    }, {
+        "x": 400,
+        "y": 300
+    }, {
+        "x": 500,
+        "y": 300
+    }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
@@ -85,23 +79,20 @@
     "id": 5,
     "title": "Replica Slate",
     "description": "For each two things in the INBOX, add them together, and put the result in the OUTBOX.\n\nYou got a new command!It ADDs the contents of a tile on the floor to whatever value you 're currently holding.",
-    "generatorFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    var expected = [];\n    for (var i = 0; i < 3; i++) {\n        expected.push(arr[i * 2] - arr[i * 2 + 1]);\n    }\n    return expected;\n}",
+    "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 6;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    return expected;\n}",
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
     "commandsUsed": [],
     "constructionSlots": [{
-            "x": 300,
-            "y": 300
-        },
-        {
-            "x": 400,
-            "y": 300
-        },
-        {
-            "x": 500,
-            "y": 300
-        }
-    ],
+        "x": 300,
+        "y": 300
+    }, {
+        "x": 400,
+        "y": 300
+    }, {
+        "x": 500,
+        "y": 300
+    }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
