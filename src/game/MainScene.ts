@@ -561,10 +561,13 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handleStoneToOutput(stone: Stone): Promise<void> {
-        for (let i = 0; i < this.outputStones.length; i++) {
-            const stone = this.outputStones[i];
-            await this.tweenStoneTo(stone, this.config.layout.outputArea.x, this.config.layout.outputArea.y + (i + 1) * this.config.layout.outputArea.spacing);
+        this.outputStones.unshift(stone);
+
+        const tasks = [];
+        for (let i = 1; i < this.outputStones.length; i++) {
+            tasks.push(this.tweenStoneTo(this.outputStones[i], this.config.layout.outputArea.x, this.config.layout.outputArea.y + i * this.config.layout.outputArea.spacing));
         }
+        await Promise.all(tasks);
 
         stone.sprite.x = this.config.layout.outputArea.x;
         stone.sprite.y = this.config.layout.outputArea.y;
@@ -572,7 +575,6 @@ export class MainScene extends Phaser.Scene {
         stone.text.x = this.config.layout.outputArea.x;
         stone.text.y = this.config.layout.outputArea.y
 
-        this.outputStones.push(stone);
     }
 
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
