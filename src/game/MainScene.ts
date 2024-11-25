@@ -272,7 +272,7 @@ export class MainScene extends Phaser.Scene {
                     0.3
                 )
                 const text = this.add.text(
-                    slot.x - 10,
+                    slot.x - 5,
                     slot.y - 10,
                     slot.value.toString(),
                     {
@@ -514,8 +514,8 @@ export class MainScene extends Phaser.Scene {
             ),
             value: stone.value,
             text: this.add.text(
-                this.constructionSlots[slot].rect.x,
-                this.constructionSlots[slot].rect.y,
+                this.constructionSlots[slot].rect.x - 10,
+                this.constructionSlots[slot].rect.y - 10,
                 stone.value.toString(),
                 {
                     fontSize: '20px',
