@@ -124,6 +124,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private resetGameState(): void {
+        console.log('Resetting game state');
         this.inputQueue = [];
         this.outputQueue = [];
         this.cmdExcCnt = 0;
@@ -172,7 +173,7 @@ export class MainScene extends Phaser.Scene {
 
     reset(): void {
         this.resetGameState();
-        this.scene.restart();
+        // this.scene.restart();
     }
 
     init(data: { errorHandler: ErrorHandler, sceneConfig: PassedConfig }): void {
@@ -375,6 +376,7 @@ export class MainScene extends Phaser.Scene {
             }
         }
         if (!this.stopped) {
+            console.log('not stopped, validating output')
             this.validateOutput();
         }
     }
@@ -662,6 +664,8 @@ export class MainScene extends Phaser.Scene {
         }
 
         let isCorrect = true;
+        console.log(this.ans, this.outputQueue)
+
         for (let i = 0; i < this.ans.length; i++) {
             if (this.ans[i] !== this.outputQueue[i]) {
                 isCorrect = false;
@@ -670,8 +674,8 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
-            await this.gameDoneAnimation();
             this.stopped = true;
+            await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
                 executeCnt: this.cmdExcCnt,
@@ -684,14 +688,12 @@ export class MainScene extends Phaser.Scene {
         let tasks = [];
         for (let i = 0; i < this.outputStones.length; i++) {
             let stone = this.outputStones[i];
-            console.log(stone)
             tasks.push(this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin, 8, 'linear').then(() => {
                 stone.sprite.destroy();
                 stone.text.destroy();
             }))
         }
         await Promise.all(tasks);
-        console.log("all tasks done")
     }
 
     private async validateOutput(): Promise<void> {
@@ -704,6 +706,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         let isCorrect = true;
+        console.log(this.ans, this.outputQueue)
         for (let i = 0; i < this.ans.length; i++) {
             if (this.ans[i] !== this.outputQueue[i]) {
                 isCorrect = false;
@@ -712,8 +715,8 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
-            await this.gameDoneAnimation();
             this.stopped = true;
+            await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
                 executeCnt: this.cmdExcCnt,
