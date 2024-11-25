@@ -48,6 +48,7 @@ const PhaserGame = () => {
                 commandCnt: data.commandCnt
             });
             setShowPopup(true);
+            setExecuting(false);
 
             // unlock next level
             unlockNextLevel(levelInfo.id);
