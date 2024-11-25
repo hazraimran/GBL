@@ -183,8 +183,8 @@ export class MainScene extends Phaser.Scene {
         this.config.constructionSlots = data.sceneConfig.constructionSlots;
         this.config.currentLevel = data.sceneConfig.currentLevel;
         this.ans = this.config.outputFn(this.generator2.nextInt.bind(this.generator2));
+        this.inputQueue = this.config.generatorFn(this.generator1.nextInt.bind(this.generator1));
 
-        this.inputQueue = [];
         this.outputQueue = [];
         this.cmdExcCnt = 0;
         this.curLine = 0;
@@ -195,6 +195,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     create(): void {
+        console.log('create scene')
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea);
         this.setupConstructionArea();
@@ -203,7 +204,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }): void {
-        this.inputQueue = this.config.generatorFn(this.generator1.nextInt.bind(this.generator1));
         for (let i = 0; i < this.inputQueue.length; i++) {
             const rect = this.add.rectangle(
                 config.x,
@@ -450,12 +450,8 @@ export class MainScene extends Phaser.Scene {
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
         try {
             if (!(this.inputStones.length > 0)) {
-                EventManager.emit('levelFailed', {
-                    "message": ErrorMessages[GameErrorCodes.INPUT_EMPTY]
-                });
-                this.stopped = true;
+                this.validateOutput();
                 return;
-                // throw new GameError('No stones in the input area', GameErrorCodes.INPUT_EMPTY);
             }
 
             const stone = this.inputStones.shift() as Stone;
@@ -661,6 +657,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async preValidateOutput(): Promise<void> {
+        console.log(this.outputQueue, this.ans)
         if (this.ans.length !== this.outputQueue.length) {
             return;
         }
@@ -700,9 +697,16 @@ export class MainScene extends Phaser.Scene {
 
     private async validateOutput(): Promise<void> {
         if (this.ans.length !== this.outputQueue.length) {
-            EventManager.emit('levelFailed', {
-                "message": "Not enough stones in the output area, this.ans " + this.ans.length + " but got " + this.outputQueue.length + "!"
-            });
+            if (this.ans.length < this.outputQueue.length) {
+                EventManager.emit('levelFailed', {
+                    "message": "Too much stones in the output area, expect" + this.ans.length + " but got " + this.outputQueue.length + "!"
+                });
+            } else {
+                EventManager.emit('levelFailed', {
+                    "message": "Not enough stones in the output area, expect" + this.ans.length + " but got " + this.outputQueue.length + "!"
+                });
+            }
+
             this.stopped = true;
             return;
         }

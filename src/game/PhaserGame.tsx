@@ -49,7 +49,6 @@ const PhaserGame = () => {
                 commandCnt: data.commandCnt
             });
             setShowPopup(true);
-            setExecuting(false);
 
             // unlock next level
             unlockNextLevel(levelInfo.id);
@@ -65,6 +64,7 @@ const PhaserGame = () => {
 
         EventManager.on('levelCompleted', levelCompleted);
         EventManager.on('levelFailed', levelFailed);
+        setExecuting(false);
 
         return () => {
             EventManager.remove('levelCompleted', levelCompleted);
@@ -121,7 +121,7 @@ const PhaserGame = () => {
         };
     }, []);
 
-    
+
 
     const handleRunCode = () => {
         saveCommandsUsed(levelInfo!.id, commandsUsed);
@@ -156,7 +156,6 @@ const PhaserGame = () => {
 
         setExecuting(false);
         mainSceneRef.current.reset();
-        setExecuting(false);
 
         // Add reset logic here
         // You might want to restart the scene
@@ -165,8 +164,6 @@ const PhaserGame = () => {
 
     useEffect(() => {
         registerResetFn(handleReset);
-        // setResetFn(handleReset.bind(this));
-        // console.log(handleReset);
     }, [])
 
     useEffect(() => {
