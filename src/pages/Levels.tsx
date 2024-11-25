@@ -5,7 +5,7 @@ import { LevelInfo } from "../types/level";
 import { RxReset } from "react-icons/rx";
 
 const Levels: React.FC = () => {
-    const { currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
+    const { setShowFirstTimePickPrompt, setShowReadyPrompt, currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
 
     useEffect(() => {
@@ -17,6 +17,10 @@ const Levels: React.FC = () => {
             setLevel?.(level.id);
 
             setLevelInfo(level);
+            if (level.id === 1) {
+                setShowReadyPrompt(true);
+                setShowFirstTimePickPrompt(true);
+            }
             setCurrentScene('GAME');
         }
     }

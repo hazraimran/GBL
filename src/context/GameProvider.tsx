@@ -18,7 +18,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     title: '',
     description: '',
     generatorFunction: '',
-    validationFunction: '',
+    outputFunction: '',
     commands: [],
     commandsUsed: [],
     constructionSlots: [],
@@ -43,6 +43,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [showFailurePrompt, setShowFailurePrompt] = useState<boolean>(false);
   const [failurePromptMessage, setFailurePromptMessage] = useState<string>('');
   const [showPickSlotPrompt, setShowPickSlotPrompt] = useState<boolean>(false);
+  const [showFirstTimePickPrompt, setShowFirstTimePickPrompt] = useState<boolean>(false);
 
   return (
     <GameContext.Provider value={{
@@ -77,7 +78,9 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       failurePromptMessage,
       setFailurePromptMessage,
       showPickSlotPrompt,
-      setShowPickSlotPrompt
+      setShowPickSlotPrompt,
+      showFirstTimePickPrompt,
+      setShowFirstTimePickPrompt
     }}>
       {children}
     </GameContext.Provider>

@@ -4,7 +4,6 @@ import { MainScene } from './MainScene';
 import BottomPanel from '../components/BottomPanel';
 import GameContext from '../context/GameContext';
 import { ErrorHandler } from '../ErrorHandler';
-import { useToast } from "../hooks/use-toast"
 import { LevelInfo } from '../types/level';
 import { saveCommandsUsed } from '../utils/storage';
 import EventManager from '../EventManager';
@@ -14,19 +13,12 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { setShowFailurePrompt, setFailurePromptMessage, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
-    // const { toast } = useToast();
+    const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
             setShowFailurePrompt(true);
             setFailurePromptMessage(error.message);
-            // toast({
-            //     title: "Error Occured",
-            //     description: error.message,
-            //     variant: error.level === 'ERROR' ? 'destructive' : 'default',
-            //     duration: 3000,
-            // });
         }
     }));
 
@@ -34,13 +26,13 @@ const PhaserGame = () => {
         if (!levelInfo) return {};
 
         const generatorFn = new Function('return ' + levelInfo.generatorFunction)();
-        const validationFn = new Function('return ' + levelInfo.validationFunction)();
+        const outputFn = new Function('return ' + levelInfo.outputFunction)();
         const constructionSlots = levelInfo.constructionSlots
         const currentLevel = levelInfo.id;
 
         return {
             generatorFn,
-            validationFn,
+            outputFn,
             constructionSlots,
             currentLevel
         };
@@ -127,6 +119,8 @@ const PhaserGame = () => {
         };
     }, []);
 
+    
+
     const handleRunCode = () => {
         saveCommandsUsed(levelInfo!.id, commandsUsed);
         if (!mainSceneRef.current) {
@@ -134,6 +128,10 @@ const PhaserGame = () => {
             return;
         }
         setExecuting(true);
+
+        if (levelInfo!.id === 1) {
+            setShowReadyPrompt(false);
+        }
 
         mainSceneRef.current.executeCommands(commandsUsed);
     };

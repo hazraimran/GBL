@@ -28,6 +28,16 @@ interface GameContextType {
     setReadyToPickSlot: (ready: boolean) => void;
     slotPicked: number | undefined;
     setSlotPicked: (slot: number | undefined) => void;
+    showReadyPrompt: boolean;
+    setShowReadyPrompt: (show: boolean) => void;
+    showFailurePrompt: boolean;
+    setShowFailurePrompt: (show: boolean) => void;
+    failurePromptMessage: string;
+    setFailurePromptMessage: (message: string) => void;
+    showPickSlotPrompt: boolean;
+    setShowPickSlotPrompt: (show: boolean) => void;
+    showFirstTimePickPrompt: boolean;
+    setShowFirstTimePickPrompt: (show: boolean) => void;
 }
 
 // Create the context with a default value (optional)
@@ -45,10 +55,10 @@ const GameContext = createContext<GameContextType>({
         title: '',
         description: '',
         generatorFunction: '',
-        validationFunction: '',
+        outputFunction: '',
         commands: [],
         commandsUsed: [],
-        constructionSlots: 0,
+        constructionSlots: [],
         expectedCommandCnt: 0,
         expectedExecuteCnt: 0,
         commandCountAchievement: null,
@@ -72,7 +82,17 @@ const GameContext = createContext<GameContextType>({
     readyToPickSlot: false,
     setReadyToPickSlot: () => { },
     slotPicked: undefined,
-    setSlotPicked: () => { }
+    setSlotPicked: () => { },
+    showReadyPrompt: false,
+    setShowReadyPrompt: () => { },
+    showFailurePrompt: false,
+    setShowFailurePrompt: () => { },
+    failurePromptMessage: '',
+    setFailurePromptMessage: () => { },
+    showPickSlotPrompt: false,
+    setShowPickSlotPrompt: () => { },
+    showFirstTimePickPrompt: false,
+    setShowFirstTimePickPrompt: () => { }
 });
 
 export default GameContext;

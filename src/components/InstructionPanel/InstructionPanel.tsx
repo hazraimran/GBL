@@ -37,7 +37,6 @@ const InstructionPanel: React.FC = () => {
     const handleWheel = (event: React.WheelEvent) => {
         // event.preventDefault();
         event.stopPropagation();
-        console.log("wheel", event.deltaY);
 
         if (instructionPanelRef.current && instructionPanelRef.current.clientHeight > window.innerHeight * 3 / 5) {
             settranslateY(prevtranslateY => prevtranslateY + event.deltaY / 10);

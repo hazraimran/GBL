@@ -12,15 +12,15 @@ interface FloatingMessageProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const FloatingMessage: React.FC<FloatingMessageProps> = ({
     text,
-    backgroundColor = '#f87171', // default red color
-    textColor = 'white',
+    backgroundColor = '#b55440', // default red color
+    textColor = 'black',
     animationDuration = 2,
     arrowOffset = 32, // default left-8 in pixels
     arrowDirection = 'down',
     ...rest
 }) => {
     return (
-        <div className="relative inline-block" {...rest}>
+        <div className="relative inline-block z-[100]" {...rest}>
             {/* Main message box */}
             <div
                 className="px-6 py-3 rounded-lg shadow-lg animate-float"

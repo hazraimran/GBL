@@ -172,7 +172,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     }
 
     return (
-        <div className="px-4 w-full">
+        <div className="px-4 w-full select-none">
             <JumpConnector connection={connection} />
 
             <div

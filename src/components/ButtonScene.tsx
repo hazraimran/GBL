@@ -6,29 +6,35 @@ const ButtonScene: React.FC = () => {
     const initPos = { x: 265, y: 265 };
 
     return <div className="w-full h-full"
-        onClick={() => {
-            setSlotPicked(undefined);
-            setReadyToPickSlot(false);
-        }}
     >
         {
-            readyToPickSlot && currentScene === 'GAME' && Array(levelInfo.constructionSlots).fill(0).map((_, idx) => {
-                return <button
-                    key={idx}
+            readyToPickSlot && currentScene === 'GAME' && Array(levelInfo.constructionSlots.length).fill(0).map((_, idx) => {
+                return <div key={idx}
+                    className="fixed"
                     style={{
-                        left: `${initPos.x + (idx % 3) * 90}px`,
-                        top: `${initPos.y + Math.floor(idx / 3) * 90}px`
-                    }}
-                    className={`fixed border-8 border-lime-600 w-[70px] h-[70px] animate-breath scale-110
+                        left: `${initPos.x + (idx % 3) * 100}px`,
+                        top: `${initPos.y + Math.floor(idx / 3) * 100}px`
+                    }}>
+
+                    <button
+                        className={`fixed border-8 border-lime-600 w-[70px] h-[70px] animate-breath scale-110
                     bg-transparent rounded-md text-black`}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setSlotPicked(idx);
-                        setReadyToPickSlot(false);
-                    }}
-                >
-                    {idx + 1}
-                </button>
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setSlotPicked(idx);
+                            setReadyToPickSlot(false);
+                        }}
+                    >
+                    </button>
+
+                    <div
+                        className="absolute text-white left-1/2 -translate-x-1/2 -translate-y-[50px] text-2xl font-bold animate-breath"
+                    >
+                        {idx + 1}
+                    </div>
+
+                </div>
+
             })
         }
     </div>
