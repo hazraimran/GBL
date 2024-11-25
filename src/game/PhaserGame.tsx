@@ -13,7 +13,8 @@ const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
+    const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn, resetFn,
+        commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -161,6 +162,16 @@ const PhaserGame = () => {
         // You might want to restart the scene
         gameInstanceRef.current?.scene.start('MainScene');
     };
+
+    useEffect(() => {
+        registerResetFn(handleReset);
+        // setResetFn(handleReset.bind(this));
+        // console.log(handleReset);
+    }, [])
+
+    useEffect(() => {
+        console.log(resetFn);
+    }, [resetFn])
 
     const handleDrag = (speed: number) => {
         mainSceneRef.current?.modifySpeed(speed + 0.5);

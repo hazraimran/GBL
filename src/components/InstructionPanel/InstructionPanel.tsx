@@ -6,9 +6,9 @@ import CommandList from './CommandList';
 import { Button } from '../ui/button';
 import ButtonConnector from './ButtonConnector';
 import Divider from './Divider';
-// import 
+
 const InstructionPanel: React.FC = () => {
-    const { levelInfo, setCommandsUsed } = useContext(GameContext);
+    const { levelInfo, setCommandsUsed, resetFn } = useContext(GameContext);
     const CommandListRef = useRef<HTMLDivElement>(null);
     const CodingAreaRef = useRef<HTMLDivElement>(null);
     const clearCommandsRef = useRef<() => void>();
@@ -63,7 +63,10 @@ const InstructionPanel: React.FC = () => {
 
             <Button
                 className=' bg-primary/10 hover:bg-primary/20 hover:text-red-600 '
-                onClick={() => clearCommandsRef.current?.()}
+                onClick={() => {
+                    clearCommandsRef.current?.();
+                    resetFn();
+                }}
             >
                 X
             </Button>

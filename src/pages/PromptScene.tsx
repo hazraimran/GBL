@@ -47,9 +47,9 @@ const PromptScene = () => {
 
     return (
         <div >
-            {showFirstTimePickPrompt && <Arrow />}
+            {/* {showFirstTimePickPrompt && <Arrow />} */}
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
-            {showFailurePrompt && <FloatingMessage className='fixed top-24 left-60' text={failurePromptMessage} arrowDirection='right' />}
+            {showFailurePrompt && <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' />}
             {showBottomPanel && showReadyPrompt && <FloatingMessage
                 backgroundColor='#7FA147'
                 text='run your program whenever you are ready'

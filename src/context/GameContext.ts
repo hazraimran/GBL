@@ -38,6 +38,8 @@ interface GameContextType {
     setShowPickSlotPrompt: (show: boolean) => void;
     showFirstTimePickPrompt: boolean;
     setShowFirstTimePickPrompt: (show: boolean) => void;
+    registerResetFn: (fn: () => void) => void,
+    resetFn: () => void
 }
 
 // Create the context with a default value (optional)
@@ -92,7 +94,13 @@ const GameContext = createContext<GameContextType>({
     showPickSlotPrompt: false,
     setShowPickSlotPrompt: () => { },
     showFirstTimePickPrompt: false,
-    setShowFirstTimePickPrompt: () => { }
+    setShowFirstTimePickPrompt: () => { },
+    registerResetFn: function (fn: () => void): {} {
+        throw new Error('Function not implemented.');
+    },
+    resetFn: function (): {} {
+        throw new Error('Function not implemented.');
+    }
 });
 
 export default GameContext;

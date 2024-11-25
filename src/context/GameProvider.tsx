@@ -1,5 +1,5 @@
 // src/context/GameProvider.tsx
-import React, { useState, ReactNode, useCallback } from 'react';
+import React, { useState, ReactNode, useRef, useCallback } from 'react';
 import GameContext from './GameContext';
 import { CurrentSceneType, LevelInfo } from '../types/level';
 import { CommandWithArgType } from '../types/game';
@@ -44,7 +44,17 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [failurePromptMessage, setFailurePromptMessage] = useState<string>('');
   const [showPickSlotPrompt, setShowPickSlotPrompt] = useState<boolean>(false);
   const [showFirstTimePickPrompt, setShowFirstTimePickPrompt] = useState<boolean>(false);
+  
+  const resetFnRef = useRef(() => {});
+  
+  const registerReset = useCallback((fn: () => void) => {
+    resetFnRef.current = fn;
+  }, []);
 
+  const reset = useCallback(() => {
+    resetFnRef.current();
+  }, []);
+  
   return (
     <GameContext.Provider value={{
       level,
@@ -80,7 +90,10 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       showPickSlotPrompt,
       setShowPickSlotPrompt,
       showFirstTimePickPrompt,
-      setShowFirstTimePickPrompt
+      setShowFirstTimePickPrompt,
+      registerResetFn: registerReset,
+      resetFn: reset
+
     }}>
       {children}
     </GameContext.Provider>
