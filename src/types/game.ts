@@ -15,9 +15,9 @@ export interface ConstructionSlot {
     stone: Stone | null;
 }
 
-export type generatorFn = (seed: number) => number[];
+export type generatorFn = (nextInt: (min: number, max: number) => number) => number[];
 
-export type outputFn = () => number[];
+export type outputFn = (nextInt: (min: number, max: number) => number) => number[];
 
 export type CommandType =
     'INPUT' | 'OUTPUT' | 'COPYFROM' | 'COPYTO' |

@@ -3,6 +3,7 @@ import { ErrorMessages, GameError, GameErrorCodes } from '../types/errors';
 import { ErrorHandler } from '../ErrorHandler';
 import EventManager from '../EventManager';
 import { ConstructtionSlotConfig } from '../types/level';
+import SeededRandom from '../utils/RandomSeedGenerator';
 
 interface PassedConfig {
     generatorFn: generatorFn;
@@ -64,6 +65,9 @@ export class MainScene extends Phaser.Scene {
     private curLine: number;
     private commandsToExecute: CommandWithArgType[] | null = null;
     private stopped: boolean = true;
+    private generator1: SeededRandom;
+    private generator2: SeededRandom;
+    private ans: number[];
 
     constructor() {
         super({ key: 'MainScene' });
@@ -75,6 +79,9 @@ export class MainScene extends Phaser.Scene {
 
         const date = new Date();
         this.RANDOM_SEED = Object.freeze(date.getTime());
+        this.generator1 = new SeededRandom(this.RANDOM_SEED);
+        this.generator2 = new SeededRandom(this.RANDOM_SEED);
+        this.ans = [];
 
         this.config = {
             stoneSize: {
@@ -174,6 +181,7 @@ export class MainScene extends Phaser.Scene {
         this.config.outputFn = data.sceneConfig.outputFn;
         this.config.constructionSlots = data.sceneConfig.constructionSlots;
         this.config.currentLevel = data.sceneConfig.currentLevel;
+        this.ans = this.config.outputFn(this.generator2.nextInt.bind(this.generator2));
 
         this.inputQueue = [];
         this.outputQueue = [];
@@ -194,7 +202,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }, generatorFn: generatorFn): void {
-        this.inputQueue = generatorFn(this.RANDOM_SEED);
+        this.inputQueue = this.config.generatorFn(this.generator1.nextInt.bind(this.generator1));
         console.log(generatorFn.toString());
         console.log(this.inputQueue);
         for (let i = 0; i < this.inputQueue.length; i++) {
@@ -285,27 +293,6 @@ export class MainScene extends Phaser.Scene {
                 stone,
             });
         })
-
-        // for (let i = 0; i < this.config.constructionSlots.length; i++) {
-        //     const initialPos = { x: 300, y: 300 };
-        //     const spacing = 90;
-
-        //     const slot: ConstructionSlot = {
-        //         rect: this.add.rectangle(
-        //             initialPos.x + ((i % 3) * spacing),
-        //             initialPos.y + (Math.floor(i / 3) * spacing),
-        //             this.config.stoneSize.width + 10,
-        //             this.config.stoneSize.height + 10,
-        //             0x666666,
-        //             0.8
-        //         ),
-        //         stone: null
-        //     };
-
-        //     slot.rect.setStrokeStyle(4, 0x000000);
-
-        //     this.constructionSlots.push(slot);
-        // }
     }
 
     private createWorker(): Worker {
@@ -507,7 +494,6 @@ export class MainScene extends Phaser.Scene {
             });
             this.stopped = true;
             return;
-            // throw new GameError('Failed to pick up from an empty slot!', GameErrorCodes.SLOT_EMPTY);
         }
 
         this.pickUpStone(slotStone.stone as Stone);
@@ -558,7 +544,7 @@ export class MainScene extends Phaser.Scene {
             // Drop stone animation
 
             const stone = this.removeStoneOnHand();
-            this.handleStoneToOutput(stone as Stone);
+            await this.handleStoneToOutput(stone as Stone);
             this.outputQueue.push(stone?.value as number);
             this.preValidateOutput();
 
@@ -574,7 +560,12 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private handleStoneToOutput(stone: Stone): void {
+    private async handleStoneToOutput(stone: Stone): Promise<void> {
+        for (let i = 0; i < this.outputStones.length; i++) {
+            const stone = this.outputStones[i];
+            console.log(stone);
+            await this.tweenStoneTo(stone, this.config.layout.outputArea.x, this.config.layout.outputArea.y + (i + 1) * this.config.layout.outputArea.spacing);
+        }
 
         stone.sprite.x = this.config.layout.outputArea.x;
         stone.sprite.y = this.config.layout.outputArea.y;
@@ -582,10 +573,11 @@ export class MainScene extends Phaser.Scene {
         stone.text.x = this.config.layout.outputArea.x;
         stone.text.y = this.config.layout.outputArea.y
 
-        this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin).then(() => {
-            stone.sprite.destroy();
-            stone.text.destroy();
-        });
+        this.outputStones.push(stone);
+        // this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin).then(() => {
+        //     stone.sprite.destroy();
+        //     stone.text.destroy();
+        // });
     }
 
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
@@ -672,14 +664,13 @@ export class MainScene extends Phaser.Scene {
     }
 
     private preValidateOutput(): void {
-        const expected = this.config.outputFn();
-        if (expected.length !== this.outputQueue.length) {
+        if (this.ans.length !== this.outputQueue.length) {
             return;
         }
 
         let isCorrect = true;
-        for (let i = 0; i < expected.length; i++) {
-            if (expected[i] !== this.outputQueue[i]) {
+        for (let i = 0; i < this.ans.length; i++) {
+            if (this.ans[i] !== this.outputQueue[i]) {
                 isCorrect = false;
                 break;
             }
@@ -696,21 +687,17 @@ export class MainScene extends Phaser.Scene {
     }
 
     private validateOutput(): void {
-        console.log(this.outputQueue);
-        const expected = this.config.outputFn();
-        console.log(expected);
-
-        if (expected.length !== this.outputQueue.length) {
+        if (this.ans.length !== this.outputQueue.length) {
             EventManager.emit('levelFailed', {
-                "message": "Not enough stones in the output area, expected " + expected.length + " but got " + this.outputQueue.length + "!"
+                "message": "Not enough stones in the output area, this.ans " + this.ans.length + " but got " + this.outputQueue.length + "!"
             });
             this.stopped = true;
             return;
         }
 
         let isCorrect = true;
-        for (let i = 0; i < expected.length; i++) {
-            if (expected[i] !== this.outputQueue[i]) {
+        for (let i = 0; i < this.ans.length; i++) {
+            if (this.ans[i] !== this.outputQueue[i]) {
                 isCorrect = false;
                 break;
             }
