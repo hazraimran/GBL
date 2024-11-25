@@ -3,7 +3,7 @@ import { CommandType, CommandWithArgType } from './game';
 export interface ConstructtionSlotConfig {
     x: number;
     y: number;
-    value?: string;
+    value?: number;
 }
 
 export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS';
@@ -13,7 +13,7 @@ export interface LevelInfo {
     title: string;
     description: string;
     generatorFunction: string;
-    validationFunction: string;
+    outputFunction: string;
     commands: CommandType[];
     commandsUsed: CommandWithArgType[];
     constructionSlots: ConstructtionSlotConfig[];
