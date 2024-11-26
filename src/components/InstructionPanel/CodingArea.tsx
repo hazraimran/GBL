@@ -24,7 +24,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         const jumpConnections: Array<{ start: HTMLElement; end: HTMLElement }> = [];
 
         commandsUsed?.forEach((command, idx) => {
-            if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
+            if (command.command === 'JUMP' || command.command === 'JUMP = 0' || command.command === 'JUMP < 0') {
                 const jumpElement = commandRefs.current[idx];
                 const extElement = commandRefs.current[commandsUsed.indexOf(command.arg as CommandWithArgType)];
                 if (jumpElement && extElement) {
@@ -116,7 +116,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 commandRef.current = newCommand;
                 newCommands.splice(to, 0, newCommand);
                 setCommandsUsed(newCommands);
-            } else if (commandWithArg.command === 'JUMP' || commandWithArg.command === 'JUMPZ' || commandWithArg.command === 'JUMPN') {
+            } else if (commandWithArg.command === 'JUMP' || commandWithArg.command === 'JUMP = 0' || commandWithArg.command === 'JUMP < 0') {
                 const newCommands = [...(commandsUsed ?? [])];
 
                 const jump: CommandWithArgType = {
@@ -153,7 +153,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
     const deleteCommand = (idx: number) => {
         const newCommands = [...(commandsUsed ?? [])];
-        if (newCommands[idx].command === 'JUMP' || newCommands[idx].command === 'JUMPZ' || newCommands[idx].command === 'JUMPN') {
+        if (newCommands[idx].command === 'JUMP' || newCommands[idx].command === 'JUMP = 0' || newCommands[idx].command === 'JUMP < 0') {
             let ext = newCommands[idx].arg as CommandWithArgType;
             let pos = commandsUsed.indexOf(ext);
             if (pos > idx) {

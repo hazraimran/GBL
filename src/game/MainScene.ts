@@ -310,7 +310,7 @@ export class MainScene extends Phaser.Scene {
         let processedCommands = structuredClone(commands);
         for (let i = 0; i < commands.length; i++) {
             const command = commands[i];
-            if (command.command === 'JUMP' || command.command === 'JUMPZ' || command.command === 'JUMPN') {
+            if (command.command === 'JUMP' || command.command === 'JUMP = 0' || command.command === 'JUMP < 0') {
                 const ext = command.arg as CommandWithArgType;
                 const pos = commands.indexOf(ext);
                 processedCommands[i].arg = pos;
@@ -337,6 +337,7 @@ export class MainScene extends Phaser.Scene {
         console.log('Executing commands:', commandsWithArg);
         const jumpto = (line: number) => {
             this.curLine = line;
+            jumpCnt++;
         }
         this.stopped = false;
         let jumpCnt = 0;
@@ -367,14 +368,13 @@ export class MainScene extends Phaser.Scene {
                     await this.handleSub(commandWithArg.arg as number);
                     break;
                 case 'JUMP':
-                    jumpCnt++;
                     await this.handleJump(commandWithArg.arg as number, jumpto);
                     break;
-                case 'JUMPZ':
-                    jumpCnt++;
+                case 'JUMP = 0':
+                    await this.handleJumpZ(commandWithArg.arg as number, jumpto);
                     break;
-                case 'JUMPN':
-                    jumpCnt++;
+                case 'JUMP < 0':
+                    await this.handleJumpN(commandWithArg.arg as number, jumpto);
                     break;
                 case '':
                     break;
@@ -445,6 +445,37 @@ export class MainScene extends Phaser.Scene {
     private async handleJump(arg: number, jumpto: (line: number) => void): Promise<void> {
         console.log('Jumping', arg);
         jumpto(arg);
+    }
+
+    private async handleJumpZ(arg: number, jumpto: (line: number) => void): Promise<void> {
+        console.log('Jumping = 0', arg);
+        if (!this.worker?.stoneCarried) {
+            EventManager.emit('levelFailed', {
+                "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_JUMP_ZERO]
+            });
+            this.stopped = true;
+            return;
+        }
+
+        if (this.worker.stoneCarried.value === 0) {
+            jumpto(arg);
+        }
+    }
+
+    private async handleJumpN(arg: number, jumpto: (line: number) => void): Promise<void> {
+        console.log('Jumping < 0', arg);
+
+        if (!this.worker?.stoneCarried) {
+            EventManager.emit('levelFailed', {
+                "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_JUMP_NEG]
+            });
+            this.stopped = true;
+            return;
+        }
+
+        if (this.worker.stoneCarried.value < 0) {
+            jumpto(arg);
+        }
     }
 
     private removeStoneOnHand(): Stone | undefined {
