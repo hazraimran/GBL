@@ -6,7 +6,7 @@ export interface Stone {
 }
 
 export interface Worker {
-    sprite: Phaser.GameObjects.Rectangle;
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     stoneCarried?: Stone;
 }
 

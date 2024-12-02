@@ -23,8 +23,6 @@ interface GameSceneConfig {
     workerConfig: {
         x: number;
         y: number;
-        width: number;
-        height: number;
     };
     layout: {
         inputArea: {
@@ -90,9 +88,7 @@ export class MainScene extends Phaser.Scene {
             },
             workerConfig: {
                 x: 200,
-                y: 300,
-                width: 30,
-                height: 30
+                y: 300
             },
             constructionSlots: [],
             generatorFn: () => [1, 2, 3],
@@ -121,6 +117,19 @@ export class MainScene extends Phaser.Scene {
             speed: 1,
             currentLevel: null
         };
+    }
+
+    preload(): void {
+        this.load.spritesheet('worker', 'src/assets/animation/character/walk_animation.png', {
+            frameWidth: 3608 / 4,
+            frameHeight: 1313
+        });
+
+        this.load.image('character', 'src/assets/animation/character/character.jpg');
+
+        this.load.on('loaderror', (file: any) => {
+            console.error(`Failed to load: ${file.key}`);
+        });
     }
 
     private resetGameState(): void {
@@ -293,12 +302,21 @@ export class MainScene extends Phaser.Scene {
     }
 
     private createWorker(): Worker {
-        const { x, y, width, height } = this.config.workerConfig;
-        const workerRect = this.add.rectangle(x, y, width, height, 0x0000ff);
-        workerRect.setStrokeStyle(2, 0x333333);
+        const { x, y } = this.config.workerConfig;
+
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('worker', { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1
+        })
+        
+        const sprite = this.physics.add.sprite(x, y+200, 'worker', 0);
+
+        sprite.setScale(0.1);
 
         return {
-            sprite: workerRect,
+            sprite: sprite,
         };
     }
 
@@ -717,49 +735,59 @@ export class MainScene extends Phaser.Scene {
         stone.text.y = this.config.layout.outputArea.y
 
     }
-
+    
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
         return new Promise((resolve) => {
             if (!this.worker) return;
 
+            const dx = x - this.worker.sprite.x;
+            const dy = y - this.worker.sprite.y;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                this.worker.sprite.setFlipX(dx < 0);
+            }
+
+            this.worker.sprite.play('walk', true);
+
             const distance = Phaser.Math.Distance.Between(
                 this.worker.sprite.x,
                 this.worker.sprite.y,
-                x,
-                y
+                x, y
             );
 
             const baseSpeed = 4;
             const duration = (distance * baseSpeed) / this.config.speed;
 
+            // adjust frame rate based on distance, not working for now
+            const frameRate = Math.max(8, Math.min(16, distance / duration * 4));
+            this.worker.sprite.anims.timeScale = frameRate / 8;
+
             this.tweens.add({
                 targets: this.worker.sprite,
-                x: x,
-                y: y,
-                duration: duration,
-                ease: 'Power2',
-                onComplete: () => resolve()
+                x, y,
+                duration,
+                ease: 'Linear',
+                onComplete: () => {
+                    this.worker?.sprite.stop();
+                    resolve();
+                }
             });
+
             if (this.worker.stoneCarried) {
                 this.tweens.add({
-                    targets: this.worker.stoneCarried.sprite,
-                    x: x,
-                    y: y,
-                    duration: duration,
-                    ease: 'Power2'
-                });
-                this.tweens.add({
-                    targets: this.worker.stoneCarried.text,
-                    x: x,
-                    y: y,
-                    duration: duration,
-                    ease: 'Power2'
+                    targets: [
+                        this.worker.stoneCarried.sprite,
+                        this.worker.stoneCarried.text
+                    ],
+                    x, y,
+                    duration,
+                    ease: 'Linear'
                 });
             }
         });
     }
 
-    private async tweenStoneTo(stone: Stone, x: number, y: number, baseSpeed: number = 2, ease: string = 'Power2'): Promise<void> {
+    private async tweenStoneTo(stone: Stone, x: number, y: number, baseSpeed: number = 2, ease: string = 'Linear'): Promise<void> {
         return new Promise((resolve) => {
             if (!stone) return;
 
