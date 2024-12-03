@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
-import { getLevelsInfo } from "../utils/storage";
 import { LevelInfo } from "../types/level";
 import { RxReset } from "react-icons/rx";
+import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 
 const Levels: React.FC = () => {
     const { setShowFirstTimePickPrompt, setShowReadyPrompt, currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
+    const { getLevelsInfo } = useGameStorage();
 
     useEffect(() => {
         setLevelsInfo(getLevelsInfo());

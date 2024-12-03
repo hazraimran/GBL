@@ -1,7 +1,7 @@
 // utils/progressService.ts
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase/setup';
-import { UserProgress, LevelProgress } from '../types/user';
+import { db } from '../../api/firebase';
+import { UserProgress, LevelProgress } from '../../types/user';
 
 // Service class for handling Firestore operations
 export class ProgressService {

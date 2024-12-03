@@ -1,19 +1,20 @@
 // hooks/useGameProgress.ts
 import { useState, useEffect } from 'react';
-import { getOrCreateUID } from '../utils/storage';
 import { LevelProgress, UserProgress } from '../types/user';
 import CircularJSON from 'circular-json';
+import { useGameStorage } from './useStorage/useGameStorage';
 
 export const useGameProgress = () => {
     // Track loading state and progress data
     const [progress, setProgress] = useState<UserProgress | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const { uid } = useGameStorage();
 
     useEffect(() => {
         const initializeProgress = async () => {
             try {
                 setIsLoading(true);
-                const uid = await getOrCreateUID();
+                // const uid = await getOrCreateUID();
                 const storedProgress = localStorage.getItem('game_progress');
 
                 if (storedProgress) {

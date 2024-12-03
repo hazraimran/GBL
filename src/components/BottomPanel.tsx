@@ -1,9 +1,8 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
-import { GoMute, GoUnmute } from "react-icons/go";
 import { RxReset } from "react-icons/rx";
 import { Play, MoveRight, Square, Gauge, Lock } from 'lucide-react';
 import GameContext from '../context/GameContext';
-import { saveCommandsUsed } from '../utils/storage';
+import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -22,7 +21,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     const [progress, setProgress] = useState(50);
     const progressRef = useRef<HTMLDivElement>(null);
     const { showFailurePrompt, showBottomPanel, setCurrentScene, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
-
+    const { saveCommandsUsed } = useGameStorage();
     const [isShaking, setIsShaking] = useState(false);
     // , playHint, hintMessage
 

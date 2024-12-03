@@ -1,16 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
-import { getOrCreateUID } from "../utils/storage";
+import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 
 const Landing: React.FC = () => {
     const { currentScene, setCurrentScene } = useContext(GameContext);
     const [showPickCharacter, setshowPickCharacter] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
-
-    useEffect(() => {
-        getOrCreateUID();
-    }, []);
-
+    useGameStorage();
+    
     const handleClickCharacter = (id: number) => {
         setshowPickCharacter(false);
         setShowModal(false);

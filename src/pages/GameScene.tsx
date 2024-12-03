@@ -4,9 +4,40 @@ import GameContext from '../context/GameContext';
 import PhaserGame from '../game/PhaserGame';
 import Popup from '../components/Popup';
 import PromptScene from './PromptScene';
+import gameTimer from '../utils/Timer';
 
 const GameScene: React.FC = () => {
-    const { currentScene, setSlotPicked, setReadyToPickSlot, readyToPickSlot } = useContext(GameContext);
+    const { currentScene, setSlotPicked, setReadyToPickSlot, readyToPickSlot, levelInfo } = useContext(GameContext);
+
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            gameTimer.pauseAndSave();
+        } else {
+            gameTimer.resume();
+        }
+    }
+
+    const handleBeforeUnload = () => {
+        gameTimer.pauseAndSave();
+    }
+
+    useEffect(() => {
+        if (currentScene === 'GAME') {
+            console.log("GameScene: GAME");
+            gameTimer.setLevel(levelInfo.id);
+            gameTimer.start();
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        } else {
+            gameTimer.pauseAndSave();
+        }
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [currentScene]);
 
     return currentScene === 'GAME' && (
         <div className={`fixed bg-cover bg-center bg-no-repeat h-[100vh] w-[100vw]`}

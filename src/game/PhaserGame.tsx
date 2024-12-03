@@ -5,9 +5,8 @@ import BottomPanel from '../components/BottomPanel';
 import GameContext from '../context/GameContext';
 import { ErrorHandler } from '../ErrorHandler';
 import { LevelInfo } from '../types/level';
-import { saveCommandsUsed } from '../utils/storage';
 import EventManager from '../EventManager';
-import { unlockNextLevel } from '../utils/storage';
+import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
@@ -15,6 +14,7 @@ const PhaserGame = () => {
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
     const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn, resetFn,
         commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
+    const { saveCommandsUsed, unlockNextLevel } = useGameStorage();
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -40,6 +40,8 @@ const PhaserGame = () => {
     }
 
     useEffect(() => {
+        
+
         const levelCompleted = (data: {
             executeCnt: number;
             commandCnt: number;
