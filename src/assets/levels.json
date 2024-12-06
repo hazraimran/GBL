@@ -10,8 +10,10 @@
     "expectedCommandCnt": 4,
     "expectedExecuteCnt": 4,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 2,
     "title": "Busy Supply Chamber",
@@ -24,8 +26,10 @@
     "expectedCommandCnt": 4,
     "expectedExecuteCnt": 24,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 3,
     "title": "Replica Slate",
@@ -50,8 +54,10 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 4,
     "title": "Scrambler Handler",
@@ -73,8 +79,10 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 5,
     "title": "Replica Slate",
@@ -96,8 +104,10 @@
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 6,
     "title": "Tripler Room",
@@ -119,8 +129,10 @@
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 7,
     "title": "Octoplier Suite",
@@ -142,8 +154,10 @@
     "expectedCommandCnt": 10,
     "expectedExecuteCnt": 29,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 8,
     "title": "Zero Exterminator",
@@ -165,8 +179,10 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 9,
     "title": "Zero Preservation",
@@ -188,8 +204,10 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 10,
     "title": "Sub Hallway",
@@ -211,8 +229,10 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }, {
     "id": 11,
     "title": "Equalization Room",
@@ -225,6 +245,8 @@
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 40,
     "commandCountAchievement": null,
+    "executeCnt": -1,
     "executeCountAchievement": null,
-    "isLocked": false
+    "isLocked": false,
+    "timeSpent": 0
 }]
