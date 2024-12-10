@@ -40,6 +40,18 @@ interface GameContextType {
     setShowFirstTimePickPrompt: (show: boolean) => void;
     registerResetFn: (fn: () => void) => void,
     resetFn: () => void
+    errorCnt: number;
+    setErrorCnt: (errorCnt: number) => void;
+    showOpenningInstruction: boolean;
+    setShowOpenningInstruction: (show: boolean) => void;
+    openningInstruction: string[];
+    setOpenningInstruction: (instructions: string[]) => void;
+    showInstructionPanel: boolean;
+    setShowInstructionPanel: (show: boolean) => void;
+    showPromptModal: boolean;
+    setShowPromptModal: (show: boolean) => void;
+    showInfo: boolean;
+    setShowInfo: (show: boolean) => void;
 }
 
 // Create the context with a default value (optional)
@@ -63,9 +75,13 @@ const GameContext = createContext<GameContextType>({
         constructionSlots: [],
         expectedCommandCnt: 0,
         expectedExecuteCnt: 0,
+        executeCnt: 0,
         commandCountAchievement: null,
         executeCountAchievement: null,
-        isLocked: false
+        isLocked: false,
+        timeSpent: 0,
+        timeAccessed: 0,
+        openningInstruction: []
     },
     setLevelInfo: () => { },
     commandsUsed: [],
@@ -100,7 +116,19 @@ const GameContext = createContext<GameContextType>({
     },
     resetFn: function (): {} {
         throw new Error('Function not implemented.');
-    }
+    },
+    errorCnt: 0,
+    setErrorCnt: () => { },
+    showOpenningInstruction: false,
+    setShowOpenningInstruction: () => { },
+    openningInstruction: [],
+    setOpenningInstruction: () => { },
+    showInstructionPanel: false,
+    setShowInstructionPanel: () => { },
+    showPromptModal: false,
+    setShowPromptModal: () => { },
+    showInfo: false,
+    setShowInfo: () => { },
 });
 
 export default GameContext;

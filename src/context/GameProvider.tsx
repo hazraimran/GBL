@@ -24,9 +24,13 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     constructionSlots: [],
     expectedCommandCnt: 0,
     expectedExecuteCnt: 0,
+    executeCnt: 0,
     commandCountAchievement: null,
     executeCountAchievement: null,
-    isLocked: false
+    isLocked: false,
+    timeSpent: 0,
+    timeAccessed: 0,
+    openningInstruction: []
   });
   const [showBottomPanel, setShowBottomPanel] = useState<boolean>(true);
   const [commandsUsed, setCommandsUsed] = useState<CommandWithArgType[]>([]);
@@ -44,9 +48,14 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [failurePromptMessage, setFailurePromptMessage] = useState<string>('');
   const [showPickSlotPrompt, setShowPickSlotPrompt] = useState<boolean>(false);
   const [showFirstTimePickPrompt, setShowFirstTimePickPrompt] = useState<boolean>(false);
-  
-  const resetFnRef = useRef(() => {});
-  
+  const [errorCnt, setErrorCnt] = useState<number>(0);
+  const [showOpenningInstruction, setShowOpenningInstruction] = useState<boolean>(false);
+  const [openningInstruction, setOpenningInstruction] = useState<string[]>([]);
+  const [showInstructionPanel, setShowInstructionPanel] = useState<boolean>(false);
+  const [showPromptModal, setShowPromptModal] = useState<boolean>(false);
+  const [showInfo, setShowInfo] = useState<boolean>(false);
+  const resetFnRef = useRef(() => { });
+
   const registerReset = useCallback((fn: () => void) => {
     resetFnRef.current = fn;
   }, []);
@@ -54,7 +63,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const reset = useCallback(() => {
     resetFnRef.current();
   }, []);
-  
+
   return (
     <GameContext.Provider value={{
       level,
@@ -92,8 +101,19 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       showFirstTimePickPrompt,
       setShowFirstTimePickPrompt,
       registerResetFn: registerReset,
-      resetFn: reset
-
+      resetFn: reset,
+      errorCnt,
+      setErrorCnt,
+      showOpenningInstruction,
+      setShowOpenningInstruction,
+      openningInstruction,
+      setOpenningInstruction,
+      showInstructionPanel,
+      setShowInstructionPanel,
+      showPromptModal,
+      setShowPromptModal,
+      showInfo,
+      setShowInfo
     }}>
       {children}
     </GameContext.Provider>

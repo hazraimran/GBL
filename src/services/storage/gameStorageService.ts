@@ -65,6 +65,14 @@ class GameStorageService {
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
     }
 
+    addAccessedTime(levelId: number): void {
+        const levels = this.getLevelsInfo();
+        levels[levelId].timeAccessed += 1;
+        console.log('timeAccessed', levels[levelId].timeAccessed);
+        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        console.log('levels', levels);
+    }
+
     unlockNextLevel(currentLevel: number): void {
         const levels = this.getLevelsInfo();
         const nextLevel = currentLevel;
@@ -83,6 +91,21 @@ class GameStorageService {
         console.log('timeSpent', timeSpent);
         levels[levelId - 1].timeSpent += timeSpent;
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+    }
+
+    extractUploadReport(errorCnt: number): any {
+        const levels = this.getLevelsInfo();
+        const report = levels.map((level: LevelInfo) => {
+            console.log('commandsUsed', CircularJSON.stringify(level.commandsUsed));
+            return {
+                id: level.id,
+                commandsUsed: CircularJSON.stringify(level.commandsUsed),
+                executeCnt: level.executeCnt,
+                errorCnt: errorCnt,
+                timeSpent: level.timeSpent,
+            };
+        });
+        return report;
     }
 }
 

@@ -5,9 +5,10 @@ import { RxReset } from "react-icons/rx";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 
 const Levels: React.FC = () => {
-    const { setShowFirstTimePickPrompt, setShowReadyPrompt, currentScene, setCurrentScene, setLevel, setLevelInfo } = useContext(GameContext);
+    const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction,
+        currentScene, setCurrentScene, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
-    const { getLevelsInfo } = useGameStorage();
+    const { getLevelsInfo, addAccessedTime } = useGameStorage();
 
     useEffect(() => {
         setLevelsInfo(getLevelsInfo());
@@ -17,11 +18,26 @@ const Levels: React.FC = () => {
         if (!level.isLocked) {
             setLevel?.(level.id);
 
+            addAccessedTime(level.id - 1);
             setLevelInfo(level);
+
+            // TODO: add condtional rendering
+            setOpenningInstruction(level.openningInstruction);
+            setShowOpenningInstruction(false);
+            setShowInstructionPanel(true);
+            if (level.timeAccessed === 0) {
+                setShowOpenningInstruction(true);
+                setShowInstructionPanel(false);
+            }
+            
+            setShowBottomPanel(false);
+            setShowFirstTimePickPrompt(false);
+
             if (level.id === 1) {
                 setShowReadyPrompt(true);
                 setShowFirstTimePickPrompt(true);
             }
+
             setCurrentScene('GAME');
         }
     }

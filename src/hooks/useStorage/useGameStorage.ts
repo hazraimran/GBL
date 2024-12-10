@@ -22,11 +22,16 @@ export const useGameStorage = () => {
         getLevelInfo: (levelId: number) => gameStorage.getLevelInfo(levelId),
         setLevelInfo: (levelId: number, info: LevelInfo) =>
             gameStorage.setLevelInfo(levelId, info),
+        addAccessedTime(levelId: number): void {
+            gameStorage.addAccessedTime(levelId);
+        },
         unlockNextLevel: (currentLevel: number) =>
             gameStorage.unlockNextLevel(currentLevel),
         saveCommandsUsed: (levelId: number, commands: CommandWithArgType[]) =>
             gameStorage.saveCommandsUsed(levelId, commands),
         updateTimeSpent: (levelId: number, timeSpent: number) =>
             gameStorage.updateTimeSpent(levelId, timeSpent),
+        extractUploadReport: (errorCnt: number) =>
+            gameStorage.extractUploadReport(errorCnt),
     };
 };

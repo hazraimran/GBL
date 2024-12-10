@@ -19,7 +19,11 @@ export interface LevelInfo {
     constructionSlots: ConstructtionSlotConfig[];
     expectedCommandCnt: number,
     expectedExecuteCnt: number,
+    executeCnt: number,
     commandCountAchievement: null,
     executeCountAchievement: null,
     isLocked: boolean;
+    timeSpent: number;
+    timeAccessed: number;
+    openningInstruction: string[];
 };

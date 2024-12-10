@@ -7,14 +7,15 @@ import { ErrorHandler } from '../ErrorHandler';
 import { LevelInfo } from '../types/level';
 import EventManager from '../EventManager';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
+import { UploadRecordService } from '../services/firestore/uploadRecordService';
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
     const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn, resetFn,
-        commandsUsed, setGameStatus, setShowPopup, setExecuting } = useContext(GameContext);
-    const { saveCommandsUsed, unlockNextLevel } = useGameStorage();
+        commandsUsed, setGameStatus, setShowPopup, setExecuting, setErrorCnt, errorCnt } = useContext(GameContext);
+    const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -40,7 +41,7 @@ const PhaserGame = () => {
     }
 
     useEffect(() => {
-        
+        setErrorCnt(0);
 
         const levelCompleted = (data: {
             executeCnt: number;
@@ -52,6 +53,11 @@ const PhaserGame = () => {
             });
             setShowPopup(true);
 
+            const report = extractUploadReport(errorCnt);
+            console.log('Upload report:', report);
+            console.log(typeof report[0].commandsUsed);
+            UploadRecordService.uploadRecord(report, uid);
+
             // unlock next level
             unlockNextLevel(levelInfo.id);
         }
@@ -60,6 +66,7 @@ const PhaserGame = () => {
             message: string;
         }) => {
             console.log('Level failed:', data);
+            setErrorCnt(errorCnt + 1);
             setShowFailurePrompt(true);
             setFailurePromptMessage(data.message);
         }
@@ -70,8 +77,9 @@ const PhaserGame = () => {
 
         return () => {
             EventManager.remove('levelCompleted', levelCompleted);
+            EventManager.remove('levelFailed', levelFailed);
         }
-    }, []);
+    }, [uid]);
 
     useEffect(() => {
         if (!gameRef.current) return;
