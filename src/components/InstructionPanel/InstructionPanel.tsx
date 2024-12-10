@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import GameContext from '../../context/GameContext';
 import InfoArea from './InfoArea';
@@ -8,7 +9,7 @@ import ButtonConnector from './ButtonConnector';
 import Divider from './Divider';
 
 const InstructionPanel: React.FC = () => {
-    const { levelInfo, setCommandsUsed, resetFn } = useContext(GameContext);
+    const { levelInfo, setCommandsUsed, resetFn, showInstructionPanel, showFirstTimePickPrompt } = useContext(GameContext);
     const CommandListRef = useRef<HTMLDivElement>(null);
     const CodingAreaRef = useRef<HTMLDivElement>(null);
     const clearCommandsRef = useRef<() => void>();
@@ -43,7 +44,7 @@ const InstructionPanel: React.FC = () => {
         }
     };
 
-    return levelInfo && (
+    return levelInfo && showInstructionPanel && (
         <aside
             className="bg-contain bg-center bg-no-repeat flex flex-col items-center text-white w-[25rem]
              p-4 absolute right-0 top-1/2 z-10"
@@ -55,6 +56,7 @@ const InstructionPanel: React.FC = () => {
             onWheel={handleWheel}>
 
             <InfoArea title={levelInfo.title} description={levelInfo.description} />
+            {showFirstTimePickPrompt && <img src='/arrow.png' className='absolute w-[3rem] top-[20rem] left-[8.5rem] rotate-[35deg] animate-arrowWiggle' />}
 
             <Divider />
 

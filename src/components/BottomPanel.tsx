@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import { RxReset } from "react-icons/rx";
-import { Play, MoveRight, Square, Gauge, Lock } from 'lucide-react';
+import { Play, MoveRight, Square, Gauge, Lock, MessageSquareWarning } from 'lucide-react';
 import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
@@ -20,10 +20,10 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
     // const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(50);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showFailurePrompt, showBottomPanel, setCurrentScene, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
+    const { showFailurePrompt, showBottomPanel, setCurrentScene, setShowInfo,
+        levelInfo, commandsUsed, exectuting } = useContext(GameContext);
     const { saveCommandsUsed } = useGameStorage();
     const [isShaking, setIsShaking] = useState(false);
-    // , playHint, hintMessage
 
     useEffect(() => {
         if (showFailurePrompt) {
@@ -97,6 +97,20 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 }}
             >
                 <RxReset className="w-[7rem] h-[4rem] text-custom-bg-text" />
+            </button>
+
+            <button
+                className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
+                onClick={() => {
+                    console.log('set show hint');
+                    setShowInfo(true);
+                }}
+            >
+                <span style={{
+                    fontSize: '3rem',
+                    fontFamily: 'monospace',
+                    // fontWeight: 'bold',
+                }} className=" w-[7rem] h-[4rem] text-custom-bg-text">i</span>
             </button>
 
             {showBottomPanel && (
