@@ -18,13 +18,15 @@ const PromptScene = () => {
     const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt } = useContext(GameContext);
 
     return (
-        <div >
+        <>
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
-            {showFailurePrompt && <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' />}
+            {showFailurePrompt && <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true}/>}
             {showBottomPanel && showReadyPrompt && <FloatingMessage
                 backgroundColor='#7FA147'
                 text='run your program whenever you are ready'
-                className='fixed bottom-28 left-1/2 -translate-x-[9rem] z-[100] rotate-[-5deg]' />}
+                className='fixed bottom-28 left-1/2 -translate-x-[9rem] z-[100] rotate-[-5deg]' 
+                hint={true}
+                />}
             {showBottomPanel && showFailurePrompt && <FloatingMessage text='stop and reset' className='fixed bottom-28 left-1/2 -translate-x-[13rem] -rotate-[5deg]' />}
             {/* <OpeningInstruction show={}/> */}
 
@@ -38,9 +40,9 @@ const PromptScene = () => {
                 "expectOutput": [1, 2, 3, 4]
             }}
                 currentCode={["INPUT", "OUTPUT"]}
-                apiKey='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' />
-            <></>
-        </div >
+                apiKeys={{anthropic: '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',
+                openai: ''}} />
+        </>
     )
 }
 

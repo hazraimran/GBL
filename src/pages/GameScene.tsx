@@ -49,10 +49,10 @@ const GameScene: React.FC = () => {
                 setReadyToPickSlot(false);
             }}
             style={{ backgroundImage: `url('/game_bg.png')` }}>
-            <PromptScene />
             <PhaserGame />
             <InstructionPanel />
             <Popup />
+            <PromptScene />
         </div>
     )
 }

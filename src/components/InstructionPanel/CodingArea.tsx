@@ -13,7 +13,8 @@ interface CodingAreaProps {
 
 const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     const { setClearCommandsRef } = props;
-    const { setReadyToPickSlot, slotPicked, commandsUsed, setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
+    const { levelInfo, setReadyToPickSlot, slotPicked, commandsUsed, setShowFirstTimePickPrompt,
+        setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
     const [waitingForResult, setWaitingForResult] = useState(false);
     const [isOver, setIsOver] = useState(false);
     const commandRefs = useRef<(HTMLElement | null)[]>([]);
@@ -35,7 +36,14 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 }
             }
         });
+        
         setConnection(jumpConnections);
+        if (commandsUsed.length !== 0 && levelInfo.id === 1) {
+            setShowFirstTimePickPrompt(false);
+        }
+        if (commandsUsed.length === 0 && levelInfo.id === 1) {
+            setShowFirstTimePickPrompt(true);
+        }
     }, [commandsUsed]);
 
     useEffect(() => {

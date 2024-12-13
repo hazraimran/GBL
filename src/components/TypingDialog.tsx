@@ -36,7 +36,6 @@ const TypingDialog = () => {
             return;
 
         } else {
-            console.log('there');
             // display all texts
             setCurrentIndex(openningInstruction[currentTextIndex].length);
             setDisplayedText(openningInstruction[currentTextIndex]);
@@ -44,7 +43,7 @@ const TypingDialog = () => {
     };
 
     return showOpenningInstruction && <div
-        className={`cursor-pointer hover:shadow-lg transition-shadow select-none fixed top-[22rem] left-1/2 -translate-x-[20rem] z-[102]`}
+        className={`cursor-pointer hover:shadow-lg transition-shadow select-none z-[102]`}
         onClick={handleClick}
     >
         <div className={`border-solid relative flex flex-col p-4 bg-gray-300 rounded-lg min-h-[2rem] ${currentTextIndex % 2 === 1 ? ' rotate-[-5deg]' : ' rotate-[5deg]'}

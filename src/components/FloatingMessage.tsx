@@ -8,6 +8,8 @@ interface FloatingMessageProps extends React.HTMLAttributes<HTMLDivElement> {
     animationDuration?: number;
     arrowOffset?: number;
     arrowDirection?: 'down' | 'right';
+    hint?: boolean
+    withCharacter?: boolean
 }
 
 const FloatingMessage: React.FC<FloatingMessageProps> = ({
@@ -17,6 +19,8 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
     animationDuration = 2,
     arrowOffset = 32, // default left-8 in pixels
     arrowDirection = 'down',
+    hint = false,
+    withCharacter = false,
     ...rest
 }) => {
     return (
@@ -27,11 +31,15 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
                 style={{
                     backgroundColor,
                     color: textColor,
-                    // animation: `float ${animationDuration}s ease-in-out infinite`
                 }}
             >
                 <p className="text-lg font-medium">{text}</p>
+                {hint && <p className="mt-4 cursor-pointer flex gap-4 items-center">
+                    Need more hints?<div className=' animate-float border-t-custom-green w-0 h-0 border-t-[12px] border-l-8 border-r-8 border-l-transparent border-r-transparent'></div>
+                </p>}
             </div>
+
+            {withCharacter}
 
             {/* Arrow */}
             {

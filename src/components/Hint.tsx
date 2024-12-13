@@ -55,30 +55,20 @@ export const MODEL_OPTIONS: ModelOption[] = [
 ];
 
 // src/services/HintService.ts
-// import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 // import type { ModelConfig } from '../types';
 
 export class HintService {
     private anthropicClient?: Anthropic;
-    // private openaiClient?: OpenAI;
 
     constructor(private config: ModelConfig) {
-        // if (config.provider === 'anthropic') {
         this.anthropicClient = new Anthropic({
             apiKey: config.apiKey,
             dangerouslyAllowBrowser: true
         });
-        // } else {
-        //     this.openaiClient = new OpenAI({
-        //         apiKey: config.apiKey,
-        //         dangerouslyAllowBrowser: true
-        //     });
-        // }
     }
 
     async getHint(prompt: string, maxTokens: number = 1000): Promise<string> {
-        // if (this.config.provider === 'anthropic' && this.anthropicClient) {
         const completion = await this.anthropicClient.messages.create({
             model: this.config.model,
             max_tokens: maxTokens,
@@ -91,21 +81,6 @@ export class HintService {
             ]
         });
         return completion.content[0].text;
-        // } else if (this.config.provider === 'openai' && this.openaiClient) {
-        //     const completion = await this.openaiClient.chat.completions.create({
-        //         model: this.config.model,
-        //         max_tokens: maxTokens,
-        //         temperature: 0.7,
-        //         messages: [
-        //             {
-        //                 role: "user",
-        //                 content: prompt
-        //             }
-        //         ]
-        //     });
-        //     return completion.choices[0]?.message?.content || '';
-        // }
-        throw new Error('No valid client configuration');
     }
 }
 
@@ -183,9 +158,8 @@ Remember:
 // src/components/SmartHintSystem.tsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Lightbulb, ChevronRight, RotateCcw, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Progress } from './ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -230,7 +204,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         try {
             const modelConfig = MODEL_OPTIONS.find(m => m.id === modelId);
             if (!modelConfig) throw new Error('Invalid model selection');
-
+            console.log(modelConfig);
             const apiKey = modelConfig.provider === 'anthropic'
                 ? apiKeys.anthropic
                 : apiKeys.openai;
@@ -297,42 +271,42 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         setError(null);
     };
 
-    return (showInfo || showOpenningInstruction || showHint) &&
-        < div className='fixed inset-0 bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center' onClick={() => {
+    return (showInfo || showOpenningInstruction) &&
+        < div className='relative h-[100vh] w-[100vw] bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center' onClick={() => {
             if (!showOpenningInstruction) {
                 setShowInfo(false);
                 setShowHint(false);
             }
         }} >
 
-            <img className='fixed w-[20rem] md:left-[32rem] lg:left-[40rem] md:top-[10rem] lg:top-[14rem] z-[102]' src='/guide.png' />
-
-            {showOpenningInstruction ? <TypingDialog /> : (!showHint && <div className='fixed w-[20rem] p-6 flex flex-col gap-2 justify-center items-center z-[102] bg-gray-300 text-3xl rounded
+            {showOpenningInstruction ? <TypingDialog /> : (!showHint && <div className=' w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102]  text-3xl 
             top-[35%] left-[30%]
             '>
-                <button className='z-[102] w-full text-left rounded px-4 py-2 hover:scale-105 transition-all' onClick={() => {
+                <button className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all rotate-6' onClick={() => {
                     setShowInfo(false);
                     setShowOpenningInstruction(true);
                 }}>
                     Say Hello Again!
+                    <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
                 </button>
-                <button className='z-[102] w-full text-left rounded px-4 py-2 hover:scale-105 transition-all' onClick={() => {
-                    // setShowInfo(false);
+                <button className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all -rotate-6' onClick={(e) => {
+                    e.stopPropagation();
                     setShowHint(true);
                 }}>
                     Give me a hint!
+                    <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
                 </button>
-                <div className='border-solid absolute -right-[1rem] border-t-[0.75rem] border-l-[1.2rem] -rotate-12 border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div>
+                {/* <div className='border-solid absolute -right-[1rem] border-t-[0.75rem] border-l-[1.2rem] -rotate-12 border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div> */}
             </div>)}
 
             {
                 showHint &&
-                <Card className="fixed w-full max-w-2xl z-[102]">
+                <Card className="w-full max-w-2xl z-[102]" onClick={(e) => e.stopPropagation()}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-2">
                                 <Lightbulb className="h-5 w-5" />
-                                {/* Hint System */}
+                                Hint System
                             </CardTitle>
                             <Select
                                 value={selectedModelId}
@@ -358,9 +332,6 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <CardDescription>
-                            {level.description}
-                        </CardDescription>
                     </CardHeader>
 
                     <CardContent className="space-y-4">
@@ -376,7 +347,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                         </div>
 
                         {hint && (
-                            <Alert className={hintLevel > 2 ? "border-destructive" : ""}>
+                            <Alert className={`max-h-[24rem] overflow-auto ${hintLevel > 2 ? "border-destructive" : ""}`}>
                                 <AlertTitle>
                                     Hint {hintLevel - 1}
                                     {hintLevel > 2 && " - Complete Solution"}
@@ -396,7 +367,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
                         <div className="flex justify-between gap-2">
                             <Button
-                                onClick={getHint}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    getHint()
+                                }}
                                 disabled={loading || hintLevel > 3 || !hintService}
                                 className="flex items-center gap-2"
                                 variant={hintLevel > 2 ? "destructive" : "default"}
@@ -408,7 +382,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     </>
                                 ) : (
                                     <>
-                                        {!hint ? 'Get Hint' : 'Next Hint'}
+                                        {!hint ? 'Get Hint' : 'Tell me more!'}
                                         <ChevronRight className="h-4 w-4" />
                                     </>
                                 )}
@@ -417,7 +391,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                             {hint && (
                                 <Button
                                     variant="outline"
-                                    onClick={resetHints}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        resetHints();
+                                    }}
                                     disabled={loading}
                                     className="flex items-center gap-2"
                                 >
@@ -426,22 +403,12 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                 </Button>
                             )}
                         </div>
-
-                        {/* {level.commands.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                                <h4 className="text-sm font-semibold">Available Commands</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {level.commands.map((command, index) => (
-                                        <Badge key={index} variant="outline">
-                                            {command}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </div>
-                        )} */}
                     </CardContent>
                 </Card>
             }
+
+            <img className='w-[20rem] z-[102]' src='/guide.png' />
+
         </div>
 };
 
