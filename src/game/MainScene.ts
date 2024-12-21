@@ -83,8 +83,8 @@ export class MainScene extends Phaser.Scene {
 
         this.config = {
             stoneSize: {
-                width: 40,
-                height: 40
+                width: 90,
+                height: 90
             },
             workerConfig: {
                 x: 200,
@@ -120,12 +120,14 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.spritesheet('worker', 'src/assets/animation/character/walk_animation.png', {
-            frameWidth: 3608 / 4,
-            frameHeight: 1313
+        this.load.spritesheet('worker', 'src/assets/animation/character/worker.png', {
+            frameWidth: 132,
+            frameHeight: 132
         });
 
         this.load.image('character', 'src/assets/animation/character/character.jpg');
+
+        this.load.image('stone', 'src/assets/stone.jpg');
 
         this.load.on('loaderror', (file: any) => {
             console.error(`Failed to load: ${file.key}`);
@@ -208,23 +210,25 @@ export class MainScene extends Phaser.Scene {
         this.setupConstructionArea();
         this.setupOutputArea(this.config.layout.outputArea);
         this.events.emit('sceneReady');
+        this.worker.sprite.play('rest', true);
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }): void {
         for (let i = 0; i < this.inputQueue.length; i++) {
-            const rect = this.add.rectangle(
+            const stone = this.add.sprite(
                 config.x,
                 config.y + (i * config.spacing),
-                this.config.stoneSize.width,
-                this.config.stoneSize.height,
-                0x00ff00,
-                0.3
+                'stone'
             );
-            rect.setStrokeStyle(2, 0x00ff00);
+
+            stone.setDisplaySize(
+                this.config.stoneSize.width,
+                this.config.stoneSize.height
+            );
 
             const text = this.add.text(
                 config.x,
-                config.y + (i * config.spacing),
+                config.y + (i * config.spacing) - 8,
                 this.inputQueue[i].toString(),
                 {
                     fontSize: '18px',
@@ -234,7 +238,7 @@ export class MainScene extends Phaser.Scene {
             text.setOrigin(0.5);
 
             this.inputStones.push({
-                sprite: rect,
+                sprite: stone, 
                 text: text,
                 value: this.inputQueue[i]
             });
@@ -305,15 +309,42 @@ export class MainScene extends Phaser.Scene {
         const { x, y } = this.config.workerConfig;
 
         this.anims.create({
+            key: 'rest',
+            frames: this.anims.generateFrameNumbers('worker', { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        })
+
+        this.anims.create({
             key: 'walk',
-            frames: this.anims.generateFrameNumbers('worker', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('worker', { start: 8, end: 13 }),
             frameRate: 8,
             repeat: -1
         })
-        
-        const sprite = this.physics.add.sprite(x, y+200, 'worker', 0);
 
-        sprite.setScale(0.1);
+        this.anims.create({
+            key: 'pick',
+            frames: this.anims.generateFrameNumbers('worker', { start: 14, end: 21 }),
+            frameRate: 9,
+            repeat: -1,
+        })
+
+        this.anims.create({
+            key: 'drop',
+            frames: this.anims.generateFrameNumbers('worker', { start: 22, end: 29 }),
+            frameRate: 9,
+            repeat: -1,
+        })
+
+        this.anims.create({
+            key: 'holdWalk',
+            frames: this.anims.generateFrameNumbers('worker', { start: 30, end: 34 }),
+            frameRate: 8,
+            repeat: -1,
+        })
+
+
+        const sprite = this.physics.add.sprite(x, y + 200, 'worker', 0);
 
         return {
             sprite: sprite,
@@ -542,7 +573,7 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    private pickUpStone(stone: Stone): void {
+    private async pickUpStone(stone: Stone): Promise<void> {
         if (!this.worker) return;
 
         if (this.worker.stoneCarried) {
@@ -552,6 +583,11 @@ export class MainScene extends Phaser.Scene {
         }
 
         // Pick up stone animation
+        this.worker.sprite.play('pick', true);
+
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(), 1000);
+        });
 
         this.worker.stoneCarried = stone;
     }
@@ -567,7 +603,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         const stone = this.inputStones.shift() as Stone;
-        this.pickUpStone(stone);
+        await this.pickUpStone(stone);
         this.handleInqueueMoveForward();
 
     }
@@ -671,7 +707,6 @@ export class MainScene extends Phaser.Scene {
             return;
         }
 
-        // this.
         if (this.constructionSlots[slot].stone) {
             this.constructionSlots[slot].stone.sprite.destroy();
             this.constructionSlots[slot].stone.text.destroy();
@@ -711,6 +746,11 @@ export class MainScene extends Phaser.Scene {
         await this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y);
 
         // Drop stone animation
+        this.worker.sprite.play('drop', true);
+
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(), 1000);
+        });
 
         const stone = this.removeStoneOnHand();
         await this.handleStoneToOutput(stone as Stone);
@@ -735,7 +775,7 @@ export class MainScene extends Phaser.Scene {
         stone.text.y = this.config.layout.outputArea.y
 
     }
-    
+
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
         return new Promise((resolve) => {
             if (!this.worker) return;
@@ -743,11 +783,9 @@ export class MainScene extends Phaser.Scene {
             const dx = x - this.worker.sprite.x;
             const dy = y - this.worker.sprite.y;
 
-            if (Math.abs(dx) > Math.abs(dy)) {
-                this.worker.sprite.setFlipX(dx < 0);
-            }
-
-            this.worker.sprite.play('walk', true);
+            // if (Math.abs(dx) > Math.abs(dy)) {
+            this.worker.sprite.setFlipX(dx < 0);
+            // }
 
             const distance = Phaser.Math.Distance.Between(
                 this.worker.sprite.x,
@@ -774,6 +812,8 @@ export class MainScene extends Phaser.Scene {
             });
 
             if (this.worker.stoneCarried) {
+                this.worker.sprite.play('holdWalk', true);
+
                 this.tweens.add({
                     targets: [
                         this.worker.stoneCarried.sprite,
@@ -783,6 +823,8 @@ export class MainScene extends Phaser.Scene {
                     duration,
                     ease: 'Linear'
                 });
+            } else {
+                this.worker.sprite.play('walk', true);
             }
         });
     }
@@ -873,11 +915,11 @@ export class MainScene extends Phaser.Scene {
         if (this.ans.length !== this.outputQueue.length) {
             if (this.ans.length < this.outputQueue.length) {
                 EventManager.emit('levelFailed', {
-                    "message": "Too much stones in the output area, expect" + this.ans.length + " but got " + this.outputQueue.length + "!"
+                    "message": "Too much stones in the output area, expect " + this.ans.length + " but got " + this.outputQueue.length + "!"
                 });
             } else {
                 EventManager.emit('levelFailed', {
-                    "message": "Not enough stones in the output area, expect" + this.ans.length + " but got " + this.outputQueue.length + "!"
+                    "message": "Not enough stones in the output area, expect " + this.ans.length + " but got " + this.outputQueue.length + "!"
                 });
             }
 

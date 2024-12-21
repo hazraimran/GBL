@@ -1,6 +1,6 @@
 // types/game.ts
 export interface Stone {
-    sprite: Phaser.GameObjects.Rectangle;
+    sprite: Phaser.GameObjects.Sprite;
     value: number;
     text: Phaser.GameObjects.Text;
 }
