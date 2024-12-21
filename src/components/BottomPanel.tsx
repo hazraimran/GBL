@@ -96,7 +96,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                     onReset();
                 }}
             >
-                <RxReset className="w-[7rem] h-[4rem] text-custom-bg-text" />
+                <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
             </button>
 
             <button
@@ -110,7 +110,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                     fontSize: '3rem',
                     fontFamily: 'monospace',
                     // fontWeight: 'bold',
-                }} className=" w-[7rem] h-[4rem] text-custom-bg-text">i</span>
+                }} className=" w-[7rem] h-[4rem] text-yellow-600">i</span>
             </button>
 
             {showBottomPanel && (

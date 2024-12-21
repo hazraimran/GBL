@@ -79,7 +79,7 @@ const CommandRow = forwardRef<HTMLDivElement, CommandRowProps>((props, ref) => {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute right-4 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity ml-auto hover:bg-destructive/20 hover:text-destructive"
+                        className="absolute right-4 h-8 w-8 p-0 opacity-0 text-black group-hover:opacity-100 transition-opacity ml-auto hover:bg-destructive/20 hover:text-destructive"
                         onClick={handleDelete}
                     >
                         x

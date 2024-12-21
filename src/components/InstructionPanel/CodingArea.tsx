@@ -36,7 +36,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 }
             }
         });
-        
+
         setConnection(jumpConnections);
         if (commandsUsed.length !== 0 && levelInfo.id === 1) {
             setShowFirstTimePickPrompt(false);
@@ -180,7 +180,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     }
 
     return (
-        <div className="px-4 w-full select-none">
+        <div className={`px-4 w-full select-none z-[10] mb-[2rem] `} ref={ref} >
             <JumpConnector connection={connection} />
 
             <div
@@ -193,7 +193,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 onDragEnter={(e) => e.preventDefault()}
                 onDragLeave={handleDragLeave}
             >
-                <div className="space-y-2" ref={ref}>
+                <div className="space-y-2">
                     {commandsUsed?.map((command, idx) => (
                         <CommandRow
                             key={idx}
@@ -209,7 +209,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                         />
                     )
                     )}
-                    <EmptyRow commandsUsed={commandsUsed} onDrop={handleDrop} ref={ref} />
+                    <EmptyRow commandsUsed={commandsUsed} onDrop={handleDrop} />
                 </div>
             </div>
         </div>

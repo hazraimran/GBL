@@ -1,5 +1,5 @@
 const Divider = () => (
-    <div className="h-6 relative w-full flex justify-center">
+    <div className="h-6 my-4 relative w-full flex justify-center">
         <svg
             id="图层_1"
             data-name="图层 1"

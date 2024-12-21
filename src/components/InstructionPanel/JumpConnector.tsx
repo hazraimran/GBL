@@ -82,8 +82,8 @@ const JumpConnector: React.FC = () => {
         ctx.scale(dpr, dpr);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#2563eb';
-        ctx.fillStyle = '#2563eb';
+        ctx.strokeStyle = '#c98a02ff';
+        ctx.fillStyle = '#c98a02ff';
         ctx.lineWidth = 2;
 
         connections.forEach(connection => {

@@ -9,7 +9,8 @@ interface FloatingMessageProps extends React.HTMLAttributes<HTMLDivElement> {
     arrowOffset?: number;
     arrowDirection?: 'down' | 'right';
     hint?: boolean
-    withCharacter?: boolean
+    withCharacter?: boolean,
+    setShowHint?: () => void
 }
 
 const FloatingMessage: React.FC<FloatingMessageProps> = ({
@@ -21,6 +22,7 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
     arrowDirection = 'down',
     hint = false,
     withCharacter = false,
+    setShowHint,
     ...rest
 }) => {
     return (
@@ -34,9 +36,9 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
                 }}
             >
                 <p className="text-lg font-medium">{text}</p>
-                {hint && <p className="mt-4 cursor-pointer flex gap-4 items-center">
+                {hint && <div className="mt-4 cursor-pointer flex gap-4 items-center" onClick={setShowHint}>
                     Need more hints?<div className=' animate-float border-t-custom-green w-0 h-0 border-t-[12px] border-l-8 border-r-8 border-l-transparent border-r-transparent'></div>
-                </p>}
+                </div>}
             </div>
 
             {withCharacter}
