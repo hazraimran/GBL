@@ -7,6 +7,9 @@ export default {
 	],
 	theme: {
 		extend: {
+			transitionProperty: {
+				'height': 'height',
+			},
 			keyframes: {
 				'bg-zoom-loop': {
 					'0%, 100%': {
@@ -15,6 +18,12 @@ export default {
 					'50%': {
 						transform: 'scale(1.1)'
 					}
+				},
+				arrowWiggle: {
+					'0%, 100%': { transform: 'rotate(35deg) scale(1)' },
+					'25%': { transform: 'rotate(30deg) scale(1.05)' },
+					'50%': { transform: 'rotate(35deg) scale(1)' },
+					'75%': { transform: 'rotate(40deg) scale(1.05)' },
 				},
 				wiggle: {
 					'0%, 100%': { transform: 'rotate(0deg) scale(1)' },
@@ -58,6 +67,7 @@ export default {
 			},
 			animation: {
 				'bg-zoom-loop': 'bg-zoom-loop 15s ease-in-out infinite',
+				arrowWiggle: 'arrowWiggle 1s ease-in-out infinite',
 				wiggle: 'wiggle 1s ease-in-out infinite',
 				flow: 'flowDash 1s linear infinite',
 				breath: 'breath 1.5s ease-in-out infinite',
