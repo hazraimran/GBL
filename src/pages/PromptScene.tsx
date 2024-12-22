@@ -1,34 +1,25 @@
 import { useContext } from 'react';
 import GameContext from '../context/GameContext';
 import FloatingMessage from '../components/FloatingMessage';
-import TypingDialog from '../components/TypingDialog';
 import SmartHintSystem from '../components/Hint';
 
-const OpeningInstruction = ({show}: {show: boolean}) => {
-
-    return show && <>
-        <div className='fixed inset-0 bg-black bg-opacity-80 z-[100]' />
-        <img className='fixed w-[20rem] left-[48%] top-[20%] z-[102]' src='/guide.png' />
-        <TypingDialog />
-    </>
-
-}
-
 const PromptScene = () => {
-    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt } = useContext(GameContext);
+    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo } = useContext(GameContext);
 
     return (
         <>
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
-            {showFailurePrompt && <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true}/>}
+            {showFailurePrompt && <>
+                <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true} setShowHint={() => setShowInfo(true)} />
+                <img className='fixed w-[20rem] z-[102] left-[28rem]' src='/guide_angry.png' />
+            </>}
             {showBottomPanel && showReadyPrompt && <FloatingMessage
                 backgroundColor='#7FA147'
                 text='run your program whenever you are ready'
-                className='fixed bottom-28 left-1/2 -translate-x-[9rem] z-[100] rotate-[-5deg]' 
-                hint={true}
-                />}
+                className='fixed bottom-28 left-1/2 -translate-x-[9rem] z-[100] rotate-[-5deg]'
+
+            />}
             {showBottomPanel && showFailurePrompt && <FloatingMessage text='stop and reset' className='fixed bottom-28 left-1/2 -translate-x-[13rem] -rotate-[5deg]' />}
-            {/* <OpeningInstruction show={}/> */}
 
             <SmartHintSystem level={{
                 "id": "1",
@@ -40,8 +31,7 @@ const PromptScene = () => {
                 "expectOutput": [1, 2, 3, 4]
             }}
                 currentCode={["INPUT", "OUTPUT"]}
-                apiKeys={{anthropic: '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',
-                openai: ''}} />
+                apiKeys={{ anthropic: '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' }} />
         </>
     )
 }
