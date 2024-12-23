@@ -9,10 +9,11 @@ import JumpConnector from './JumpConnector';
 
 interface CodingAreaProps {
     setClearCommandsRef: (fn: () => void) => void;
+    marginTop: number;
 }
 
 const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
-    const { setClearCommandsRef } = props;
+    const { setClearCommandsRef, marginTop } = props;
     const { levelInfo, setReadyToPickSlot, slotPicked, commandsUsed, setShowFirstTimePickPrompt,
         setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
     const [waitingForResult, setWaitingForResult] = useState(false);
@@ -180,7 +181,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     }
 
     return (
-        <div className={`px-4 w-full select-none z-[10] mb-[2rem] `} ref={ref} >
+        <div className={`absolute px-4 w-[25rem] select-none z-[10] pb-[3rem] `} ref={ref} style={{ marginTop: `${marginTop}px` }}>
             <JumpConnector connection={connection} />
 
             <div

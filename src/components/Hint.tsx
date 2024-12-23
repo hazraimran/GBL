@@ -59,7 +59,7 @@ import Anthropic from '@anthropic-ai/sdk';
 // import type { ModelConfig } from '../types';
 
 export class HintService {
-    private anthropicClient?: Anthropic;
+    private anthropicClient: Anthropic;
 
     constructor(private config: ModelConfig) {
         this.anthropicClient = new Anthropic({
@@ -157,20 +157,18 @@ Remember:
 
 // src/components/SmartHintSystem.tsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Lightbulb, ChevronRight, RotateCcw, Loader2 } from 'lucide-react';
+import { Coins, Lightbulb, ChevronRight, RotateCcw, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Progress } from './ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface SmartHintSystemProps {
     level: Level;
     currentCode: string[];
     apiKeys: {
         anthropic?: string;
-        openai?: string;
     };
+    useHint?: boolean;
     onCodeSuggestion?: (code: string) => void;
 }
 
@@ -180,58 +178,61 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     level,
     currentCode,
     apiKeys,
+    useHint = false,
     onCodeSuggestion
 }) => {
-    const { showInfo, setShowInfo, showOpenningInstruction, setShowOpenningInstruction } = useContext(GameContext);
-    const [selectedModelId, setSelectedModelId] = useState(MODEL_OPTIONS[0].id);
+    // Context
+    const {
+        showInfo,
+        setShowInfo,
+        showOpenningInstruction,
+        setShowOpenningInstruction,
+        coins,
+        setCoins
+    } = useContext(GameContext);
+
+    // State
     const [hintService, setHintService] = useState<HintService | null>(null);
     const [loading, setLoading] = useState(false);
     const [hint, setHint] = useState<string>('');
     const [hintLevel, setHintLevel] = useState(1);
     const [error, setError] = useState<string | null>(null);
-    const [showHint, setShowHint] = useState(false);
+    const [showHint, setShowHint] = useState(useHint);
 
+    // Hint descriptions
+    const hintDescriptions = {
+        1: "A gentle nudge in the right direction",
+        2: "More specific guidance with code suggestions",
+        3: "Complete solution with detailed explanation"
+    };
+
+    // Initialize hint service
+    useEffect(() => {
+        if (apiKeys.anthropic) {
+            const service = new HintService({
+                provider: 'anthropic',
+                model: 'claude-3-sonnet-20240229',
+                apiKey: apiKeys.anthropic
+            });
+            setHintService(service);
+        }
+    }, [apiKeys]);
+
+    // Extract code suggestion from AI response
     const extractCodeSuggestion = (content: string): string | undefined => {
         const match = content.match(/<code>([\s\S]+?)<\/code>/);
         return match?.[1]?.trim();
     };
 
-    useEffect(() => {
-        handleModelChange(selectedModelId);
-    }, [selectedModelId, apiKeys]);
-
-    const handleModelChange = (modelId: string) => {
-        try {
-            const modelConfig = MODEL_OPTIONS.find(m => m.id === modelId);
-            if (!modelConfig) throw new Error('Invalid model selection');
-            console.log(modelConfig);
-            const apiKey = modelConfig.provider === 'anthropic'
-                ? apiKeys.anthropic
-                : apiKeys.openai;
-
-            if (!apiKey) {
-                throw new Error(`No API key provided for ${modelConfig.provider}`);
-            }
-
-            const service = new HintService({
-                provider: modelConfig.provider,
-                model: modelConfig.model,
-                apiKey
-            });
-
-            setHintService(service);
-            setSelectedModelId(modelId);
-            setError(null);
-        } catch (err) {
-            console.error('Failed to initialize model:', err);
-            setError(err instanceof Error ? err.message : 'Failed to initialize model');
-            setHintService(null);
-        }
-    };
-
+    // Get hint function
     const getHint = async () => {
         if (!hintService) {
-            setError('No model selected');
+            setError('Hint service not initialized');
+            return;
+        }
+
+        if (coins <= 0) {
+            setError('Not enough coins!');
             return;
         }
 
@@ -239,18 +240,17 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         setError(null);
 
         try {
-            const modelConfig = MODEL_OPTIONS.find(m => m.id === selectedModelId);
-            if (!modelConfig) throw new Error('Invalid model selection');
-
             const content = await hintService.getHint(
                 buildPrompt(currentCode, hintLevel, level),
-                modelConfig.maxTokens
+                1000
             );
 
             const suggestedCode = extractCodeSuggestion(content);
             const cleanHint = content.replace(/<code>[\s\S]+?<\/code>/g, '').trim();
 
             setHint(cleanHint);
+            setCoins(coins - 1);
+            // setCoins((prevCoins: number) => prevCoins - 1);
 
             if (suggestedCode && onCodeSuggestion && hintLevel === 3) {
                 onCodeSuggestion(suggestedCode);
@@ -265,93 +265,92 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         }
     };
 
+    // Reset hints function
     const resetHints = () => {
         setHint('');
         setHintLevel(1);
         setError(null);
     };
 
-    return (showInfo || showOpenningInstruction) &&
-        < div className='relative h-[100vh] w-[100vw] bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center' onClick={() => {
-            if (!showOpenningInstruction) {
-                setShowInfo(false);
-                setShowHint(false);
-            }
-        }} >
+    // Click handler for background
+    const handleBackgroundClick = () => {
+        if (!showOpenningInstruction) {
+            setShowInfo(false);
+            setShowHint(false);
+        }
+    };
 
-            {showOpenningInstruction ? <TypingDialog /> : (!showHint && <div className=' w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102]  text-3xl 
-            top-[35%] left-[30%]
-            '>
-                <button className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all rotate-6' onClick={() => {
-                    setShowInfo(false);
-                    setShowOpenningInstruction(true);
-                }}>
-                    Say Hello Again!
-                    <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
-                </button>
-                <button className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all -rotate-6' onClick={(e) => {
-                    e.stopPropagation();
-                    setShowHint(true);
-                }}>
-                    Give me a hint!
-                    <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
-                </button>
-                {/* <div className='border-solid absolute -right-[1rem] border-t-[0.75rem] border-l-[1.2rem] -rotate-12 border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div> */}
-            </div>)}
+    return (showInfo || showOpenningInstruction) && (
+        <div
+            className='relative h-[100vh] w-[100vw] bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center'
+            onClick={handleBackgroundClick}
+        >
+            {showOpenningInstruction ? (
+                <TypingDialog />
+            ) : (
+                !showHint && (
+                    <div className='w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102] text-3xl'>
+                        <button
+                            className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all rotate-6'
+                            onClick={() => {
+                                setShowInfo(false);
+                                setShowOpenningInstruction(true);
+                            }}
+                        >
+                            Say Hello Again!
+                            <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
+                        </button>
+                        <button
+                            className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all -rotate-6'
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowHint(true);
+                            }}
+                        >
+                            Buy a hint!
+                            <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
+                        </button>
+                    </div>
+                )
+            )}
 
-            {
-                showHint &&
+            {showHint && (
                 <Card className="w-full max-w-2xl z-[102]" onClick={(e) => e.stopPropagation()}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-2">
-                                <Lightbulb className="h-5 w-5" />
-                                Hint System
+                                <Lightbulb />
+
+                                <span className="text-xl font-bold">
+                                    Need some help? That'll cost ya!
+                                </span>
                             </CardTitle>
-                            <Select
-                                value={selectedModelId}
-                                onValueChange={handleModelChange}
-                            >
-                                <SelectTrigger className="w-[200px]">
-                                    <SelectValue placeholder="Select model" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {MODEL_OPTIONS.map(model => (
-                                        <SelectItem
-                                            key={model.id}
-                                            value={model.id}
-                                        >
-                                            <div className="flex flex-col">
-                                                <span>{model.name}</span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {model.description}
-                                                </span>
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="flex items-center gap-2">
+                                <Coins className="h-5 w-5 text-yellow-400" />
+                                <span className="font-bold">{coins} coins remaining</span>
+                            </div>
                         </div>
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-sm text-muted-foreground">
-                                <span>Hint Progress</span>
-                                <span>{hintLevel - 1}/3</span>
-                            </div>
-                            <Progress
-                                value={((hintLevel - 1) / 3) * 100}
-                                className="h-2"
-                            />
+                        {/* {!hint && ( */}
+                        <div className="bg-gray-100 p-4 rounded-lg">
+                            <p className="font-medium mb-2">How hints work:</p>
+                            <ul className="space-y-2 text-sm">
+                                {Object.entries(hintDescriptions).map(([level, desc]) => (
+                                    <li key={level} className="flex items-center gap-2">
+                                        <span className="font-bold">Level {level}:</span>
+                                        <span>{desc}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="mt-2 text-sm text-gray-600">Each hint costs 1 coin - spend them wisely!</p>
                         </div>
+                        {/* )} */}
 
                         {hint && (
                             <Alert className={`max-h-[24rem] overflow-auto ${hintLevel > 2 ? "border-destructive" : ""}`}>
-                                <AlertTitle>
-                                    Hint {hintLevel - 1}
-                                    {hintLevel > 2 && " - Complete Solution"}
-                                </AlertTitle>
+                                <AlertTitle>Hint Level {hintLevel - 1}</AlertTitle>
                                 <AlertDescription className="mt-2 whitespace-pre-wrap">
                                     {hint}
                                 </AlertDescription>
@@ -369,9 +368,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                             <Button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    getHint()
+                                    getHint();
                                 }}
-                                disabled={loading || hintLevel > 3 || !hintService}
+                                disabled={loading || hintLevel > 3 || coins <= 0}
                                 className="flex items-center gap-2"
                                 variant={hintLevel > 2 ? "destructive" : "default"}
                             >
@@ -382,8 +381,8 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     </>
                                 ) : (
                                     <>
-                                        {!hint ? 'Get Hint' : 'Tell me more!'}
-                                        <ChevronRight className="h-4 w-4" />
+                                        {!hint ? 'Purchase Hint' : 'Tell me more!'}
+                                        {/* <ChevronRight className="h-4 w-4" /> */}
                                     </>
                                 )}
                             </Button>
@@ -405,11 +404,11 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                         </div>
                     </CardContent>
                 </Card>
-            }
+            )}
 
-            <img className='w-[20rem] z-[102]' src='/guide.png' />
-
+            <img className='w-[20rem] z-[102]' src='/guide_speak.png' />
         </div>
+    );
 };
 
 export default SmartHintSystem;

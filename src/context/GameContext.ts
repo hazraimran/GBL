@@ -52,6 +52,8 @@ interface GameContextType {
     setShowPromptModal: (show: boolean) => void;
     showInfo: boolean;
     setShowInfo: (show: boolean) => void;
+    coins: number,
+    setCoins: (coins: number) => void,
 }
 
 // Create the context with a default value (optional)
@@ -129,6 +131,8 @@ const GameContext = createContext<GameContextType>({
     setShowPromptModal: () => { },
     showInfo: false,
     setShowInfo: () => { },
+    coins: 0,
+    setCoins: () => { },
 });
 
 export default GameContext;
