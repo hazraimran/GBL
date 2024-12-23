@@ -9,11 +9,13 @@
     "constructionSlots": [],
     "expectedCommandCnt": 4,
     "expectedExecuteCnt": 4,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Welcome to the construction site, young apprentice!", "Building in these ancient ruins is no small feat!", "Your first job will appear over there on the right side in a moment.", "Remember, you can always ask me for help."]
 }, {
     "id": 2,
     "title": "Busy Supply Chamber",
@@ -25,11 +27,13 @@
     "constructionSlots": [],
     "expectedCommandCnt": 4,
     "expectedExecuteCnt": 24,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Congratulations on your promotion to Apprentice Craftsman!", "But don’t get too comfortable—the challenges only get harder from here.", "Here is your new assignment."]
 }, {
     "id": 3,
     "title": "Replica Slate",
@@ -53,11 +57,13 @@
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Oh no!", "The rolling log system that transports stones has broken down!", "But construction can’t wait.", "You’ll have to bypass the system and grab stones directly from the construction slot.", "Think fast and adapt, young craftsman—the structure depends on you!"]
 }, {
     "id": 4,
     "title": "Scrambler Handler",
@@ -78,11 +84,13 @@
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Good news!", "The rolling log system is fixed, but now the stones are arriving completely out of order!", "Your task is to sort them correctly and ensure each one ends up in its proper place.", "Precision is key—an unorganized foundation could spell disaster for the entire structure!"]
 }, {
     "id": 5,
     "title": "Replica Slate",
@@ -103,11 +111,13 @@
     }],
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Sigh…", "The rainy season is here, and the site is a muddy mess.", "The old architect always said, “Stay calm and focused, and not even the rain can stop a great building.", "Don’t worry; math isn’t the key here—just take it one step at a time."]
 }, {
     "id": 6,
     "title": "Tripler Room",
@@ -128,11 +138,13 @@
     }],
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Who are you ? !", "This secret area is reserved for only the most exceptional architects.", "And you’re late—seven years late!", "From now on, I expect a 100% increase in efficiency.", "Every task will be scrutinized with the utmost care.", "Good luck!"]
 }, {
     "id": 7,
     "title": "Octoplier Suite",
@@ -153,17 +165,19 @@
     }],
     "expectedCommandCnt": 10,
     "expectedExecuteCnt": 29,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": []
 }, {
     "id": 8,
     "title": "Zero Exterminator",
     "description": "Send all things that ARE NOT ZERO to the OUTBOX.\n\nYou got a new command!It jumps ONLY if the value you are holding is ZERO.Otherwise it continues to the next line.",
     "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        if (i % 2 === 0) {\n            arr.push(0);\n        }\n        else {\n            arr.push(generatorFn(1, 20));\n        }\n    }\n    return arr;\n}",
-    "outputFunction": "function (generatorFn) {\n    return [0, 0, 0, 0];\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 4;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    return expected;\n}",
     "commands": ["INPUT", "OUTPUT", "ADD", "COPYFROM", "COPYTO", "JUMP", "JUMP = 0"],
     "commandsUsed": [],
     "constructionSlots": [{
@@ -178,11 +192,13 @@
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Where do you see yourself in 5 years?", "Or 10 years?", "I have a note here from your other boss that says…", "From this point on, YOUR PERFORMANCE WILL BE EVALUATED WITH EXTRA SCRUTINY.", "What a treat!"]
 }, {
     "id": 9,
     "title": "Zero Preservation",
@@ -203,11 +219,13 @@
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Recently, someone suggested we pay more attention to the underappreciated materials.", "This time, you’ll only keep the “zero-weight” stones.", "What about the other materials ? That’s for you to decide!"]
 }, {
     "id": 10,
     "title": "Sub Hallway",
@@ -228,25 +246,38 @@
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Subtraction?!", "In construction, reducing errors means increasing success.", "Did you learn this in school?", "Don’t worry—we’re a good team, and I know you can figure it out!"]
 }, {
     "id": 11,
     "title": "Equalization Room",
     "description": "Get two things from the INBOX.If they are EQUAL, put ONE of them in the OUTBOX.Discard non - equal pairs.\nRepeat!",
-    "generatorFunction": "function () {\n    var len = 5;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    return arr;\n}",
-    "outputFunction": "function () {\n    var len = 5;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(Math.floor(Math.random() * 20));\n    }\n    var expected = arr;\n    return expected;\n}",
-    "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0"],
+    "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        var val = generatorFn(1, 20);\n        arr.push(val);\n        if (i % 3 === 0) {\n            arr.push(val);\n        }\n    }\n    return arr;\n}",
+    "outputFunction": "function (generatorFn) {\n    var len = 8;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        var val = generatorFn(1, 20);\n        if (i % 3 === 0) {\n            expected.push(val);\n        }\n    }\n    return expected;\n}",
+    "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],
     "commandsUsed": [],
-    "constructionSlots": 3,
+    "constructionSlots": [{
+        "x": 300,
+        "y": 300
+    }, {
+        "x": 400,
+        "y": 300
+    }, {
+        "x": 500,
+        "y": 300
+    }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 40,
-    "commandCountAchievement": null,
     "executeCnt": -1,
+    "commandCountAchievement": null,
     "executeCountAchievement": null,
     "isLocked": false,
-    "timeSpent": 0
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": ["Sometimes…", "…one stone is stronger than another.", "And sometimes…", "…they’re exactly the same!", "Learn to identify and balance them—that’s the essence of great architecture."]
 }]
