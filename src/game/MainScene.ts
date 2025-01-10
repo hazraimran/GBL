@@ -83,8 +83,8 @@ export class MainScene extends Phaser.Scene {
 
         this.config = {
             stoneSize: {
-                width: 90,
-                height: 90
+                width: 70,
+                height: 70
             },
             workerConfig: {
                 x: 200,
@@ -173,7 +173,7 @@ export class MainScene extends Phaser.Scene {
                 slot.rect.destroy();
             }
             if (slot.stone?.sprite) {
-                slot.stone.sprite.destroy();
+                (slot.stone.sprite as any).destroy();
             }
             if (slot.stone?.text) {
                 slot.stone.text.destroy();
@@ -195,7 +195,6 @@ export class MainScene extends Phaser.Scene {
         this.config.currentLevel = data.sceneConfig.currentLevel;
         this.ans = this.config.outputFn(this.generator2.nextInt.bind(this.generator2));
         this.inputQueue = this.config.generatorFn(this.generator1.nextInt.bind(this.generator1));
-        console.log(this.ans, this.inputQueue);
 
         this.outputQueue = [];
         this.cmdExcCnt = 0;
@@ -238,39 +237,28 @@ export class MainScene extends Phaser.Scene {
             text.setOrigin(0.5);
 
             this.inputStones.push({
-                sprite: stone, 
+                sprite: stone,
                 text: text,
                 value: this.inputQueue[i]
             });
         }
 
-        this.add.text(config.x - 30, config.y - 50, 'INPUT', {
-            fontSize: '16px',
-            color: '#00ff00'
-        });
     }
 
     private setupOutputArea(config: { x: number; y: number; spacing: number }): void {
         const width = this.game.config.width as number;
         const finalX = config.x > width ? width - 100 : config.x;
 
-        this.add.text(finalX - 30, config.y - 50, 'OUTPUT', {
-            fontSize: '16px',
-            color: '#ff0000'
-        });
     }
 
     private setupConstructionArea(): void {
         this.config.constructionSlots.forEach((slot, idx) => {
             const rect = this.add.rectangle(
-                slot.x,
-                slot.y,
-                this.config.stoneSize.width + 10,
-                this.config.stoneSize.height + 10,
-                0x666666,
-                0.8
+                slot.x + 65,
+                slot.y + 30,
+                this.config.stoneSize.width - 5,
+                this.config.stoneSize.height - 5,
             );
-            rect.setStrokeStyle(4, 0x000000);
             let stone = null;
 
             if (slot.value !== undefined) {
@@ -326,14 +314,14 @@ export class MainScene extends Phaser.Scene {
             key: 'pick',
             frames: this.anims.generateFrameNumbers('worker', { start: 14, end: 21 }),
             frameRate: 9,
-            repeat: -1,
+            repeat: 0,
         })
 
         this.anims.create({
             key: 'drop',
             frames: this.anims.generateFrameNumbers('worker', { start: 22, end: 29 }),
             frameRate: 9,
-            repeat: -1,
+            repeat: 0,
         })
 
         this.anims.create({
@@ -394,7 +382,6 @@ export class MainScene extends Phaser.Scene {
         while (this.curLine < processedCommands.length && !this.stopped) {
             if (this.detectInfiniteLoop(jumpCnt)) return;
             const commandWithArg = processedCommands[this.curLine];
-            console.log(commandWithArg)
             this.curLine++;
             this.cmdExcCnt++;
             switch (commandWithArg.command) {
@@ -431,7 +418,6 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (!this.stopped) {
-            console.log('not stopped')
             this.validateOutput();
         }
     }
@@ -445,10 +431,6 @@ export class MainScene extends Phaser.Scene {
         }
         return false;
 
-    }
-
-    async executeOneStep(): Promise<void> {
-        console.log('Executing one step');
     }
 
     private async handleCopyFrom(arg: number): Promise<void> {
@@ -470,7 +452,7 @@ export class MainScene extends Phaser.Scene {
             y: 300 + Math.floor(arg / 3) * 60 - 60
         }
         await this.tweenWorkerTo(slotPos.x, slotPos.y);
-        this.putStoneToSlot(arg)
+        await this.putStoneToSlot(arg)
     }
 
     private async handleAdd(arg: number): Promise<void> {
@@ -492,17 +474,15 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handleJump(arg: number, jumpto: (line: number) => void): Promise<void> {
-        console.log('Jumping', arg);
         jumpto(arg);
     }
 
     private async handleJumpZ(arg: number, jumpto: (line: number) => void): Promise<void> {
-        console.log('Jumping = 0', arg);
         if (!this.worker?.stoneCarried) {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_JUMP_ZERO]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -512,13 +492,12 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async handleJumpN(arg: number, jumpto: (line: number) => void): Promise<void> {
-        console.log('Jumping < 0', arg);
 
         if (!this.worker?.stoneCarried) {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_JUMP_NEG]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -536,41 +515,6 @@ export class MainScene extends Phaser.Scene {
         // Reset worker state
         this.worker.stoneCarried = undefined;
         return stone;
-    }
-
-    private pickUpStoneFromSlot(stone: Stone): void {
-        if (!this.worker) return;
-
-        if (this.worker.stoneCarried) {
-            const stone = this.removeStoneOnHand();
-            stone?.sprite.destroy();
-            stone?.text?.destroy();
-        }
-
-        // Pick up stone animation
-        let stoneRect = this.add.rectangle(
-            this.worker.sprite.x,
-            this.worker.sprite.y,
-            this.config.stoneSize.width,
-            this.config.stoneSize.height,
-            0x00ff00,
-            0.3
-        );
-
-        this.worker.stoneCarried = {
-            sprite: stoneRect,
-            value: stone.value,
-            text: this.add.text(
-                this.worker.sprite.x - 5,
-                this.worker.sprite.y - 10,
-                stone.value.toString(),
-                {
-                    color: '#000000',
-                    fontSize: '20px'
-                }
-            )
-        }
-
     }
 
     private async pickUpStone(stone: Stone): Promise<void> {
@@ -596,7 +540,6 @@ export class MainScene extends Phaser.Scene {
         if (!this.worker) return;
 
         await this.tweenWorkerTo(this.config.layout.inputArea.x + 60, this.config.layout.inputArea.y);
-        console.log(this.inputStones)
         if (this.inputStones.length === 0) {
             this.validateOutput();
             return;
@@ -627,7 +570,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.ADD_EMPTY]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -635,7 +578,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_ADD]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -650,7 +593,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.SUB_EMPTY]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -658,7 +601,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_SUB]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -688,14 +631,44 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.COPYFROM_EMPTY]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
-        this.pickUpStoneFromSlot(slotStone.stone as Stone);
+        if (this.worker.stoneCarried) {
+            const stone = this.removeStoneOnHand();
+            stone?.sprite.destroy();
+            stone?.text?.destroy();
+        }
+
+        // Pick up stone animation
+        this.worker.sprite.play('pick', true);
+
+        let stoneRect = this.add.rectangle(
+            this.worker.sprite.x,
+            this.worker.sprite.y,
+            this.config.stoneSize.width,
+            this.config.stoneSize.height,
+            0x00ff00,
+            0.3
+        );
+
+        this.worker.stoneCarried = {
+            sprite: stoneRect,
+            value: slotStone.stone.value,
+            text: this.add.text(
+                this.worker.sprite.x - 5,
+                this.worker.sprite.y - 10,
+                slotStone.stone.value.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '20px'
+                }
+            )
+        }
     }
 
-    private putStoneToSlot(slot: number) {
+    private async putStoneToSlot(slot: number) {
         if (!this.worker) return;
 
         const stone = this.worker.stoneCarried;
@@ -703,24 +676,35 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_COPYTO]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
+
+        // Drop stone animation
+        this.worker.sprite.play('drop', true);
+
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(), 1000);
+        });
 
         if (this.constructionSlots[slot].stone) {
             this.constructionSlots[slot].stone.sprite.destroy();
             this.constructionSlots[slot].stone.text.destroy();
         }
 
+        const stone_copy = this.add.sprite(
+            this.constructionSlots[slot].rect.x,
+            this.constructionSlots[slot].rect.y,
+            'stone'
+        );
+
+        stone_copy.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
+
         this.constructionSlots[slot].stone = {
-            sprite: this.add.rectangle(
-                this.constructionSlots[slot].rect.x,
-                this.constructionSlots[slot].rect.y,
-                this.config.stoneSize.width,
-                this.config.stoneSize.height,
-                0x00ff00,
-                0.3
-            ),
+            sprite: stone_copy,
             value: stone.value,
             text: this.add.text(
                 this.constructionSlots[slot].rect.x - 10,
@@ -740,7 +724,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_OUTPUT]
             });
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
         await this.tweenWorkerTo(this.config.layout.outputArea.x - 60, this.config.layout.outputArea.y);
@@ -781,11 +765,8 @@ export class MainScene extends Phaser.Scene {
             if (!this.worker) return;
 
             const dx = x - this.worker.sprite.x;
-            const dy = y - this.worker.sprite.y;
 
-            // if (Math.abs(dx) > Math.abs(dy)) {
             this.worker.sprite.setFlipX(dx < 0);
-            // }
 
             const distance = Phaser.Math.Distance.Between(
                 this.worker.sprite.x,
@@ -872,7 +853,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async preValidateOutput(): Promise<void> {
-        console.log("prevalidate")
         if (this.ans.length !== this.outputQueue.length) {
             return;
         }
@@ -887,7 +867,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
-            this.stopped = true;
+            this.stopExecution();
             await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
@@ -910,8 +890,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async validateOutput(): Promise<void> {
-        console.log("validate")
-        console.log(this.ans, this.outputQueue)
         if (this.ans.length !== this.outputQueue.length) {
             if (this.ans.length < this.outputQueue.length) {
                 EventManager.emit('levelFailed', {
@@ -923,7 +901,7 @@ export class MainScene extends Phaser.Scene {
                 });
             }
 
-            this.stopped = true;
+            this.stopExecution();
             return;
         }
 
@@ -936,7 +914,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (isCorrect) {
-            this.stopped = true;
+            this.stopExecution();
             await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
@@ -944,7 +922,7 @@ export class MainScene extends Phaser.Scene {
                 commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
             });
         } else {
-            this.stopped = true;
+            this.stopExecution();
             EventManager.emit('levelFailed', {
                 "message": "Output is incorrect"
             })

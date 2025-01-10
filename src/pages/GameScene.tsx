@@ -48,7 +48,8 @@ const GameScene: React.FC = () => {
                 setSlotPicked(undefined);
                 setReadyToPickSlot(false);
             }}
-            style={{ backgroundImage: `url('/game_bg.png')` }}>
+            style={{ backgroundImage: `url('/game_bg.webp')` }}>
+            <img src="./slots.webp" alt="" className='absolute' />
             <PhaserGame />
             <InstructionPanel />
             <Popup />

@@ -54,6 +54,8 @@ interface GameContextType {
     setShowInfo: (show: boolean) => void;
     coins: number,
     setCoins: (coins: number) => void,
+    navTo: (scene: CurrentSceneType) => void,
+    showModal: boolean,
 }
 
 // Create the context with a default value (optional)
@@ -133,6 +135,8 @@ const GameContext = createContext<GameContextType>({
     setShowInfo: () => { },
     coins: 0,
     setCoins: () => { },
+    navTo: () => { },
+    showModal: false,
 });
 
 export default GameContext;

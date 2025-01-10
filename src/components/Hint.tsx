@@ -282,7 +282,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
     return (showInfo || showOpenningInstruction) && (
         <div
-            className='relative h-[100vh] w-[100vw] bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center'
+            className='relative h-[100vh] w-[100vw] top-0 bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center select-none'
             onClick={handleBackgroundClick}
         >
             {showOpenningInstruction ? (
@@ -406,7 +406,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                 </Card>
             )}
 
-            <img className='w-[20rem] z-[102]' src='/guide_speak.png' />
+            {!showOpenningInstruction && <img className='w-[20rem] z-[102]' src='/guide_speak1.webp' />}
         </div>
     );
 };

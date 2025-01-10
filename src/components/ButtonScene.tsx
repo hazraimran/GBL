@@ -3,7 +3,7 @@ import GameContext from "../context/GameContext";
 
 const ButtonScene: React.FC = () => {
     const { levelInfo, currentScene, readyToPickSlot, setReadyToPickSlot, setSlotPicked } = useContext(GameContext);
-    const initPos = { x: 265, y: 265 };
+    const initPos = { x: 320, y: 290 };
 
     return <div className="w-full h-full"
     >
@@ -17,7 +17,7 @@ const ButtonScene: React.FC = () => {
                     }}>
 
                     <button
-                        className={`fixed border-8 border-lime-600 w-[70px] h-[70px] animate-breath scale-110
+                        className={`fixed border-8 border-lime-600 w-[80px] h-[80px] animate-breath scale-110
                     bg-transparent rounded-md text-black`}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -28,7 +28,7 @@ const ButtonScene: React.FC = () => {
                     </button>
 
                     <div
-                        className="absolute text-white left-1/2 -translate-x-1/2 -translate-y-[50px] text-2xl font-bold animate-breath"
+                        className="absolute left-1/2 -translate-x-1/2 -translate-y-[50px] text-3xl font-bold animate-breath"
                     >
                         {idx + 1}
                     </div>

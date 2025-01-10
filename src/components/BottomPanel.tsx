@@ -1,27 +1,24 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import { RxReset } from "react-icons/rx";
-import { Play, MoveRight, Square, Gauge, Lock, MessageSquareWarning } from 'lucide-react';
+import { Play, Square, Gauge, Lock } from 'lucide-react';
 import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 interface BottomPanelProps {
     onExecute: () => void;
-    onExecuteOneStep: () => void;
     onReset: () => void;
     onDrag: (progress: number) => void;
 }
 
 const BottomPanel: React.FC<BottomPanelProps> = ({
     onExecute,
-    onExecuteOneStep,
     onReset,
     onDrag
 }) => {
-    // const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(50);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showFailurePrompt, showBottomPanel, setCurrentScene, setShowInfo,
-        levelInfo, commandsUsed, exectuting } = useContext(GameContext);
+    const { showFailurePrompt, showBottomPanel, navTo, setShowInfo, showInfo,
+        showOpenningInstruction, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
     const { saveCommandsUsed } = useGameStorage();
     const [isShaking, setIsShaking] = useState(false);
 
@@ -91,7 +88,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
             <button
                 className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
                 onClick={() => {
-                    setCurrentScene('LEVELS');
+                    navTo('LEVELS');
                     saveCommandsUsed(levelInfo!.id, commandsUsed);
                     onReset();
                 }}
@@ -99,22 +96,20 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
             </button>
 
-            <button
-                className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={() => {
-                    console.log('set show hint');
-                    setShowInfo(true);
-                }}
-            >
-                <span style={{
-                    fontSize: '3rem',
-                    fontFamily: 'monospace',
-                    // fontWeight: 'bold',
-                }} className=" w-[7rem] h-[4rem] text-yellow-600">i</span>
-            </button>
+            {
+                !showInfo && !showOpenningInstruction && !showFailurePrompt && <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>
+                    <img src="./guide_read.webp" alt=""
+                        className=' h-[6rem]'
+                        onClick={() => {
+                            setShowInfo(true);
+                        }} />
+                </div>
+            }
+
 
             {showBottomPanel && (
                 <div className={`flex items-center space-x-4 p-4 bg-custom-bg rounded-lg m-auto ${isShaking && 'animate-shake'}`}>
+
                     <button
                         className={`w-[4rem] h-[4rem] ${exectuting ? 'bg-custom-red hover:scale-105' : 'bg-custom-gray'} rounded-lg flex items-center justify-center transition-transform duration-200`}
                         onClick={onReset}
@@ -136,17 +131,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                             className={`w-10 h-10 ${exectuting ? 'opacity-30' : 'opacity-50'}`}
                             strokeWidth={2}
                             color="black"
-                        />
-                    </button>
-
-                    <button
-                        className="w-[4rem] h-[4rem] bg-custom-green hover:scale-105 rounded-lg flex items-center justify-center transition-transform duration-200"
-                        onClick={onExecuteOneStep}
-                    >
-                        <MoveRight
-                            className="w-10 h-10"
-                            strokeWidth={2}
-                            color="#064e3b"
                         />
                     </button>
 

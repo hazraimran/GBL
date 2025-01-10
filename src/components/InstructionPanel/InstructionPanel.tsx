@@ -133,9 +133,8 @@ const InstructionPanel: React.FC = () => {
 
     return levelInfo && showInstructionPanel && (
         <aside
-            className="w-[35rem] flex flex-col items-center transition-all duration-1000 ease-in-out overflow-hidden
-              absolute right-0 top-1/2 z-10 pt-[5rem] pb-[5
-                rem] px-[5rem]"
+            className="w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out overflow-hidden
+              absolute top-1/2 z-10 pt-[5rem] pb-[5rem] px-[5rem] -right-[2rem]"
             ref={instructionPanelRef}
             onWheel={handleWheel}
 
@@ -152,7 +151,7 @@ const InstructionPanel: React.FC = () => {
                 onWheel={handleWheel}
             >
 
-                <div className='absolute flex flex-col items-center overflow-hidden w-full'
+                <div className='absolute flex flex-col items-center overflow-hidden w-full transition-all'
                     style={{
                         height: `calc(100% - ${remToPx(8)}px)`
                     }}>
@@ -162,13 +161,13 @@ const InstructionPanel: React.FC = () => {
                         className='bg-cover bg-center bg-no-repeat overflow-hidden w-[25rem]  z-[-1] '
                         style={{
                             height: `calc(100% + 4rem)`,
-                            backgroundImage: `url('/scroll_menu.png')`,
+                            backgroundImage: `url('/scroll_menu.webp')`,
                         }}
                     ></div>
                 </div>
 
                 <InfoArea title={levelInfo.title} description={levelInfo.description} />
-                {showFirstTimePickPrompt && <img src='/arrow.png' className='absolute w-[3rem] top-[20rem] left-[8.5rem] rotate-[35deg] animate-arrowWiggle' />}
+                {showFirstTimePickPrompt && <img src='/arrow.webp' className='absolute w-[3rem] top-[20rem] left-[8.5rem] rotate-[35deg] animate-arrowWiggle' />}
 
                 <Divider />
 
@@ -180,7 +179,7 @@ const InstructionPanel: React.FC = () => {
             <img
                 src={frames[currentFrame]}
                 alt=""
-                className="select-none absolute transition-all duration-1000 ease-in-out"
+                className="select-none absolute duration-1000 ease-in-out"
                 style={{
                     top: `calc(${asideHeight - remToPx(11)}px)`,
                 }}

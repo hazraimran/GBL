@@ -15,7 +15,7 @@ type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
     const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction,
-        currentScene, setCurrentScene, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
+        currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
 
@@ -47,7 +47,7 @@ const Levels: React.FC = () => {
                 setShowFirstTimePickPrompt(true);
             }
 
-            setCurrentScene('GAME');
+            navTo('GAME');
         }
     }
 
@@ -167,7 +167,7 @@ const Levels: React.FC = () => {
             <button
                 className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
                 onClick={() => {
-                    setCurrentScene('LANDING');
+                    navTo('LANDING');
                 }}
             >
                 <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />

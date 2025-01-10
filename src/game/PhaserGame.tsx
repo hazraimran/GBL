@@ -131,8 +131,6 @@ const PhaserGame = () => {
         };
     }, []);
 
-
-
     const handleRunCode = () => {
         saveCommandsUsed(levelInfo!.id, commandsUsed);
         if (!mainSceneRef.current) {
@@ -167,18 +165,12 @@ const PhaserGame = () => {
         setExecuting(false);
         mainSceneRef.current.reset();
 
-        // Add reset logic here
-        // You might want to restart the scene
         gameInstanceRef.current?.scene.start('MainScene');
     };
 
     useEffect(() => {
         registerResetFn(handleReset);
     }, [])
-
-    useEffect(() => {
-        console.log(resetFn);
-    }, [resetFn])
 
     const handleDrag = (speed: number) => {
         mainSceneRef.current?.modifySpeed(speed + 0.5);

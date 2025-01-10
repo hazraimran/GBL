@@ -3,7 +3,7 @@ import GameContext from '../context/GameContext';
 import { HelpCircle } from 'lucide-react';
 
 const Popup: React.FC = () => {
-    const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, setCurrentScene } = useContext(GameContext);
+    const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo } = useContext(GameContext);
     const getStatusColor = (current: number, target: number) => {
         return current <= target ? 'bg-lime-300' : 'bg-amber-600';
     };
@@ -78,7 +78,7 @@ const Popup: React.FC = () => {
                     </button>
                     <button
                         onClick={() => {
-                            setCurrentScene('LEVELS');
+                            navTo('LEVELS');
                             setCommandsUsed([]);
                             setShowPopup(false);
                         }}

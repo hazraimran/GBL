@@ -4,21 +4,26 @@ import FloatingMessage from '../components/FloatingMessage';
 import SmartHintSystem from '../components/Hint';
 
 const PromptScene = () => {
-    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo } = useContext(GameContext);
+    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt } = useContext(GameContext);
 
     return (
         <>
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
+            
             {showFailurePrompt && <>
-                <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true} setShowHint={() => setShowInfo(true)} />
-                <img className='fixed w-[20rem] z-[102] left-[28rem]' src='/guide_angry.png' />
+                <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true} setShowHint={() => {
+                    setShowInfo(true)
+                    setShowFailurePrompt(false)
+                }} />
+                <img className='fixed w-[20rem] z-[102] left-[28rem]' src='/guide_angry.webp' />
             </>}
+
             {showBottomPanel && showReadyPrompt && <FloatingMessage
                 backgroundColor='#7FA147'
                 text='run your program whenever you are ready'
                 className='fixed bottom-28 left-1/2 -translate-x-[9rem] z-[100] rotate-[-5deg]'
-
             />}
+
             {showBottomPanel && showFailurePrompt && <FloatingMessage text='stop and reset' className='fixed bottom-28 left-1/2 -translate-x-[13rem] -rotate-[5deg]' />}
 
             <SmartHintSystem level={{
