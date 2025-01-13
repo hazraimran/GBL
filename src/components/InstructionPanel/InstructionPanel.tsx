@@ -19,18 +19,18 @@ const InstructionPanel: React.FC = () => {
     const [fps, setFps] = useState(6); // 4 frames per second
 
     const frames = [
-        "./src/assets/animation/menu/menu_rotate_1.webp",
-        "./src/assets/animation/menu/menu_rotate_2.webp",
-        "./src/assets/animation/menu/menu_rotate_3.webp",
-        "./src/assets/animation/menu/menu_rotate_4.webp",
-        "./src/assets/animation/menu/menu_rotate_5.webp",
-        "./src/assets/animation/menu/menu_rotate_6.webp",
-        "./src/assets/animation/menu/menu_rotate_7.webp",
-        "./src/assets/animation/menu/menu_rotate_8.webp",
-        "./src/assets/animation/menu/menu_rotate_9.webp",
-        "./src/assets/animation/menu/menu_rotate_10.webp",
-        "./src/assets/animation/menu/menu_rotate_11.webp",
-        "./src/assets/animation/menu/menu_rotate_12.webp",
+        "./animation/menu_rotate_1.webp",
+        "./animation/menu_rotate_2.webp",
+        "./animation/menu_rotate_3.webp",
+        "./animation/menu_rotate_4.webp",
+        "./animation/menu_rotate_5.webp",
+        "./animation/menu_rotate_6.webp",
+        "./animation/menu_rotate_7.webp",
+        "./animation/menu_rotate_8.webp",
+        "./animation/menu_rotate_9.webp",
+        "./animation/menu_rotate_10.webp",
+        "./animation/menu_rotate_11.webp",
+        "./animation/menu_rotate_12.webp",
     ];
 
     const nextFrame = useCallback(() => {

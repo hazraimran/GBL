@@ -157,7 +157,7 @@ Remember:
 
 // src/components/SmartHintSystem.tsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Coins, Lightbulb, ChevronRight, RotateCcw, Loader2 } from 'lucide-react';
+import { Coins, Lightbulb, RotateCcw, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';

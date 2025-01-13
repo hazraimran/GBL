@@ -120,7 +120,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.spritesheet('worker', 'src/assets/animation/character/worker.png', {
+        this.load.spritesheet('worker', './worker.png', {
             frameWidth: 132,
             frameHeight: 132
         });
