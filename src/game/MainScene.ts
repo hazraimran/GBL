@@ -127,7 +127,7 @@ export class MainScene extends Phaser.Scene {
 
         this.load.image('character', 'src/assets/animation/character/character.jpg');
 
-        this.load.image('stone', 'src/assets/stone.jpg');
+        this.load.image('stone', './stone.jpg');
 
         this.load.on('loaderror', (file: any) => {
             console.error(`Failed to load: ${file.key}`);
