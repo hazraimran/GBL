@@ -21,10 +21,9 @@ const Landing: React.FC = () => {
                 }}
             >
             </div>
-            <div className="absolute top-1/2 -translate-y-full left-1/2 -translate-x-1/2 px-[2rem] py-[1rem] bg-gray-600 rounded-lg">
+            {/* <div className="absolute top-1/2 -translate-y-full left-1/2 -translate-x-1/2 px-[2rem] py-[1rem] bg-gray-600 rounded-lg">
                 <img className="w-[14rem]" src={'./icon2.png'} />
-            </div>
-
+            </div> */}
         </>
     );
 }
