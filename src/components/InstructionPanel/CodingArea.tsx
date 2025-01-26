@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect, useState, forwardRef } from 'react';
 import { CommandType, CommandWithArgType } from '../../types/game';
 import GameContext from '../../context/GameContext';
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import CommandRow from './CommandRow';
 import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';

@@ -82,7 +82,6 @@ const InstructionPanel: React.FC = () => {
                 }, 1000);
 
                 setCodingAreaHeight(entry.contentRect.height); // 更新高度
-                console.log('CodingArea height:', entry.contentRect.height);
             }
         });
 
@@ -122,10 +121,8 @@ const InstructionPanel: React.FC = () => {
         const element = CodingAreaRef.current;
 
         if (!element) return;
-        console.log('codingAreaHeight:', CodingAreaRef.current.offsetHeight, 'ContentRef.current.offsetHeight:', ContentRef.current?.offsetHeight);
 
         const height = ContentRef.current?.offsetHeight + CodingAreaRef.current?.offsetHeight
-        console.log('height', height);
 
         setAsideHeight(height + remToPx(10));
 
