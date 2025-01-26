@@ -7,6 +7,7 @@ import JumpConnector from './components/InstructionPanel/JumpConnector';
 import ButtonScene from './components/ButtonScene';
 import GameContext from './context/GameContext';
 import { useContext } from 'react';
+import AudioPlayer from './components/AudioPlayer';
 
 function App() {
   const Modal: React.FC = () => {
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <GameProvider>
+      <AudioPlayer />
       <div className='h-[100vh] w-[100vw] relative overflow-hidden'>
         <Toaster />
         <Landing />
