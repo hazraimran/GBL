@@ -10,6 +10,9 @@ export default {
 			transitionProperty: {
 				'height': 'height',
 			},
+			duration: {
+				'3000': '3000ms',
+			},
 			keyframes: {
 				'bg-zoom-loop': {
 					'0%, 100%': {

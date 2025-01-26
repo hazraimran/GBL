@@ -11,16 +11,24 @@ interface LevelCoordinate {
     h: number;
 }
 
+interface LevelStatus {
+    visited: boolean;
+    current: boolean;
+}
+
 type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
     const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction,
         currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
+    const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
 
     useEffect(() => {
-        setLevelsInfo(getLevelsInfo());
+        const levelsInfo = getLevelsInfo();
+        setLevelStatus(helper(levelsInfo));
+        setLevelsInfo(levelsInfo);
     }, [currentScene]);
 
     const handleClickLevel = (level: LevelInfo) => {
@@ -49,6 +57,27 @@ const Levels: React.FC = () => {
 
             navTo('GAME');
         }
+    }
+
+    const helper = (levels: LevelInfo[]): LevelStatus[] => {
+        let current = false;
+        const levelsStatus: LevelStatus[] = new Array(levels.length);
+        for (let i = levels.length - 1; i >= 0; i--) {
+            let status: LevelStatus = {
+                visited: false,
+                current: false
+            };
+            if (!levels[i].isLocked) {
+                status.visited = true;
+                if (!current) {
+                    current = true;
+                    status.current = true;
+                    status.visited = false;
+                }
+            }
+            levelsStatus[i] = status;
+        }
+        return levelsStatus;
     }
 
     const LEVEL_COORDINATES: LevelCoordinates = [
@@ -161,6 +190,12 @@ const Levels: React.FC = () => {
                             handleClickLevel(levelsInfo[idx]);
                         }}
                     >
+                        {
+                            levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-3"><img src="./cross.png" /></div>
+                        }
+                        {
+                            levelStatus[idx]?.current && <div className="-translate-x-3 -translate-y-3"><img src="./circle.png" className="animate-breath duration-3000" /></div>
+                        }
                     </button>
                 )
             })}
