@@ -3,6 +3,12 @@ import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { RxReset } from "react-icons/rx";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "../components/ui/tooltip"
 
 interface LevelCoordinate {
     x: number;
@@ -175,39 +181,50 @@ const Levels: React.FC = () => {
         },
     ]
 
-    return currentScene === 'LEVELS' && (
+    return currentScene === 'LEVELS' && levelsInfo && (
 
-        <div className="select-none fixed inset-0 flex flex-row justify-center overflow-scroll" >
-            <img src="./map.webp" className="h-[160vh]" alt="" />
-            {LEVEL_COORDINATES.map((level, idx) => {
-                return (
-                    <button
-                        key={idx}
-                        className={`absolute bg-transparent border-black rounded-full`}
-                        style={{ left: `${level.x}px`, top: `${level.y}px`, width: `${level.w}rem`, height: `${level.h}rem` }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleClickLevel(levelsInfo[idx]);
-                        }}
-                    >
-                        {
-                            levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-3"><img src="./cross.png" /></div>
-                        }
-                        {
-                            levelStatus[idx]?.current && <div className="-translate-x-3 -translate-y-3"><img src="./circle.png" className="animate-breath duration-3000" /></div>
-                        }
-                    </button>
-                )
-            })}
-            <button
-                className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={() => {
-                    navTo('LANDING');
-                }}
-            >
-                <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
-            </button>
-        </div>
+        <TooltipProvider>
+            <div className="select-none fixed inset-0 flex flex-row justify-center overflow-scroll" >
+                <img src="./map.webp" className="h-[160vh]" alt="" />
+                {LEVEL_COORDINATES.map((level, idx) => {
+                    return (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+
+                                <button
+                                    key={idx}
+                                    className={`absolute bg-transparent border-black rounded-full`}
+                                    style={{ left: `${level.x}px`, top: `${level.y}px`, width: `${level.w}rem`, height: `${level.h}rem` }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleClickLevel(levelsInfo[idx]);
+                                    }}
+                                >
+                                    {
+                                        levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-3"><img src="./tick.png" /></div>
+                                    }
+                                    {
+                                        levelStatus[idx]?.current && <div className="-translate-x-3 -translate-y-3"><img src="./circle.png" className="animate-breath duration-3000" /></div>
+                                    }
+                                </button>
+                            </TooltipTrigger>
+
+                            <TooltipContent className="text-lg">
+                                {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
+                            </TooltipContent>
+                        </Tooltip>
+                    )
+                })}
+                <button
+                    className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
+                    onClick={() => {
+                        navTo('LANDING');
+                    }}
+                >
+                    <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
+                </button>
+            </div>
+        </TooltipProvider>
     );
 }
 

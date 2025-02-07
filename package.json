@@ -17,6 +17,7 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",
+    "@radix-ui/react-tooltip": "^1.1.8",
     "circular-json": "^0.5.9",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
@@ -24,6 +25,7 @@
     "fingerprintjs": "^0.5.3",
     "firebase": "^11.0.1",
     "konva": "^9.3.16",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.454.0",
     "phaser": "^3.86.0",
     "react": "^18.3.1",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@types/circular-json": "^0.4.0",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
