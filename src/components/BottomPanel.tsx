@@ -3,6 +3,7 @@ import { RxReset } from "react-icons/rx";
 import { Play, Square, Gauge, Lock } from 'lucide-react';
 import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
+import { Volume2, VolumeOff } from "lucide-react";
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -17,7 +18,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 }) => {
     const [progress, setProgress] = useState(50);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showFailurePrompt, showBottomPanel, navTo, setShowInfo, showInfo,
+    const { showFailurePrompt, showBottomPanel, navTo, setShowInfo, showInfo, muted, setMuted,
         showOpenningInstruction, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
     const { saveCommandsUsed } = useGameStorage();
     const [isShaking, setIsShaking] = useState(false);
@@ -95,6 +96,18 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
             >
                 <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
             </button>
+            
+            <button
+                className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
+                onClick={() => {
+                }}
+            >
+                {muted ?
+                    <VolumeOff onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
+                    <Volume2 onClick={() => setMuted(true)} className="w-[7rem] h-[4rem] text-yellow-600" />
+                }
+            </button>
+
 
             {
                 !showInfo && !showOpenningInstruction && !showFailurePrompt && <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>

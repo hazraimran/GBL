@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
+import { Volume2, VolumeOff } from "lucide-react";
 import { RxReset } from "react-icons/rx";
 import {
     Tooltip,
@@ -25,7 +26,7 @@ interface LevelStatus {
 type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
-    const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction,
+    const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction, muted, setMuted,
         currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
@@ -222,6 +223,17 @@ const Levels: React.FC = () => {
                     }}
                 >
                     <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
+                </button>
+
+                <button
+                    className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
+                    onClick={() => {
+                    }}
+                >
+                    {muted ?
+                        <VolumeOff onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
+                        <Volume2 onClick={() => setMuted(true)} className="w-[7rem] h-[4rem] text-yellow-600" />
+                    }
                 </button>
             </div>
         </TooltipProvider>

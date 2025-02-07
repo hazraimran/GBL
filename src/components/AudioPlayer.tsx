@@ -4,10 +4,16 @@ import usePrevious from "../hooks/usePrevious";
 
 function AudioPlayer() {
 
-    const { currentScene } = useContext(GameContext);
+    const { currentScene, muted } = useContext(GameContext);
     const preScene = usePrevious(currentScene);
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.muted = muted;
+        }
+    }, [muted]);
+    
     useEffect(() => {
         let audioUrl;
 
