@@ -1,78 +1,109 @@
 import React, { useContext } from 'react';
 import GameContext from '../context/GameContext';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, ChevronRight, Check, X } from 'lucide-react';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-const Popup: React.FC = () => {
+const Popup = () => {
     const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo } = useContext(GameContext);
-    const getStatusColor = (current: number, target: number) => {
-        return current <= target ? 'bg-lime-300' : 'bg-amber-600';
+
+    const getStatusColor = (current, target) => {
+        return current <= target ? 'bg-lime-200' : 'bg-red-400';
     };
 
+    const getTextColor = (current, target) => {
+        return current <= target ? 'text-green-600' : 'text-red-700';
+    };
+
+    const isSuccessful = (current, target) => current <= target;
+
     return showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-[40rem]">
-                <h2 className="text-xl font-semibold mb-4">{levelInfo?.title ?? ''}</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+            <div className="bg-[#f4d03f] rounded-xl shadow-xl p-8 w-full max-w-2xl border-4 border-[#8B4513]"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E")`,
+                }}>
+                <h1 className="text-4xl font-bold text-[#8B4513] mb-6 text-center font-['Comic Sans MS']">{levelInfo?.title ?? 'Supply Chamber'}</h1>
+
                 {/* Size Challenge */}
-                <div className="relative">
-                    <div className="flex items-start">
-                        <div className="flex-1">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Size Challenge</h2>
-                            <p className="text-base mb-2">
-                                Use {levelInfo?.expectedCommandCnt} or fewer commands.
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-3">
+                        <h2 className="text-3xl font-bold text-[#8B4513] font-['Comic Sans MS']">Size Challenge</h2>
+                        {isSuccessful(gameStatus.commandCnt, levelInfo?.expectedCommandCnt) ? (
+                            <Check className="w-6 h-6 text-green-600" />
+                        ) : (
+                            <X className="w-6 h-6 text-red-600" />
+                        )}
+                    </div>
+                    <div className="flex items-center justify-between bg-[#f5e6d3] rounded-lg p-4 border-2 border-[#8B4513]">
+                        <div>
+                            <p className="text-xl text-[#8B4513] mb-2">Use {levelInfo?.expectedCommandCnt} or fewer commands</p>
+                            <p className={getTextColor(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)}>
+                                Your current solution uses {gameStatus.commandCnt} commands
                             </p>
-                            <p className="text-red-600 ml-4">
-                                - Your current solution uses {gameStatus.commandCnt} commands.
-                            </p>
-                            {/* <p className="text-gray-700 ml-4">
-                                    Your best used {sizeChallenge.best} commands.
-                                </p> */}
                         </div>
-                        <div className="flex items-start gap-1">
-                            <div className={`w-8 h-8 flex items-center justify-center text-black ${getStatusColor(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)}`}>
-                                {levelInfo?.expectedCommandCnt}
-                            </div>
-                            <div className={`w-8 h-8 flex items-center justify-center text-white ${getStatusColor(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)}`}>
+                        <div className="flex items-center gap-2">
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold ${getStatusColor(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)}`}>
                                 {gameStatus.commandCnt}
                             </div>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <HelpCircle className="w-7 h-7 text-[#8B4513] bg-[#f5e5d3ff]" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="text-lg">
+                                        <p>Try to use fewer commands to optimize your solution</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
-                        <button className="ml-2 text-gray-400 hover:text-gray-600">
-                            <HelpCircle className="w-5 h-5" />
-                        </button>
                     </div>
                 </div>
 
                 {/* Speed Challenge */}
-                <div className="relative mt-4">
-                    <div className="flex items-start">
-                        <div className="flex-1">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Speed Challenge</h2>
-                            <p className="text-base mb-2">
-                                Complete in {levelInfo?.expectedExecuteCnt} or fewer steps.
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-3">
+                        <h2 className="text-3xl font-bold text-[#8B4513] font-['Comic Sans MS']">Speed Challenge</h2>
+                        {isSuccessful(gameStatus.executeCnt, levelInfo?.expectedExecuteCnt) ? (
+                            <Check className="w-6 h-6 text-green-600" />
+                        ) : (
+                            <X className="w-6 h-6 text-red-600" />
+                        )}
+                    </div>
+                    <div className="flex items-center justify-between bg-[#f5e6d3] rounded-lg p-4 border-2 border-[#8B4513]">
+                        <div>
+                            <p className="text-xl text-[#8B4513] mb-2">Complete in {levelInfo?.expectedExecuteCnt} or fewer steps</p>
+                            <p className={getTextColor(gameStatus.executeCnt, levelInfo?.expectedExecuteCnt)}>
+                                Your solution completes in {gameStatus.executeCnt} steps
                             </p>
-                            <p className="text-red-600 ml-4">
-                                - Your solution completes in {gameStatus.executeCnt} steps, on average.
-                            </p>
-                            {/* <p className="text-gray-700 ml-4">
-                                    Your best completed in {speedChallenge.best} steps, on average.
-                                </p> */}
                         </div>
-                        <div className="flex items-start gap-1">
-                            <div className={`w-8 h-8 flex items-center justify-center text-black ${getStatusColor(gameStatus.executeCnt, levelInfo?.expectedExecuteCnt)}`}>
-                                {levelInfo?.expectedExecuteCnt}
-                            </div>
-                            <div className={`w-8 h-8 flex items-center justify-center text-white ${getStatusColor(gameStatus.executeCnt, levelInfo?.expectedExecuteCnt)}`}>
+                        <div className="flex items-center gap-2">
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold ${getStatusColor(gameStatus.executeCnt, levelInfo?.expectedExecuteCnt)}`}>
                                 {gameStatus.executeCnt}
                             </div>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <HelpCircle className="w-7 h-7 text-[#8B4513] bg-[#f5e5d3ff]" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="text-lg">
+                                        <p>Try to complete the level in fewer steps for better efficiency</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
-                        <button className="ml-2 text-gray-400 hover:text-gray-600">
-                            <HelpCircle className="w-5 h-5" />
-                        </button>
                     </div>
                 </div>
-                <div className="flex justify-end space-x-4">
+
+                {/* Buttons */}
+                <div className="flex justify-end gap-4">
                     <button
                         onClick={() => setShowPopup(false)}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                        className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-['Comic Sans MS'] text-lg"
                     >
                         Back
                     </button>
@@ -82,9 +113,10 @@ const Popup: React.FC = () => {
                             setCommandsUsed([]);
                             setShowPopup(false);
                         }}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        className="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-['Comic Sans MS'] text-lg flex items-center gap-2"
                     >
-                        Go To Map!
+                        Go To Map
+                        <ChevronRight className="w-5 h-5" />
                     </button>
                 </div>
             </div>
