@@ -87,20 +87,16 @@ npm run deploy
 
 Currently in active development with regular updates and new features being added. Feedback and contributions are welcome!
 
-## 🤝 Contributing
 
-We welcome contributions! Please see our contributing guidelines for more information.
-
-## 📝 License
-
-[License details to be added]
 
 ## 👥 Team
 
-- Project Lead: [Your Name]
-- Developers: [Team Members]
-- Educational Advisors: [Advisors]
+- Project Lead: Zack Hu
+- Developers: Zack Hu
+- Educational Advisors: Imran Hazra
 
 ## 📞 Contact
 
-For questions or feedback, please reach out to [contact information]
+For questions or feedback, please reach out to:
+- Email: zackhu2001@gmail.com
+- WeChat: HZX2001227

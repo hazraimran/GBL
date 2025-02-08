@@ -30,7 +30,7 @@
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Congratulations on your promotion to Apprentice Craftsman!", "But don’t get too comfortable—the challenges only get harder from here.", "Here is your new assignment."]
@@ -43,16 +43,16 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300,
+        "x": 362.5,
+        "y": 330,
         "value": 5
     }, {
-        "x": 400,
-        "y": 300,
+        "x": 462.5,
+        "y": 330,
         "value": 2
     }, {
-        "x": 500,
-        "y": 300,
+        "x": 562.5,
+        "y": 330,
         "value": 0
     }],
     "expectedCommandCnt": 8,
@@ -60,7 +60,7 @@
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Oh no!", "The rolling log system that transports stones has broken down!", "But construction can’t wait.", "You’ll have to bypass the system and grab stones directly from the construction slot.", "Think fast and adapt, young craftsman—the structure depends on you!"]
@@ -73,21 +73,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Good news!", "The rolling log system is fixed, but now the stones are arriving completely out of order!", "Your task is to sort them correctly and ensure each one ends up in its proper place.", "Precision is key—an unorganized foundation could spell disaster for the entire structure!"]
@@ -100,21 +100,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Sigh…", "The rainy season is here, and the site is a muddy mess.", "The old architect always said, “Stay calm and focused, and not even the rain can stop a great building.", "Don’t worry; math isn’t the key here—just take it one step at a time."]
@@ -127,21 +127,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 7,
     "expectedExecuteCnt": 20,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Who are you ? !", "This secret area is reserved for only the most exceptional architects.", "And you’re late—seven years late!", "From now on, I expect a 100% increase in efficiency.", "Every task will be scrutinized with the utmost care.", "Good luck!"]
@@ -154,21 +154,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 10,
     "expectedExecuteCnt": 29,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": []
@@ -181,21 +181,21 @@
     "commands": ["INPUT", "OUTPUT", "ADD", "COPYFROM", "COPYTO", "JUMP", "JUMP = 0"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Where do you see yourself in 5 years?", "Or 10 years?", "I have a note here from your other boss that says…", "From this point on, YOUR PERFORMANCE WILL BE EVALUATED WITH EXTRA SCRUTINY.", "What a treat!"]
@@ -208,21 +208,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Recently, someone suggested we pay more attention to the underappreciated materials.", "This time, you’ll only keep the “zero-weight” stones.", "What about the other materials ? That’s for you to decide!"]
@@ -235,21 +235,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 25,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Subtraction?!", "In construction, reducing errors means increasing success.", "Did you learn this in school?", "Don’t worry—we’re a good team, and I know you can figure it out!"]
@@ -262,21 +262,21 @@
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],
     "commandsUsed": [],
     "constructionSlots": [{
-        "x": 300,
-        "y": 300
+        "x": 362.5,
+        "y": 330
     }, {
-        "x": 400,
-        "y": 300
+        "x": 462.5,
+        "y": 330
     }, {
-        "x": 500,
-        "y": 300
+        "x": 562.5,
+        "y": 330
     }],
     "expectedCommandCnt": 8,
     "expectedExecuteCnt": 40,
     "executeCnt": -1,
     "commandCountAchievement": null,
     "executeCountAchievement": null,
-    "isLocked": true,
+    "isLocked": false,
     "timeSpent": 0,
     "timeAccessed": 0,
     "openningInstruction": ["Sometimes…", "…one stone is stronger than another.", "And sometimes…", "…they’re exactly the same!", "Learn to identify and balance them—that’s the essence of great architecture."]
