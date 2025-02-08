@@ -1,6 +1,7 @@
 // types/game.ts
 export interface Stone {
     sprite: Phaser.GameObjects.Sprite;
+    shadow: Phaser.GameObjects.Sprite | null;
     value: number;
     text: Phaser.GameObjects.Text;
 }
@@ -8,6 +9,7 @@ export interface Stone {
 export interface Worker {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     stoneCarried?: Stone;
+    shadow: Phaser.GameObjects.Sprite;
 }
 
 export interface ConstructionSlot {

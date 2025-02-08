@@ -130,7 +130,7 @@ const Levels: React.FC = () => {
             w: 5,
             h: 4
         }, {
-            x: 930,
+            x: 920,
             y: 440,
             w: 5,
             h: 4
@@ -140,7 +140,7 @@ const Levels: React.FC = () => {
             w: 5,
             h: 3
         }, {
-            x: 815,
+            x: 800,
             y: 375,
             w: 4,
             h: 3
@@ -202,7 +202,7 @@ const Levels: React.FC = () => {
                                     }}
                                 >
                                     {
-                                        levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-3"><img src="./tick.png" /></div>
+                                        levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-1 p-2"><img src="./tick.png" /></div>
                                     }
                                     {
                                         levelStatus[idx]?.current && <div className="-translate-x-3 -translate-y-3"><img src="./circle.png" className="animate-breath duration-3000" /></div>
@@ -212,6 +212,7 @@ const Levels: React.FC = () => {
 
                             <TooltipContent className="text-lg">
                                 {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
+                                {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
                             </TooltipContent>
                         </Tooltip>
                     )
