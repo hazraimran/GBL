@@ -6,7 +6,6 @@ const TypingDialog = () => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
-    // const [showSpeak1, setShowSpeak1] = useState(true);
 
     useEffect(() => {
         if (currentIndex < openningInstruction[currentTextIndex].length) {

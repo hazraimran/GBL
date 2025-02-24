@@ -1,0 +1,97 @@
+import { useState, useEffect, useContext } from 'react';
+// import GameContext from '../context/GameContext';
+import { useGameStorage } from '../hooks/useStorage/useGameStorage';
+
+const OpeningDialog = () => {
+    const openningInstruction = [
+        "Ah, at last! The new architect has arrived at our ancient construction site. Welcome, young builder!",
+        "I see the sacred map has already revealed itself to you - each number marks a challenge that will test your architectural prowess along the Nile.From the lotus fields at the start to the great pyramids beyond, your journey awaits!",
+        "But first, you must learn our ways.You'll be working with our mystical construction system - a series of commands that you'll arrange to direct your worker.",
+        "Think of it as conducting a sacred dance: INPUT to gather materials, OUTPUT to place them, and more advanced movements as you progress.",
+        "Don't be intimidated by the grand structures before you. Like the ancient architects before you, you'll start with simple tasks and gradually master more complex techniques.",
+        "Shall we begin with your first assignment at the supply chamber ? Remember, young architect - I'll be here to guide you every step of the way!"
+    ];
+    // const { setShowInstructionPanel } = useContext(GameContext);
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    const [displayedText, setDisplayedText] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const { getAndUpdateIsFirstTime } = useGameStorage();
+    const [showOpenningInstruction, setShowOpenningInstruction] = useState(false);
+
+    useEffect(() => {
+        const isFirstTime = getAndUpdateIsFirstTime();
+        if (isFirstTime) {
+            setShowOpenningInstruction(true);
+            console.log("first time");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (currentIndex < openningInstruction[currentTextIndex].length) {
+            const timer = setTimeout(() => {
+                setDisplayedText(prev => prev + openningInstruction[currentTextIndex][currentIndex]);
+                setCurrentIndex(prev => prev + 1);
+            }, 40);
+
+            return () => clearTimeout(timer);
+        }
+    }, [currentIndex, openningInstruction, currentTextIndex]);
+
+    const handleClick = () => {
+        if (currentIndex === openningInstruction[currentTextIndex].length) {
+            if (currentTextIndex === openningInstruction.length - 1) {
+                // reset all states
+                setCurrentIndex(0);
+                setDisplayedText('');
+                setCurrentTextIndex(0);
+                setShowOpenningInstruction(false);
+                // setShowInstructionPanel(true);
+                return;
+            }
+            // reset all states
+            setCurrentIndex(0);
+            setDisplayedText('');
+            setCurrentTextIndex(currentTextIndex + 1);
+            return;
+        } else {
+            // display all texts
+            setCurrentIndex(openningInstruction[currentTextIndex].length);
+            setDisplayedText(openningInstruction[currentTextIndex]);
+        }
+    };
+
+    return showOpenningInstruction && <>
+        <div
+            className={`fixed inset-0 z-[1000] h-[100vh] w-[100vw] transition-opacity duration-500 ease-linear backdrop-blur-sm`}
+            style={{
+                opacity: 1,
+                pointerEvents: 'auto',
+            }}
+        />
+        <div className='h-full flex flex-row justify-center items-center'>
+
+            <div
+                className={`cursor-pointer hover:shadow-lg transition-shadow select-none z-[1001]`}
+                onClick={handleClick}
+            >
+                <div className={`border-solid relative flex flex-col p-4 bg-gray-300 rounded-lg min-h-[2rem] z-[1001] ${currentTextIndex % 2 === 1 ? ' rotate-[-5deg]' : ' rotate-[5deg]'}
+            ${openningInstruction[currentTextIndex].length < 60 ? 'w-[16rem]' : openningInstruction[currentTextIndex].length < 100 ? 'w-[20rem]' : 'w-[22rem]'}`}>
+                    <div className='text-2xl'>
+                        {displayedText}
+                    </div>
+                    {currentIndex !== openningInstruction[currentTextIndex].length && <div className='relative w-full h-2 animate-float '>
+                        <div className='absolute -bottom-1 right-2 border-t-[12px] border-l-8 border-l-transparent border-r-8 border-r-transparent w-0 h-0 border-t-green-400'></div>
+                    </div>}
+
+                    <div className='border-solid absolute -right-[0.9rem] border-t-[0.75rem] border-l-[1rem] border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div>
+                </div>
+            </div>
+            {
+                currentTextIndex % 2 === 0 ? <img className='relative w-[20rem] z-[1002]' src='/guide_speak1.webp' /> : <img className='relative w-[20rem] z-[1002]' src='/guide_speak2.webp' />
+            }
+        </div>
+
+    </>
+};
+
+export default OpeningDialog;

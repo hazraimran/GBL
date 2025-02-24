@@ -33,5 +33,6 @@ export const useGameStorage = () => {
             gameStorage.updateTimeSpent(levelId, timeSpent),
         extractUploadReport: (errorCnt: number) =>
             gameStorage.extractUploadReport(errorCnt),
+        getAndUpdateIsFirstTime: () => gameStorage.getAndUpdateIsFirstTime(),
     };
 };

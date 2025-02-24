@@ -108,7 +108,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                 }
             </button>
 
-
             {
                 !showInfo && !showOpenningInstruction && !showFailurePrompt && <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>
                     <img src="./guide_read.webp" alt=""

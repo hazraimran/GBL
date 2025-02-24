@@ -43,6 +43,25 @@ class GameStorageService {
 
     createLevelInfoFromTemplate(): void {
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levelsInfo));
+        this.setIsFirstTime(true);
+    }
+
+    setIsFirstTime(isFirstTime: boolean): void {
+        localStorage.setItem(this.getKey('isFirstTime'), isFirstTime.toString());
+    }
+
+    getAndUpdateIsFirstTime(): boolean {
+        console.log("getAndUpdateIsFirstTime");
+        const value = localStorage.getItem(this.getKey('isFirstTime'));
+        if (!value) {
+            localStorage.setItem(this.getKey('isFirstTime'), 'true');
+            return true;
+        }
+        if (JSON.parse(value)) {
+            localStorage.setItem(this.getKey('isFirstTime'), 'false');
+            return true;
+        }
+        return false;
     }
 
     getLevelsInfo(): any {
