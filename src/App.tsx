@@ -8,6 +8,7 @@ import ButtonScene from './components/ButtonScene';
 import GameContext from './context/GameContext';
 import { useContext } from 'react';
 import AudioPlayer from './components/AudioPlayer';
+import { useEffect } from 'react';
 
 function App() {
   const Modal: React.FC = () => {
@@ -21,6 +22,26 @@ function App() {
       }}
     />
   }
+
+  useEffect(() => {
+    const preventZoom = (event: { ctrlKey: any; metaKey: any; preventDefault: () => void; }) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+      }
+    };
+
+    const preventKeyZoom = (event: { ctrlKey: any; metaKey: any; key: string; preventDefault: () => void; }) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener('wheel', preventZoom, { passive: false });
+    window.addEventListener('keydown', preventKeyZoom);
+
+    return () => {
+      window.removeEventListener('wheel', preventZoom);
+      window.removeEventListener('keydown', preventKeyZoom);
+    };
+  }, []);
 
   return (
     <GameProvider>
