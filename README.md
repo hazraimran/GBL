@@ -1,13 +1,14 @@
-# Ancient Architect
+# Ancient Architect 
+### [Click Here to Play](https://ancientarchitect.zackhu.com/)
 
 An interactive educational game that teaches <strong>assembly programming concepts</strong> through engaging puzzles in an <strong>ancient architectural setting</strong>. Players learn fundamental computer science concepts by solving visual challenges using assembly-like instructions.
 
 This game is inspired by <strong>Human Resource Machine</strong>, and lead by <strong>Professor Imran Hazra</strong>.
-## 🎯 Project Overview
+## Project Overview
 
 Ancient Architect is designed to bridge the gap between high-level programming concepts and machine-level execution. Through an intuitive visual interface, players solve increasingly complex puzzles using a simplified assembly instruction set, developing crucial computational thinking skills along the way.
 
-## 🌟 Key Features
+## Key Features
 
 ### Educational Components
 - Interactive visual programming environment
@@ -23,7 +24,7 @@ Ancient Architect is designed to bridge the gap between high-level programming c
 - Performance metrics tracking
 - AI-powered intelligent assistance
 
-## 🛠 Technology Stack
+## Technology Stack
 
 - **Frontend Framework**: Vite + React with TypeScript
 - **Game Engine**: Phaser.js
@@ -32,7 +33,7 @@ Ancient Architect is designed to bridge the gap between high-level programming c
 - **Hosting**: Firebase
 - **CI/CD**: GitHub Actions
 
-## 🎮 Gameplay Instructions
+## Gameplay Instructions
 
 Players progress through various levels, each introducing new assembly concepts:
 
@@ -48,7 +49,7 @@ Each level features:
 - Construction area for building programs
 - Performance metrics (command count, execution steps)
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Visit [Ancient Architect](https://ancientarchitect.zackhu.com/)
 2. Complete the tutorial level to learn basic controls
@@ -56,7 +57,7 @@ Each level features:
 4. Use the hint system when needed
 5. Optimize your solutions to earn achievements
 
-## 💡 Educational Benefits
+## Educational Benefits
 
 - Deep understanding of computer instruction execution
 - Strong foundation in computational thinking
@@ -64,7 +65,7 @@ Each level features:
 - Development of problem-solving skills
 - Understanding of code optimization principles
 
-## 🔧 Development Setup
+## Development Setup
 
 ```bash
 # Clone the repository
@@ -83,19 +84,13 @@ npm run build
 npm run deploy
 ```
 
-## 📈 Project Status
-
-Currently in active development with regular updates and new features being added. Feedback and contributions are welcome!
-
-
-
-## 👥 Team
+## Team
 
 - Project Lead: Zack Hu
 - Developers: Zack Hu
 - Educational Advisors: Imran Hazra
 
-## 📞 Contact
+## Contact
 
 For questions or feedback, please reach out to:
 - Email: zackhu2001@gmail.com
