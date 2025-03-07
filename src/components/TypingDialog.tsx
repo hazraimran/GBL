@@ -44,7 +44,7 @@ const TypingDialog = () => {
 
     return showOpenningInstruction && <>
         <div
-            className={`cursor-pointer hover:shadow-lg transition-shadow select-none z-[102]`}
+            className={`cursor-pointer transition-shadow select-none z-[102]`}
             onClick={handleClick}
         >
             <div className={`border-solid relative flex flex-col p-4 bg-gray-300 rounded-lg min-h-[2rem] ${currentTextIndex % 2 === 1 ? ' rotate-[-5deg]' : ' rotate-[5deg]'}
@@ -52,9 +52,9 @@ const TypingDialog = () => {
                 <div className='text-2xl'>
                     {displayedText}
                 </div>
-                {currentIndex !== openningInstruction[currentTextIndex].length && <div className='relative w-full h-2 animate-float '>
+                <div className={`relative w-full h-2 animate-float`}>
                     <div className='absolute -bottom-1 right-2 border-t-[12px] border-l-8 border-l-transparent border-r-8 border-r-transparent w-0 h-0 border-t-green-400'></div>
-                </div>}
+                </div>
 
                 <div className='border-solid absolute -right-[0.9rem] border-t-[0.75rem] border-l-[1rem] border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div>
             </div>
@@ -62,7 +62,7 @@ const TypingDialog = () => {
         {
             currentTextIndex % 2 === 0 ? <img className='w-[20rem] z-[102]' src='/guide_speak1.webp' /> : <img className='w-[20rem] z-[102]' src='/guide_speak2.webp' />
         }
-        
+
     </>
 };
 

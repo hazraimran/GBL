@@ -281,8 +281,19 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     };
 
     return (showInfo || showOpenningInstruction) && (
+
         <div
-            className='relative h-[100vh] w-[100vw] top-0 bg-black bg-opacity-80 z-[100] flex flex-row justify-center items-center select-none'
+            className={`flex flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+            style={{
+                opacity: 1,
+                pointerEvents: 'auto',
+                top: '25vh',
+                left: '20vw',
+                width: '60vw',
+                height: '50vh',
+                boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+            }}
             onClick={handleBackgroundClick}
         >
             {showOpenningInstruction ? (

@@ -22,7 +22,6 @@ const OpeningDialog = () => {
         const isFirstTime = getAndUpdateIsFirstTime();
         if (isFirstTime) {
             setShowOpenningInstruction(true);
-            console.log("first time");
         }
     }, []);
 
@@ -62,16 +61,22 @@ const OpeningDialog = () => {
 
     return showOpenningInstruction && <>
         <div
-            className={`fixed inset-0 z-[1000] h-[100vh] w-[100vw] transition-opacity duration-500 ease-linear backdrop-blur-sm`}
+            className={`fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
                 opacity: 1,
                 pointerEvents: 'auto',
+                top: '25vh',
+                left: '20vw',
+                width: '60vw',
+                height: '50vh',
+                boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
             }}
         />
         <div className='h-full flex flex-row justify-center items-center'>
 
             <div
-                className={`cursor-pointer hover:shadow-lg transition-shadow select-none z-[1001]`}
+                className={`cursor-pointer transition-shadow select-none z-[1001]`}
                 onClick={handleClick}
             >
                 <div className={`border-solid relative flex flex-col p-4 bg-gray-300 rounded-lg min-h-[2rem] z-[1001] ${currentTextIndex % 2 === 1 ? ' rotate-[-5deg]' : ' rotate-[5deg]'}
@@ -82,7 +87,13 @@ const OpeningDialog = () => {
                     {currentIndex !== openningInstruction[currentTextIndex].length && <div className='relative w-full h-2 animate-float '>
                         <div className='absolute -bottom-1 right-2 border-t-[12px] border-l-8 border-l-transparent border-r-8 border-r-transparent w-0 h-0 border-t-green-400'></div>
                     </div>}
-
+                    {
+                        displayedText === openningInstruction[currentTextIndex] && <div className='flex justify-end relative '>
+                            <div className='text-center text-lg pr-6'>Click to continue</div>
+                            <div className='absolute top-1 border-t-[12px] border-l-8 border-l-transparent border-r-8 border-r-transparent w-0 h-0 border-t-green-400 animate-float'>
+                            </div>
+                        </div>
+                    }
                     <div className='border-solid absolute -right-[0.9rem] border-t-[0.75rem] border-l-[1rem] border-l-gray-300 border-b-[0.75rem] border-b-transparent border-t-transparent w-0 h-0 '></div>
                 </div>
             </div>
