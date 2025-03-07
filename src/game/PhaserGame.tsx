@@ -8,6 +8,8 @@ import { LevelInfo } from '../types/level';
 import EventManager from '../EventManager';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { UploadRecordService } from '../services/firestore/uploadRecordService';
+import VictorySoundPlayer from './VictorySoundPlayer';
+
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
@@ -47,6 +49,7 @@ const PhaserGame = () => {
             executeCnt: number;
             commandCnt: number;
         }) => {
+            VictorySoundPlayer.play();
             setGameStatus({
                 executeCnt: data.executeCnt,
                 commandCnt: data.commandCnt

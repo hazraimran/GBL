@@ -627,7 +627,7 @@ export class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: stone.text,
             x: stone.text.x + adjust.x,
-            y: stone.text.y + adjust.y,            
+            y: stone.text.y + adjust.y,
             duration: 700,
             ease: 'Power2.easeInOut',
             onComplete: () => {
@@ -985,15 +985,15 @@ export class MainScene extends Phaser.Scene {
     }
 
     private async gameDoneAnimation(): Promise<void> {
-        let tasks = [];
-        for (let i = 0; i < this.outputStones.length; i++) {
-            let stone = this.outputStones[i];
-            tasks.push(this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin, 8, 'linear').then(() => {
-                stone.sprite.destroy();
-                stone.text.destroy();
-            }))
-        }
-        await Promise.all(tasks);
+        // let tasks = [];
+        // for (let i = 0; i < this.outputStones.length; i++) {
+        //     let stone = this.outputStones[i];
+        //     tasks.push(this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin, 8, 'linear').then(() => {
+        //         stone.sprite.destroy();
+        //         stone.text.destroy();
+        //     }))
+        // }
+        // await Promise.all(tasks);
     }
 
     private async validateOutput(): Promise<void> {
