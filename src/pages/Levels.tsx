@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { Volume2, VolumeOff } from "lucide-react";
+import { Volume2, VolumeOff, RotateCcw } from "lucide-react";
 import { RxReset } from "react-icons/rx";
+import ResetGamePopup from "../components/ResetGamePopup";
 import {
     Tooltip,
     TooltipContent,
@@ -32,6 +33,7 @@ const Levels: React.FC = () => {
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
+    const [showResetPopup, setShowResetPopup] = useState(false);
 
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
@@ -228,6 +230,15 @@ const Levels: React.FC = () => {
                     </button>
 
                     <button
+                        className="fixed bottom-0 right-0 bg-custom-bg rounded-lg flex items-center justify-center py-1"
+                        onClick={() => {
+                            setShowResetPopup(true);
+                        }}
+                    >
+                        <RotateCcw onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
+                    </button>
+
+                    <button
                         className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
                         onClick={() => {
                         }}
@@ -240,7 +251,7 @@ const Levels: React.FC = () => {
                 </div>
             </TooltipProvider>
             <OpeningDialog />
-
+            {showResetPopup && <ResetGamePopup setShowResetPopup={setShowResetPopup}/>}
         </>
     );
 }

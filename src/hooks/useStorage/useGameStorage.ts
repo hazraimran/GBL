@@ -34,5 +34,6 @@ export const useGameStorage = () => {
         extractUploadReport: (errorCnt: number) =>
             gameStorage.extractUploadReport(errorCnt),
         getAndUpdateIsFirstTime: () => gameStorage.getAndUpdateIsFirstTime(),
+        resetGameData: () => gameStorage.resetGameData(),
     };
 };

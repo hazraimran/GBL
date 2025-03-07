@@ -126,6 +126,33 @@ class GameStorageService {
         });
         return report;
     }
+
+    resetGameData(): boolean {
+        try {
+            const currentUID = localStorage.getItem(this.getKey('uid'));
+
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(this.storagePrefix) && !key.endsWith('uid')) {
+                    keysToRemove.push(key);
+                }
+            }
+
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+
+            this.createLevelInfoFromTemplate();
+
+            if (currentUID) {
+                localStorage.setItem(this.getKey('uid'), currentUID);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('reset error:', error);
+            return false;
+        }
+    }
 }
 
 const gameStorageService = new GameStorageService();
