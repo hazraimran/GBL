@@ -8,6 +8,7 @@ import { FingerprintService } from '../fingerPrint/fingerPrintService';
 class GameStorageService {
     private storagePrefix: string = 'game';
     private fingerprintService: FingerprintService;
+    private defaultCoins: number = 5;
 
     constructor() {
         this.fingerprintService = FingerprintService.getInstance();
@@ -26,6 +27,7 @@ class GameStorageService {
         const newUID = await this.generateUID();
         localStorage.setItem(this.getKey('uid'), newUID);
         this.createLevelInfoFromTemplate();
+        this.initializeCoins();
         return newUID;
     }
 
@@ -44,6 +46,39 @@ class GameStorageService {
     createLevelInfoFromTemplate(): void {
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levelsInfo));
         this.setIsFirstTime(true);
+    }
+
+    initializeCoins(): void {
+        if (localStorage.getItem(this.getKey('coins')) === null) {
+            localStorage.setItem(this.getKey('coins'), this.defaultCoins.toString());
+        }
+    }
+
+    getCoins(): number {
+        const coins = localStorage.getItem(this.getKey('coins'));
+        if (coins === null) {
+            this.initializeCoins();
+            return this.defaultCoins;
+        }
+        return parseInt(coins, 10);
+    }
+
+    setCoins(amount: number): void {
+        localStorage.setItem(this.getKey('coins'), amount.toString());
+    }
+
+    addCoins(amount: number): number {
+        const currentCoins = this.getCoins();
+        const newAmount = currentCoins + amount;
+        this.setCoins(newAmount);
+        return newAmount;
+    }
+
+    removeCoins(amount: number): number {
+        const currentCoins = this.getCoins();
+        const newAmount = Math.max(0, currentCoins - amount); // 确保coins不会小于0
+        this.setCoins(newAmount);
+        return newAmount;
     }
 
     setIsFirstTime(isFirstTime: boolean): void {
@@ -130,11 +165,12 @@ class GameStorageService {
     resetGameData(): boolean {
         try {
             const currentUID = localStorage.getItem(this.getKey('uid'));
+            const currentCoins = this.getCoins(); // 保存当前的coins数量
 
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && key.startsWith(this.storagePrefix) && !key.endsWith('uid')) {
+                if (key && key.startsWith(this.storagePrefix) && !key.endsWith('uid') && !key.endsWith('coins')) {
                     keysToRemove.push(key);
                 }
             }
@@ -146,6 +182,13 @@ class GameStorageService {
             if (currentUID) {
                 localStorage.setItem(this.getKey('uid'), currentUID);
             }
+
+            // 重置后是否要重置coins取决于游戏逻辑
+            // 如果需要保留coins，取消下面的注释
+            // this.setCoins(currentCoins);
+
+            // 如果需要重置coins为默认值，取消下面的注释
+            this.setCoins(this.defaultCoins);
 
             return true;
         } catch (error) {

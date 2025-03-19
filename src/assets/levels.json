@@ -171,7 +171,12 @@
         "isLocked": false,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": []
+        "openningInstruction": ["Astonishing!",
+            "You've discovered our most secret multiplication workshop!",
+            "Every stone here must be precisely transformed to eight times its original weight.",
+            "But resources are scarce—you must complete this task with minimal tools.",
+            "Remember, a true master isn't defined by how many tools they possess, but by how cleverly they use them."
+        ]
     }, {
         "id": 8,
         "title": "Zero Exterminator",

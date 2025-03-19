@@ -10,7 +10,7 @@ import {
 
 const Popup = () => {
     const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo } = useContext(GameContext);
-
+    
     const getStatusColor = (current, target) => {
         return current <= target ? 'bg-lime-200' : 'bg-red-400';
     };
@@ -113,7 +113,7 @@ const Popup = () => {
                             setCommandsUsed([]);
                             setShowPopup(false);
                         }}
-                        className="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-['Comic Sans MS'] text-lg flex items-center gap-2"
+                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-['Comic Sans MS'] text-lg flex items-center gap-2"
                     >
                         Go To Map
                         <ChevronRight className="w-5 h-5" />

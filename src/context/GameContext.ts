@@ -52,8 +52,6 @@ interface GameContextType {
     setShowPromptModal: (show: boolean) => void;
     showInfo: boolean;
     setShowInfo: (show: boolean) => void;
-    coins: number,
-    setCoins: (coins: number) => void,
     navTo: (scene: CurrentSceneType) => void,
     showModal: boolean,
     muted: boolean,
@@ -135,8 +133,6 @@ const GameContext = createContext<GameContextType>({
     setShowPromptModal: () => { },
     showInfo: false,
     setShowInfo: () => { },
-    coins: 0,
-    setCoins: () => { },
     navTo: () => { },
     showModal: false,
     muted: false,

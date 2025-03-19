@@ -1,4 +1,3 @@
-// hooks/useGame / useGameStorage.ts
 import { useState, useEffect } from 'react';
 import GameStorageService from '../../services/storage/gameStorageService';
 import { LevelInfo } from '../../types/level';
@@ -7,17 +6,48 @@ import { CommandWithArgType } from '../../types/game';
 export const useGameStorage = () => {
     const [gameStorage] = useState(GameStorageService);
     const [uid, setUid] = useState<string | null>(null);
+    const [coins, setCoins] = useState<number>(0);
 
     useEffect(() => {
         const initUID = async () => {
             const id = await gameStorage.getOrCreateUID();
             setUid(id);
+            // Initialize and get the coins amount
+            updateCoinsState();
         };
         initUID();
     }, [gameStorage]);
 
+    // Helper function to update coins state
+    const updateCoinsState = () => {
+        setCoins(gameStorage.getCoins());
+    };
+
     return {
         uid,
+        // Coins-related methods
+        coins, // Current coins amount state
+        getCoins: () => {
+            const currentCoins = gameStorage.getCoins();
+            setCoins(currentCoins);
+            return currentCoins;
+        },
+        setCoins: (amount: number) => {
+            gameStorage.setCoins(amount);
+            setCoins(amount);
+            return amount;
+        },
+        addCoins: (amount: number) => {
+            const newAmount = gameStorage.addCoins(amount);
+            setCoins(newAmount);
+            return newAmount;
+        },
+        removeCoins: (amount: number) => {
+            const newAmount = gameStorage.removeCoins(amount);
+            setCoins(newAmount);
+            return newAmount;
+        },
+        // Original methods
         getLevelsInfo: () => gameStorage.getLevelsInfo(),
         getLevelInfo: (levelId: number) => gameStorage.getLevelInfo(levelId),
         setLevelInfo: (levelId: number, info: LevelInfo) =>
@@ -34,6 +64,11 @@ export const useGameStorage = () => {
         extractUploadReport: (errorCnt: number) =>
             gameStorage.extractUploadReport(errorCnt),
         getAndUpdateIsFirstTime: () => gameStorage.getAndUpdateIsFirstTime(),
-        resetGameData: () => gameStorage.resetGameData(),
+        resetGameData: () => {
+            const result = gameStorage.resetGameData();
+            // Update coins state after resetting game data
+            updateCoinsState();
+            return result;
+        },
     };
 };

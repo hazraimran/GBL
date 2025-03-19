@@ -157,10 +157,11 @@ Remember:
 
 // src/components/SmartHintSystem.tsx
 import React, { useState, useEffect, useContext } from 'react';
-import { Coins, Lightbulb, RotateCcw, Loader2 } from 'lucide-react';
+import { Coins, Lightbulb, ChevronLeft, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 
 interface SmartHintSystemProps {
     level: Level;
@@ -187,8 +188,6 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         setShowInfo,
         showOpenningInstruction,
         setShowOpenningInstruction,
-        coins,
-        setCoins
     } = useContext(GameContext);
 
     // State
@@ -198,6 +197,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     const [hintLevel, setHintLevel] = useState(1);
     const [error, setError] = useState<string | null>(null);
     const [showHint, setShowHint] = useState(useHint);
+    const { coins, getCoins, addCoins, removeCoins } = useGameStorage();
 
     // Hint descriptions
     const hintDescriptions = {
@@ -249,8 +249,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
             const cleanHint = content.replace(/<code>[\s\S]+?<\/code>/g, '').trim();
 
             setHint(cleanHint);
-            setCoins(coins - 1);
-            // setCoins((prevCoins: number) => prevCoins - 1);
+            removeCoins(1);
 
             if (suggestedCode && onCodeSuggestion && hintLevel === 3) {
                 onCodeSuggestion(suggestedCode);
@@ -271,6 +270,11 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         setHintLevel(1);
         setError(null);
     };
+
+    const earnCoins = () => {
+        window.open('https://google.com', '_blank', 'noopener,noreferrer');
+        addCoins(1);
+    }
 
     // Click handler for background
     const handleBackgroundClick = () => {
@@ -293,6 +297,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                 height: '50vh',
                 boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
             }}
             onClick={handleBackgroundClick}
         >
@@ -302,7 +307,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                 !showHint && (
                     <div className='w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102] text-3xl'>
                         <button
-                            className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all rotate-6'
+                            className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all rotate-6'
                             onClick={() => {
                                 setShowInfo(false);
                                 setShowOpenningInstruction(true);
@@ -312,7 +317,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                             <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
                         </button>
                         <button
-                            className='z-[102] w-full text-center rounded px-4 py-2 hover:scale-105 transition-all -rotate-6'
+                            className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all -rotate-6'
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setShowHint(true);
@@ -326,7 +331,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
             )}
 
             {showHint && (
-                <Card className="w-full max-w-2xl z-[102]" onClick={(e) => e.stopPropagation()}>
+                <Card className="w-full h-full max-w-2xl z-[102]" onClick={(e) => e.stopPropagation()}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-2">
@@ -344,23 +349,32 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        {/* {!hint && ( */}
-                        <div className="bg-gray-100 p-4 rounded-lg">
-                            <p className="font-medium mb-2">How hints work:</p>
-                            <ul className="space-y-2 text-sm">
-                                {Object.entries(hintDescriptions).map(([level, desc]) => (
-                                    <li key={level} className="flex items-center gap-2">
-                                        <span className="font-bold">Level {level}:</span>
-                                        <span>{desc}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <p className="mt-2 text-sm text-gray-600">Each hint costs 1 coin - spend them wisely!</p>
-                        </div>
-                        {/* )} */}
+                        {!hint && (
+                            <>
+                                <div className="bg-gray-100 p-4 rounded-lg">
+                                    <p className="font-medium mb-2 text-lg">How hints work:</p>
+                                    <ul className="space-y-2 text-sm">
+                                        {Object.entries(hintDescriptions).map(([level, desc]) => (
+                                            <li key={level} className="flex items-center gap-2">
+                                                <span className="font-bold">Level {level}:</span>
+                                                <span>{desc}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <p className="mt-2 text-sm text-gray-600">Each hint costs 1 coin - spend them wisely!</p>
+                                </div>
+
+                                <div className="bg-gray-100 p-4 rounded-lg">
+                                    <p className="font-medium mb-2 text-lg">How to earn hints:</p>
+                                    <ul className="space-y-2 text-sm">
+                                    </ul>
+                                    <p className="mt-2 text-sm text-gray-600">Click & Read the Below Resource would give you 1 coin</p>
+                                </div>
+                            </>
+                        )}
 
                         {hint && (
-                            <Alert className={`max-h-[24rem] overflow-auto ${hintLevel > 2 ? "border-destructive" : ""}`}>
+                            <Alert className={`max-h-[17rem] overflow-auto ${hintLevel > 2 ? "border-destructive" : ""}`}>
                                 <AlertTitle>Hint Level {hintLevel - 1}</AlertTitle>
                                 <AlertDescription className="mt-2 whitespace-pre-wrap">
                                     {hint}
@@ -375,7 +389,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                             </Alert>
                         )}
 
-                        <div className="flex justify-between gap-2">
+                        <div className="flex justify-between gap-2 flex-row-reverse">
                             <Button
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -392,8 +406,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     </>
                                 ) : (
                                     <>
-                                        {!hint ? 'Purchase Hint' : 'Tell me more!'}
-                                        {/* <ChevronRight className="h-4 w-4" /> */}
+                                        {!hint ? 'Purchase Hint' : 'Tell me more! (-1 coin)'}
                                     </>
                                 )}
                             </Button>
@@ -408,8 +421,23 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     disabled={loading}
                                     className="flex items-center gap-2"
                                 >
-                                    <RotateCcw className="h-4 w-4" />
-                                    Reset
+                                    <ChevronLeft className="h-4 w-4" />
+                                    Back
+                                </Button>
+                            )}
+                            {!hint && (
+                                <Button
+                                    variant="outline"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        earnCoins();
+                                    }}
+                                    disabled={loading}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Coins className="h-5 w-5 text-yellow-400" />
+
+                                    Earn Coins!
                                 </Button>
                             )}
                         </div>

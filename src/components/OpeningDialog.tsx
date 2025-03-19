@@ -71,6 +71,7 @@ const OpeningDialog = () => {
                 height: '50vh',
                 boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
             }}
         />
         <div className='h-full flex flex-row justify-center items-center'>
