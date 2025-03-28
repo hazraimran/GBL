@@ -475,20 +475,20 @@ export class MainScene extends Phaser.Scene {
 
     private async handleCopyTo(arg: number): Promise<void> {
         const slotPos = {
-            x: 300 + arg % 3 * 60 + 30,
-            y: 300 + Math.floor(arg / 3) * 60
+            x: 300 + arg % 3 * 100 + 20,
+            y: 300 + Math.floor(arg / 3) * 100 + 30
         }
         await this.tweenWorkerTo(slotPos.x, slotPos.y);
-        await this.putStoneToSlot(arg)
+        await this.copyStoneToSlot(arg)
     }
 
     private async handleAdd(arg: number): Promise<void> {
         const slotPos = {
-            x: 300 + arg % 3 * 100,
-            y: 300 + Math.floor(arg / 3) * 100 - 60
+            x: 300 + arg % 3 * 100 + 20,
+            y: 300 + Math.floor(arg / 3) * 100 + 30
         }
         await this.tweenWorkerTo(slotPos.x, slotPos.y);
-        this.addStoneFromSlot(arg);
+        await this.addStoneFromSlot(arg);
     }
 
     private async handleSub(arg: number): Promise<void> {
@@ -671,7 +671,7 @@ export class MainScene extends Phaser.Scene {
         await this.pickUpStone(stone, true, false);
     }
 
-    private addStoneFromSlot(slot: number) {
+    private async addStoneFromSlot(slot: number) {
         if (!this.worker) return;
 
         const slotStone = this.constructionSlots[slot];
@@ -691,10 +691,369 @@ export class MainScene extends Phaser.Scene {
             return;
         }
 
-        this.addStone(slotStone.stone as Stone);
+        // Store original values before any modifications
+        const originalSlotValue = slotStone.stone.value;
+        const carriedValue = this.worker.stoneCarried.value;
+
+        // 1. Put down the currently carried stone into the slot (similar to COPYTO)
+        const carriedStone = this.worker.stoneCarried;
+
+        // Play drop animation
+        this.worker.sprite.play('drop', true);
+
+        // Create a copy of the carried stone to place in the slot
+        const stoneCopy: Stone = {
+            sprite: this.add.sprite(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y,
+                'stone'
+            ).setDepth(7),
+            shadow: this.add.sprite(
+                carriedStone.sprite.x + 10,
+                carriedStone.sprite.y + 10,
+                'stoneShadow'
+            ).setScale(0.35).setDepth(1),
+            value: carriedStone.value,
+            text: this.add.text(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y - 8,
+                carriedStone.value.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '18px'
+                }
+            ).setDepth(7).setOrigin(0.5)
+        };
+
+        stoneCopy.sprite.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
+
+        // Calculate target position in the slot
+        const targetX = slotStone.rect.x - 65;
+        const targetY = slotStone.rect.y - 30;
+
+        // Temporarily hide the carried stone during animation
+        carriedStone.sprite.setVisible(false);
+        carriedStone.text?.setVisible(false);
+        carriedStone.shadow?.setVisible(false);
+
+        // Animate: Move the stone copy into the slot
+        await Promise.all([
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.sprite,
+                    x: targetX,
+                    y: targetY,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.text,
+                    x: targetX,
+                    y: targetY - 8,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.shadow,
+                    x: targetX + 10,
+                    y: targetY + 10,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            })
+        ]);
+
+        // 2. Calculate the combined value (original slot value + carried value)
+        const combinedValue = originalSlotValue + carriedValue;
+
+        // 3. Pick up the combined stone from the slot
+        this.worker.sprite.play('pick', true);
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Create the combined stone at the slot position
+        const combinedStone: Stone = {
+            sprite: this.add.sprite(
+                targetX,
+                targetY,
+                'stone'
+            ).setDepth(7),
+            shadow: this.add.sprite(
+                targetX + 10,
+                targetY + 10,
+                'stoneShadow'
+            ).setScale(0.35).setDepth(1),
+            value: combinedValue,
+            text: this.add.text(
+                targetX,
+                targetY - 8,
+                combinedValue.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '18px'
+                }
+            ).setDepth(7).setOrigin(0.5)
+        };
+
+        combinedStone.sprite.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
+
+        stoneCopy.sprite.destroy();
+        stoneCopy.text?.destroy();
+        stoneCopy.shadow?.destroy();
+
+        // Animate: Fade out the shadow
+        this.tweens.add({
+            targets: combinedStone.shadow,
+            alpha: 0,
+            scale: 0.25,
+            duration: 700,
+            ease: 'Linear',
+            onComplete: () => {
+                combinedStone.shadow?.destroy();
+            }
+        });
+
+        // Animate: Move stone to worker's hand
+        const adjust = { x: -45, y: -55 }; // Same offset as pickStoneFromSlot
+        await Promise.all([
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: combinedStone.sprite,
+                    x: targetX + adjust.x,
+                    y: targetY + adjust.y,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: combinedStone.text,
+                    x: targetX + adjust.x,
+                    y: targetY + adjust.y - 8,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            })
+        ]);
+
+        // Clean up the original carried stone
+        carriedStone.sprite.destroy();
+        carriedStone.text?.destroy();
+        carriedStone.shadow?.destroy();
+
+        // Set the combined stone as the currently carried stone
+        this.worker.stoneCarried = combinedStone;
+
+        // Small delay to complete animations
+        await new Promise(resolve => setTimeout(resolve, 200));
     }
 
-    private subStoneFromSlot(slot: number) {
+    private async subStoneFromSlot(slot: number) {
+        if (!this.worker) return;
+
+        const slotStone = this.constructionSlots[slot];
+        if (!slotStone.stone) {
+            EventManager.emit('levelFailed', {
+                "message": ErrorMessages[GameErrorCodes.SUB_EMPTY]
+            });
+            this.stopExecution();
+            return;
+        }
+
+        if (!this.worker.stoneCarried) {
+            EventManager.emit('levelFailed', {
+                "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_SUB]
+            });
+            this.stopExecution();
+            return;
+        }
+
+        // Store original values before any modifications
+        const originalSlotValue = slotStone.stone.value;
+        const carriedValue = this.worker.stoneCarried.value;
+
+        // 1. Put down the currently carried stone into the slot (similar to COPYTO)
+        const carriedStone = this.worker.stoneCarried;
+
+        // Play drop animation
+        this.worker.sprite.play('drop', true);
+
+        // Create a copy of the carried stone to place in the slot
+        const stoneCopy: Stone = {
+            sprite: this.add.sprite(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y,
+                'stone'
+            ).setDepth(7),
+            shadow: this.add.sprite(
+                carriedStone.sprite.x + 10,
+                carriedStone.sprite.y + 10,
+                'stoneShadow'
+            ).setScale(0.35).setDepth(1),
+            value: carriedStone.value,
+            text: this.add.text(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y - 8,
+                carriedStone.value.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '18px'
+                }
+            ).setDepth(7).setOrigin(0.5)
+        };
+
+        stoneCopy.sprite.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
+
+        // Calculate target position in the slot
+        const targetX = slotStone.rect.x - 65;
+        const targetY = slotStone.rect.y - 30;
+
+        // Temporarily hide the carried stone during animation
+        carriedStone.sprite.setVisible(false);
+        carriedStone.text?.setVisible(false);
+        carriedStone.shadow?.setVisible(false);
+
+        // Animate: Move the stone copy into the slot
+        await Promise.all([
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.sprite,
+                    x: targetX,
+                    y: targetY,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.text,
+                    x: targetX,
+                    y: targetY - 8,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: stoneCopy.shadow,
+                    x: targetX + 10,
+                    y: targetY + 10,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            })
+        ]);
+
+        // 2. Calculate the subtracted value (carried value - original slot value)
+        const subtractedValue = carriedValue - originalSlotValue;
+
+        // 3. Pick up the subtracted stone from the slot
+        this.worker.sprite.play('pick', true);
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Create the subtracted stone at the slot position
+        const subtractedStone: Stone = {
+            sprite: this.add.sprite(
+                targetX,
+                targetY,
+                'stone'
+            ).setDepth(7),
+            shadow: this.add.sprite(
+                targetX + 10,
+                targetY + 10,
+                'stoneShadow'
+            ).setScale(0.35).setDepth(1),
+            value: subtractedValue,
+            text: this.add.text(
+                targetX,
+                targetY - 8,
+                subtractedValue.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '18px'
+                }
+            ).setDepth(7).setOrigin(0.5)
+        };
+
+        subtractedStone.sprite.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
+
+        stoneCopy.sprite.destroy();
+        stoneCopy.text?.destroy();
+        stoneCopy.shadow?.destroy();
+
+        // Animate: Fade out the shadow
+        this.tweens.add({
+            targets: subtractedStone.shadow,
+            alpha: 0,
+            scale: 0.25,
+            duration: 700,
+            ease: 'Linear',
+            onComplete: () => {
+                subtractedStone.shadow?.destroy();
+            }
+        });
+
+        // Animate: Move stone to worker's hand
+        const adjust = { x: -45, y: -55 }; // Same offset as pickStoneFromSlot
+        await Promise.all([
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: subtractedStone.sprite,
+                    x: targetX + adjust.x,
+                    y: targetY + adjust.y,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.tweens.add({
+                    targets: subtractedStone.text,
+                    x: targetX + adjust.x,
+                    y: targetY + adjust.y - 8,
+                    duration: 700,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            })
+        ]);
+
+        // Clean up the original carried stone
+        carriedStone.sprite.destroy();
+        carriedStone.text?.destroy();
+        carriedStone.shadow?.destroy();
+
+        // Set the subtracted stone as the currently carried stone
+        this.worker.stoneCarried = subtractedStone;
+
+        // Small delay to complete animations
+        await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    private foo(slot: number) {
         if (!this.worker) return;
 
         const slotStone = this.constructionSlots[slot];
@@ -715,14 +1074,6 @@ export class MainScene extends Phaser.Scene {
         }
 
         this.subStone(slotStone.stone as Stone);
-    }
-
-    private addStone(stone: Stone) {
-        if (!this.worker || !this.worker.stoneCarried) return;
-        // animation
-        let newValue = (this.worker.stoneCarried.value ?? 0) + stone.value;
-        this.worker.stoneCarried.text.setText(newValue.toString());
-        this.worker.stoneCarried.value = newValue;
     }
 
     private subStone(stone: Stone) {
@@ -795,77 +1146,13 @@ export class MainScene extends Phaser.Scene {
         this.worker.stoneCarried = stoneCopy;
     }
 
-    // private async putStoneToSlot(slot: number) {
-    //     if (!this.worker) return;
-
-    //     const stone = this.worker.stoneCarried;
-
-    //     stone?.sprite.setDepth(5);
-    //     stone?.text?.setDepth(5);
-
-    //     if (!stone) {
-    //         EventManager.emit('levelFailed', {
-    //             "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_COPYTO]
-    //         });
-    //         this.stopExecution();
-    //         return;
-    //     }
-
-    //     const shadow = this.add.sprite(
-    //         stone.sprite?.x ?? 0 + 10,
-    //         stone.sprite?.y ?? 0 + 10,
-    //         'stoneShadow'
-    //     ).setScale(0.35).setDepth(1);
-    //     stone.shadow = shadow;
-
-    //     // Drop stone animation
-    //     this.worker.sprite.play('drop', true);
-
-    //     await new Promise((resolve) => {
-    //         setTimeout(() => resolve(), 1000);
-    //     });
-
-    //     if (this.constructionSlots[slot].stone) {
-    //         this.constructionSlots[slot].stone.sprite.destroy();
-    //         this.constructionSlots[slot].stone.text.destroy();
-    //     }
-
-    //     const stone_copy = this.add.sprite(
-    //         this.constructionSlots[slot].rect.x,
-    //         this.constructionSlots[slot].rect.y,
-    //         'stone'
-    //     ).setDepth(5);
-
-    //     stone_copy.setDisplaySize(
-    //         this.config.stoneSize.width,
-    //         this.config.stoneSize.height
-    //     );
-
-    //     this.constructionSlots[slot].stone = {
-    //         sprite: stone_copy,
-    //         shadow: shadow,
-    //         value: stone.value,
-    //         text: this.add.text(
-    //             this.constructionSlots[slot].rect.x - 10,
-    //             this.constructionSlots[slot].rect.y - 10,
-    //             stone.value.toString(),
-    //             {
-    //                 fontSize: '18px',
-    //                 color: '#000000'
-    //             }
-    //         ).setDepth(5).setOrigin(0.5)
-    //     };
-    // }
-
-    private async putStoneToSlot(slot: number): Promise<void> {
-        if (!this.worker) {
+    private async copyStoneToSlot(slot: number): Promise<void> {
+        if (!this.worker || !this.scene) {
             return;
         }
 
-        const stone = this.worker.stoneCarried;
-        const stoneCopy = _.cloneDeep(stone);
-
-        if (!stone) {
+        const carriedStone = this.worker.stoneCarried;
+        if (!carriedStone) {
             EventManager.emit('levelFailed', {
                 "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_COPYTO]
             });
@@ -882,35 +1169,48 @@ export class MainScene extends Phaser.Scene {
         // 1. 播放工人放置动画
         this.worker.sprite.play('drop', true);
 
-        // 3. 计算目标位置（槽位中心）
+        // 2. 计算目标位置（槽位中心）
         const targetX = targetSlot.rect.x - 65;
         const targetY = targetSlot.rect.y - 30;
 
-        const shadow = this.add.sprite(
-            stone.sprite.x + 10,
-            stone.sprite.y + 10,
-            'stoneShadow'
-        ).setScale(0.25).setDepth(1).setAlpha(0);
+        // 3. 创建石头的深拷贝用于放置到槽位
+        const stoneCopy: Stone = {
+            sprite: this.add.sprite(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y,
+                'stone'
+            ).setDepth(7),
+            shadow: this.add.sprite(
+                carriedStone.sprite.x + 10,
+                carriedStone.sprite.y + 10,
+                'stoneShadow'
+            ).setScale(0.35).setDepth(1),
+            value: carriedStone.value,
+            text: this.add.text(
+                carriedStone.sprite.x,
+                carriedStone.sprite.y - 8,
+                carriedStone.value.toString(),
+                {
+                    color: '#000000',
+                    fontSize: '18px'
+                }
+            ).setDepth(7).setOrigin(0.5)
+        };
 
-        stone.shadow = shadow;
+        carriedStone.sprite.setVisible(false);
+        carriedStone.text?.setVisible(false);
+        carriedStone.shadow?.setVisible(false);
 
-        this.tweens.add({
-            targets: shadow,
-            x: this.config.layout.outputArea.x + 70,
-            y: stone.sprite.y + 55 + 10,
-            alpha: 1,
-            scale: 0.35,
-            duration: 700,
-            ease: 'Power2.easeInOut',
-        });
+        stoneCopy.sprite.setDisplaySize(
+            this.config.stoneSize.width,
+            this.config.stoneSize.height
+        );
 
-        // 4. 执行放置动画（石头移动到槽位）
+        // 4. 执行放置动画（石头拷贝移动到槽位）
         await Promise.all([
-            
-            // 石头移动
             new Promise<void>(resolve => {
                 this.tweens.add({
-                    targets: stone.sprite,
+                    targets: stoneCopy.sprite,
                     x: targetX,
                     y: targetY,
                     duration: 700,
@@ -918,30 +1218,26 @@ export class MainScene extends Phaser.Scene {
                     onComplete: () => resolve()
                 });
             }),
-
-            // 文字同步移动
             new Promise<void>(resolve => {
                 this.tweens.add({
-                    targets: stone.text,
+                    targets: stoneCopy.text,
                     x: targetX,
-                    y: targetY - 8, // 文字微调
+                    y: targetY - 8,
                     duration: 700,
                     ease: 'Power2.easeInOut',
                     onComplete: () => resolve()
                 });
             }),
-
-            // 阴影移动（如果存在）
-            stone.shadow ? new Promise<void>(resolve => {
+            new Promise<void>(resolve => {
                 this.tweens.add({
-                    targets: stone.shadow,
+                    targets: stoneCopy.shadow,
                     x: targetX + 10,
                     y: targetY + 10,
                     duration: 700,
                     ease: 'Power2.easeInOut',
                     onComplete: () => resolve()
                 });
-            }) : Promise.resolve()
+            })
         ]);
 
         // 5. 清理槽位上原有的石头（如果有）
@@ -951,21 +1247,21 @@ export class MainScene extends Phaser.Scene {
             targetSlot.stone.shadow?.destroy();
         }
 
-        // 2. 调整石头层级（从搬运时的7恢复为正常值）
-        stone.sprite.setDepth(5);      // 普通石头层级
-        stone.text?.setDepth(5);       // 文字略高于石头
-        stone.shadow?.setDepth(1);     // 阴影在底层
+        // 6. 将石头拷贝绑定到槽位
+        targetSlot.stone = stoneCopy;
 
-        // 6. 将石头绑定到槽位
-        targetSlot.stone = {
-            sprite: stone.sprite,
-            shadow: stone.shadow,
-            text: stone.text,
-            value: stone.value
-        };
+        // 7. 工人手中的石头保持不变（不需要清除）
+        // 如果需要，可以在这里添加一个动画表示复制动作
 
-        // 7. 清空工人手中的石头
-        this.worker.stoneCarried = undefined;
+        // 8. 确保工人继续持有原来的石头
+        this.worker.stoneCarried = carriedStone;
+
+        carriedStone.sprite.setVisible(true);
+        carriedStone.text?.setVisible(true);
+        carriedStone.shadow?.setVisible(true);
+
+        stoneCopy.sprite.setDepth(5);
+        stoneCopy.text?.setDepth(5);
 
         await new Promise(resolve => setTimeout(resolve, 200));
     }
