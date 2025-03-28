@@ -493,11 +493,11 @@ export class MainScene extends Phaser.Scene {
 
     private async handleSub(arg: number): Promise<void> {
         const slotPos = {
-            x: 300 + arg % 3 * 100,
-            y: 300 + Math.floor(arg / 3) * 100 - 60
+            x: 300 + arg % 3 * 100 + 20,
+            y: 300 + Math.floor(arg / 3) * 100 + 30
         }
         await this.tweenWorkerTo(slotPos.x, slotPos.y);
-        this.subStoneFromSlot(arg);
+        await this.subStoneFromSlot(arg);
     }
 
     private async handleJump(arg: number, jumpto: (line: number) => void): Promise<void> {
@@ -1053,35 +1053,6 @@ export class MainScene extends Phaser.Scene {
         await new Promise(resolve => setTimeout(resolve, 200));
     }
 
-    private foo(slot: number) {
-        if (!this.worker) return;
-
-        const slotStone = this.constructionSlots[slot];
-        if (!slotStone.stone) {
-            EventManager.emit('levelFailed', {
-                "message": ErrorMessages[GameErrorCodes.SUB_EMPTY]
-            });
-            this.stopExecution();
-            return;
-        }
-
-        if (!this.worker.stoneCarried) {
-            EventManager.emit('levelFailed', {
-                "message": ErrorMessages[GameErrorCodes.EMPTY_HAND_SUB]
-            });
-            this.stopExecution();
-            return;
-        }
-
-        this.subStone(slotStone.stone as Stone);
-    }
-
-    private subStone(stone: Stone) {
-        if (!this.worker || !this.worker.stoneCarried) return;
-        let newValue = (this.worker.stoneCarried.value ?? 0) - stone.value;
-        this.worker.stoneCarried.text.setText(newValue.toString());
-        this.worker.stoneCarried.value = newValue;
-    }
 
     private async pickStoneFromSlot(slot: number) {
         if (!this.worker) return;
