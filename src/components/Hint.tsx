@@ -285,7 +285,6 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     };
 
     return (showInfo || showOpenningInstruction) && (
-
         <div
             className={`flex flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
@@ -305,28 +304,35 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                 <TypingDialog />
             ) : (
                 !showHint && (
-                    <div className='w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102] text-3xl'>
-                        <button
-                            className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all rotate-6'
-                            onClick={() => {
-                                setShowInfo(false);
-                                setShowOpenningInstruction(true);
-                            }}
-                        >
-                            Say Hello Again!
-                            <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
-                        </button>
-                        <button
-                            className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all -rotate-6'
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setShowHint(true);
-                            }}
-                        >
-                            Buy a hint!
-                            <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
-                        </button>
-                    </div>
+                    <>
+                        <div className='w-[20rem] p-6 flex flex-col gap-16 justify-center items-center z-[102] text-3xl'>
+                            <button
+                                className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all rotate-6'
+                                onClick={() => {
+                                    setShowInfo(false);
+                                    setShowOpenningInstruction(true);
+                                }}
+                            >
+                                Say Hello Again!
+                                <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
+                            </button>
+                            <button
+                                className='z-[102] w-full text-center rounded px-4 py-2 bg-white hover:scale-105 transition-all -rotate-6'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowHint(true);
+                                }}
+                            >
+                                Buy a hint!
+                                <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
+                            </button>
+                        </div>
+
+                        {/* Dismiss text at the bottom of the modal */}
+                        <div className="absolute bottom-3 left-0 right-0 text-center text-white text-xs opacity-70">
+                            Click anywhere on modal to dismiss
+                        </div>
+                    </>
                 )
             )}
 
@@ -365,9 +371,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                 </div>
 
                                 <div className="bg-gray-100 p-4 rounded-lg">
-                                    <p className="font-medium mb-2 text-lg">How to earn hints:</p>
-                                    <ul className="space-y-2 text-sm">
-                                    </ul>
+                                    <p className="font-medium mb-2 text-lg">How to earn Coins:</p>
+                                    {/* <ul className="space-y-2 text-sm">
+                                    </ul> */}
                                     <p className="mt-2 text-sm text-gray-600">Click & Read the Below Resource would give you 1 coin</p>
                                 </div>
                             </>
@@ -446,6 +452,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
             )}
 
             {!showOpenningInstruction && <img className='w-[20rem] z-[102]' src='/guide_speak1.webp' />}
+
         </div>
     );
 };
