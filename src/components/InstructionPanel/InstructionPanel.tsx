@@ -164,7 +164,7 @@ const InstructionPanel: React.FC = () => {
                 </div>
 
                 <InfoArea title={levelInfo.title} description={levelInfo.description} />
-                {showFirstTimePickPrompt && <img src='/arrow.webp' className='absolute w-[3rem] top-[20rem] left-[8.5rem] rotate-[35deg] animate-arrowWiggle' />}
+                {showFirstTimePickPrompt && <img src='/arrow.webp' className='absolute w-[3rem] top-[24rem] left-[10rem] rotate-[35deg] animate-arrowWiggle z-[100]' />}
 
                 <Divider />
 

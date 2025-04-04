@@ -39,8 +39,7 @@ const Popup = ({ setShowResetPopup }: { setShowResetPopup: (value: boolean) => v
                         onClick={() => setShowResetPopup(false)}
                         className="bg-gray-600 hover:bg-gray-700 text-gray-100 py-3 px-6 rounded-md text-lg transition-colors duration-300"
                     >
-                        'Back'
-
+                        Back
                     </button>
                 </div>
             </div>
