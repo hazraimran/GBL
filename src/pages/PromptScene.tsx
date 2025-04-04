@@ -36,7 +36,7 @@ const PromptScene = () => {
                 "expectOutput": [1, 2, 3, 4]
             }}
                 currentCode={["INPUT", "OUTPUT"]}
-                apiKeys={{ anthropic: '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' }} />
+                apiKeys={{ anthropic: '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' }} />
         </>
     )
 }
