@@ -115,7 +115,7 @@ export class MainScene extends Phaser.Scene {
                     spacing: 60
                 }
             },
-            speed: 1,
+            speed: 0.7,
             currentLevel: null
         };
     }
@@ -364,7 +364,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     modifySpeed(speed: number): void {
-        this.config.speed = speed;
+        this.config.speed = speed * 0.7;
     }
 
     private preProcessCommands(commands: CommandWithArgType[]): CommandWithArgType[] {
