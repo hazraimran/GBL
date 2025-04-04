@@ -1,16 +1,16 @@
-var inputFn = function () {
+var inputFn = function (generatorFn) {
     var len = 6;
     var arr = [];
     for (var i = 0; i < len; i++) {
-        arr.push(Math.floor(Math.random() * 20));
+        arr.push(generatorFn.nextInt(1, 20));
     }
     return arr;
 };
-var outputFn = function () {
+var outputFn = function (generatorFn) {
     var len = 6;
     var arr = [];
     for (var i = 0; i < len; i++) {
-        arr.push(Math.floor(Math.random() % 10 + 1));
+        arr.push(generatorFn.nextInt(1, 20));
     }
     var expected = [];
     for (var i = 0; i < 3; i++) {
@@ -23,7 +23,7 @@ var level1 = {
     // title: 'Command Post',
     // description: 'You got a new command! SUBtracts the contents of a tile on the floor FROM whatever value you\'re currently holding.',
     generatorFunction: inputFn.toString(),
-    // outputFunction: outputFn.toString(),
+    outputFunction: outputFn.toString(),
     // commands: ['INPUT', 'OUTPUT'],
     // commandsUsed: [],
     // constructionSlots: [

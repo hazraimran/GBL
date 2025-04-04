@@ -1,0 +1,53 @@
+const inputFn = (generatorFn: (min: number, max: number) => number) => {
+    const len = 8;
+    const arr = [];
+    for (let i = 0; i < len; i++) {
+        if (i % 2 === 0) {
+            arr.push(0);
+        } else {
+            arr.push(generatorFn(1, 20));
+        }
+    }
+    return arr;
+}
+
+const outputFn = (generatorFn: (min: number, max: number) => number) => {
+    return [0, 0, 0, 0];
+}
+
+const level = {
+    "id": 8,
+    "title": "Zero Exterminator",
+    "description": "Send all things that ARE NOT ZERO to the OUTBOX.\n\nYou got a new command!It jumps ONLY if the value you are holding is ZERO.Otherwise it continues to the next line.",
+    "generatorFunction": inputFn.toString(),
+    "outputFunction": outputFn.toString(),
+    "commands": ["INPUT", "OUTPUT", "ADD", "COPYFROM", "COPYTO", "JUMP", "JUMP = 0"],
+    "commandsUsed": [],
+    "constructionSlots": [{
+        "x": 300,
+        "y": 300
+    },
+    {
+        "x": 400,
+        "y": 300
+    },
+    {
+        "x": 500,
+        "y": 300
+    }
+    ],
+    "expectedCommandCnt": 8,
+    "expectedExecuteCnt": 40,
+    "executeCnt": -1,
+    "commandCountAchievement": null,
+    "executeCountAchievement": null,
+    "isLocked": false,
+    "timeSpent": 0,
+    "timeAccessed": 0,
+    "openningInstruction": [
+
+    ]
+
+}
+
+console.log(JSON.stringify(level))

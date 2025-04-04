@@ -1,17 +1,17 @@
-const inputFn = () => {
+const inputFn = (generatorFn: (min:number, max: number) => number) => {
     const len = 6;
     const arr = [];
     for (let i = 0; i < len; i++) {
-        arr.push(Math.floor(Math.random() * 20));
+        arr.push(generatorFn(1, 20));
     }
     return arr;
 }
 
-const outputFn = () => {
+const outputFn = (generatorFn: (min: number, max: number) => number) => {
     const len = 6;
     const arr: number[] = [];
     for (let i = 0; i < len; i++) {
-        arr.push(Math.floor(Math.random() % 10 + 1));
+        arr.push(generatorFn(1, 20));
     }
 
     let expected = [];
@@ -27,7 +27,7 @@ const level1 = {
     // title: 'Command Post',
     // description: 'You got a new command! SUBtracts the contents of a tile on the floor FROM whatever value you\'re currently holding.',
     generatorFunction: inputFn.toString(),
-    // outputFunction: outputFn.toString(),
+    outputFunction: outputFn.toString(),
     // commands: ['INPUT', 'OUTPUT'],
     // commandsUsed: [],
     // constructionSlots: [
