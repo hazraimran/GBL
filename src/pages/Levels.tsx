@@ -16,8 +16,7 @@ import OpeningDialog from "../components/OpeningDialog";
 interface LevelCoordinate {
     x: number;
     y: number;
-    w: number;
-    h: number;
+    size: number;
 }
 
 interface LevelStatus {
@@ -89,99 +88,96 @@ const Levels: React.FC = () => {
         }
         return levelsStatus;
     }
-
     const LEVEL_COORDINATES: LevelCoordinates = [
         {
-            x: 620,
-            y: 1180,
-            w: 7,
-            h: 5
+            x: 46.5,
+            y: 146,
+            size: 6
         },
         {
-            x: 700,
-            y: 1050,
-            w: 7,
-            h: 5
-        }, {
-            x: 480,
-            y: 820,
-            w: 6,
-            h: 4
-        }, {
-            x: 570,
-            y: 740,
-            w: 6,
-            h: 4
-        }, {
-            x: 880,
-            y: 770,
-            w: 7,
-            h: 5
-        }, {
-            x: 650,
-            y: 650,
-            w: 5,
-            h: 3.5
-        }, {
-            x: 830,
-            y: 590,
-            w: 5,
-            h: 4
-        }, {
-            x: 660,
-            y: 460,
-            w: 5,
-            h: 4
-        }, {
-            x: 920,
-            y: 440,
-            w: 5,
-            h: 4
-        }, {
-            x: 650,
-            y: 395,
-            w: 5,
-            h: 3
-        }, {
-            x: 800,
-            y: 375,
-            w: 4,
-            h: 3
-        }, {
-            x: 830,
-            y: 235,
-            w: 4,
-            h: 3
-        }, {
-            x: 605,
-            y: 305,
-            w: 4,
-            h: 3
-        }, {
-            x: 700,
-            y: 215,
-            w: 4,
-            h: 3
-        }, {
-            x: 790,
-            y: 150,
-            w: 4,
-            h: 3
-        }, {
-            x: 610,
-            y: 170,
-            w: 4,
-            h: 3
-        }, {
-            x: 620,
-            y: 100,
-            w: 4,
-            h: 3
-        }, {
-            x: 725,
-            y: 100,
-            w: 4,
-            h: 3
+            x: 52,
+            y: 132,
+            size: 6
+        },
+        {
+            x: 36.79,
+            y: 102,
+            size: 5
+        },
+        {
+            x: 42.5,
+            y: 92.5,
+            size: 5
+        },
+        {
+            x: 64,
+            y: 97,
+            size: 6
+        },
+        {
+            x: 47.5,
+            y: 81,
+            size: 4.5
+        },
+        {
+            x: 60,
+            y: 75,
+            size: 5
+        },
+        {
+            x: 66.5,
+            y: 57,
+            size: 5
+        },
+        {
+            x: 48.5,
+            y: 60,
+            size: 5
+        },
+        {
+            x: 47.5,
+            y: 50,
+            size: 4
+        },
+        {
+            x: 58,
+            y: 48,
+            size: 4
+        },
+        {
+            x: 59,
+            y: 32,
+            size: 4
+        },
+        {
+            x: 44,
+            y: 39,
+            size: 4
+        },
+        {
+            x: 50.5,
+            y: 28,
+            size: 4
+        },
+        {
+            x: 56.5,
+            y: 21,
+            size: 4
+        },
+        {
+            x: 44,
+            y: 23,
+            size: 4
+        },
+        {
+            x: 45,
+            y: 13.86,
+            size: 4
+        },
+        {
+            x: 43,
+            y: 13.86,
+            size: 4
         },
     ]
 
@@ -194,21 +190,20 @@ const Levels: React.FC = () => {
                         return (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-
                                     <button
                                         key={idx}
-                                        className={`absolute bg-transparent border-black rounded-full`}
-                                        style={{ left: `${level.x}px`, top: `${level.y}px`, width: `${level.w}rem`, height: `${level.h}rem` }}
+                                        className={`absolute bg-transparent border-black rounded-full -translate-x-1/2 -translate-y-1/2`}
+                                        style={{ left: `${level.x}vw`, top: `${level.y}vh`, width: `${level.size}rem`, height: `${level.size}rem` }}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handleClickLevel(levelsInfo[idx]);
                                         }}
                                     >
                                         {
-                                            levelStatus[idx]?.visited && <div className="-translate-x-3 -translate-y-1 p-2"><img src="./tick.png" /></div>
+                                            levelStatus[idx]?.visited && <img src="./tick.png" />
                                         }
                                         {
-                                            levelStatus[idx]?.current && <div className="-translate-x-3 -translate-y-3"><img src="./circle.png" className="animate-breath duration-3000" /></div>
+                                            levelStatus[idx]?.current && <img src="./circle.png" className="animate-breath duration-3000" />
                                         }
                                     </button>
                                 </TooltipTrigger>
@@ -251,7 +246,7 @@ const Levels: React.FC = () => {
                 </div>
             </TooltipProvider>
             <OpeningDialog />
-            {showResetPopup && <ResetGamePopup setShowResetPopup={setShowResetPopup}/>}
+            {showResetPopup && <ResetGamePopup setShowResetPopup={setShowResetPopup} />}
         </>
     );
 }
