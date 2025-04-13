@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Papyrus';
-  src: url('./assets/fonts/Papyrus-LET-Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 :root {
   font-family: Papyrus,
     Inter,
