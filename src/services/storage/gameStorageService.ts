@@ -86,7 +86,6 @@ class GameStorageService {
     }
 
     getAndUpdateIsFirstTime(): boolean {
-        console.log("getAndUpdateIsFirstTime");
         const value = localStorage.getItem(this.getKey('isFirstTime'));
         if (!value) {
             localStorage.setItem(this.getKey('isFirstTime'), 'true');
@@ -122,9 +121,7 @@ class GameStorageService {
     addAccessedTime(levelId: number): void {
         const levels = this.getLevelsInfo();
         levels[levelId].timeAccessed += 1;
-        console.log('timeAccessed', levels[levelId].timeAccessed);
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
-        console.log('levels', levels);
     }
 
     unlockNextLevel(currentLevel: number): void {
@@ -142,7 +139,6 @@ class GameStorageService {
 
     updateTimeSpent(levelId: number, timeSpent: number): void {
         const levels = this.getLevelsInfo();
-        console.log('timeSpent', timeSpent);
         levels[levelId - 1].timeSpent += timeSpent;
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
     }
@@ -150,7 +146,6 @@ class GameStorageService {
     extractUploadReport(errorCnt: number): any {
         const levels = this.getLevelsInfo();
         const report = levels.map((level: LevelInfo) => {
-            console.log('commandsUsed', CircularJSON.stringify(level.commandsUsed));
             return {
                 id: level.id,
                 commandsUsed: CircularJSON.stringify(level.commandsUsed),
@@ -165,7 +160,6 @@ class GameStorageService {
     resetGameData(): boolean {
         try {
             const currentUID = localStorage.getItem(this.getKey('uid'));
-            const currentCoins = this.getCoins(); // 保存当前的coins数量
 
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
@@ -183,11 +177,6 @@ class GameStorageService {
                 localStorage.setItem(this.getKey('uid'), currentUID);
             }
 
-            // 重置后是否要重置coins取决于游戏逻辑
-            // 如果需要保留coins，取消下面的注释
-            // this.setCoins(currentCoins);
-
-            // 如果需要重置coins为默认值，取消下面的注释
             this.setCoins(this.defaultCoins);
 
             return true;

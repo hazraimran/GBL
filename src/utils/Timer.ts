@@ -40,7 +40,7 @@ class GameTimerManager {
 
     public start(): void {
         if (this.isRunning) return;
-        console.log("timer started");
+        // console.log("timer started");
         this.startTime = this.startTime || Date.now();
         this.isRunning = true;
     }
@@ -55,7 +55,7 @@ class GameTimerManager {
         this.isRunning = false;
 
         const duration = this.getDuration();
-        console.log("timer paused and saved, duration:", duration);
+        // console.log("timer paused and saved, duration:", duration);
         this.saveGameDuration(duration, this.level);
     }
 

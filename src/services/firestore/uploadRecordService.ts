@@ -1,5 +1,5 @@
 // utils/progressService.ts
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { CommandWithArgType } from '../../types/game';
 
@@ -17,31 +17,12 @@ export class UploadRecordService {
             throw new Error('User ID is required');
         }
 
-        // 将 commandsUsed 转换为可以存储的格式
-        const processedRecord = {
-            ...record,
-            // 将数组转换为字符串或对象格式
-            commandsUsed: JSON.stringify(record.commandsUsed)
-        };
-
         try {
             const userDocRef = doc(db, 'users', uid);
-            const userDoc = await getDoc(userDocRef);
-            console.log('userDoc:', userDoc);
 
-            // if (!userDoc.exists()) {
-                await setDoc(userDocRef, {
-                    records: record
-                })
-            // } else {
-            //     const userData = userDoc.data();
-            //     const existingRecords = userData.records || {};
-
-            //     await updateDoc(userDocRef, {
-            //         [`records.${record.id}`]: processedRecord, // 使用点符号更新特定记录
-            //         lastUpdatedAt: new Date().toISOString()
-            //     });
-            // }
+            await setDoc(userDocRef, {
+                records: record
+            })
         } catch (error) {
             console.error('Error uploading record:', error);
             throw error;

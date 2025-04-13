@@ -58,7 +58,6 @@ const PhaserGame = () => {
 
             const report = extractUploadReport(errorCnt);
             console.log('Upload report:', report);
-            console.log(typeof report[0].commandsUsed);
             UploadRecordService.uploadRecord(report, uid);
 
             // unlock next level
@@ -68,7 +67,6 @@ const PhaserGame = () => {
         const levelFailed = (data: {
             message: string;
         }) => {
-            console.log('Level failed:', data);
             setErrorCnt(errorCnt + 1);
             setShowFailurePrompt(true);
             setFailurePromptMessage(data.message);
@@ -121,7 +119,6 @@ const PhaserGame = () => {
         // Store reference to main scene
         game.events.once('ready', () => {
             mainSceneRef.current = game.scene.getScene('MainScene') as MainScene;
-            console.log('Game scene ready:', mainSceneRef.current);
         });
 
         // Cleanup

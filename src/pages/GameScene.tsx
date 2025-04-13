@@ -23,7 +23,6 @@ const GameScene: React.FC = () => {
 
     useEffect(() => {
         if (currentScene === 'GAME') {
-            console.log("GameScene: GAME");
             gameTimer.setLevel(levelInfo.id);
             gameTimer.start();
 
@@ -44,7 +43,6 @@ const GameScene: React.FC = () => {
             onClick={(e) => {
                 if (!readyToPickSlot) return;
                 e.stopPropagation();
-                console.log('clicked');
                 setSlotPicked(undefined);
                 setReadyToPickSlot(false);
             }}
