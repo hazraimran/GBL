@@ -56,6 +56,8 @@ interface GameContextType {
     showModal: boolean,
     muted: boolean,
     setMuted: (muted: boolean) => void,
+    playBGM: boolean,
+    setPlayBGM: (play: boolean) => void,
 }
 
 // Create the context with a default value (optional)
@@ -137,6 +139,8 @@ const GameContext = createContext<GameContextType>({
     showModal: false,
     muted: false,
     setMuted: () => { },
+    playBGM: false,
+    setPlayBGM: () => { }
 });
 
 export default GameContext;

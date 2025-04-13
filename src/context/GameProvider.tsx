@@ -57,6 +57,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const resetFnRef = useRef(() => { });
   const [showModal, setShowModal] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(false);
+  const [playBGM, setPlayBGM] = useState<boolean>(false);
 
   const registerReset = useCallback((fn: () => void) => {
     resetFnRef.current = fn;
@@ -130,7 +131,9 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       navTo,
       showModal,
       muted,
-      setMuted
+      setMuted,
+      playBGM,
+      setPlayBGM
     }}>
       {children}
     </GameContext.Provider>

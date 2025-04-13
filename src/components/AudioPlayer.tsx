@@ -1,28 +1,33 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../context/GameContext";
-import usePrevious from "../hooks/usePrevious";
+
+// Define scene types to avoid string literals
+type SceneType = 'LANDING' | 'GAME' | 'LEVELS';
+
+// Define interface for the context
+interface GameContextType {
+    currentScene: SceneType;
+    muted: boolean;
+    playBGM: boolean;
+}
 
 function AudioPlayer() {
+    const { currentScene, muted, playBGM } = useContext(GameContext) as GameContextType;
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    // Track the currently playing BGM URL
+    const [currentBgm, setCurrentBgm] = useState<string | null>(null);
 
-    const { currentScene, muted } = useContext(GameContext);
-    const preScene = usePrevious(currentScene);
-    const audioRef = useRef<HTMLAudioElement>(null);
-
+    // Handle mute state changes
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.muted = muted;
         }
     }, [muted]);
-    
-    useEffect(() => {
-        let audioUrl;
 
-        if (preScene === 'GAME') {
-            audioUrl = './home.mp3';
-        }
-        if (currentScene === 'GAME') {
-            audioUrl = './game.mp3';
-        }
+    // Handle BGM switching when scene changes
+    useEffect(() => {
+        // Determine the audio URL based on current scene
+        let audioUrl: string;
         switch (currentScene) {
             case 'LANDING':
                 audioUrl = './home.mp3';
@@ -34,16 +39,21 @@ function AudioPlayer() {
                 audioUrl = './home.mp3';
                 break;
             default:
-                break;
+                return; // If no matching scene, return early
         }
 
-        if ((preScene === 'GAME' || currentScene === 'GAME') && audioRef.current && audioUrl) {
+        // Only change the music if the new BGM is different from the current one
+        if (audioRef.current && audioUrl !== currentBgm && playBGM) {
             audioRef.current.src = audioUrl;
+            setCurrentBgm(audioUrl);
+
+            // Play the new BGM
             audioRef.current.play().catch(error => {
                 console.error("Failed to play audio:", error);
             });
         }
-    }, [currentScene])
+    }, [currentScene, currentBgm, playBGM]);
+
     return (
         <audio ref={audioRef} loop></audio>
     );

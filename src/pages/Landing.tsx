@@ -3,11 +3,17 @@ import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { ChevronRight } from "lucide-react";
 
-const AnimatedStart = ({ navTo }) => {
+interface AnimatedStartProps {
+    navTo: (scene: string) => void;
+    setPlayBGM: (play: boolean) => void;
+}
+
+const AnimatedStart: React.FC<AnimatedStartProps> = ({ navTo, setPlayBGM }) => {
     const [isAnimating, setIsAnimating] = useState(false);
 
     const handleClick = () => {
         setIsAnimating(true);
+        setPlayBGM(true);
         setTimeout(() => {
             navTo('LEVELS');
         }, 500);
@@ -31,7 +37,7 @@ const AnimatedStart = ({ navTo }) => {
 };
 
 const Landing: React.FC = () => {
-    const { currentScene, navTo } = useContext(GameContext);
+    const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
     useGameStorage();
 
 
@@ -48,7 +54,7 @@ const Landing: React.FC = () => {
             <div className="absolute top-1/3 -translate-y-full left-1/2 -translate-x-1/2 px-[2rem] pt-[2rem] text-7xl text-yellow-600 filter backdrop-blur-lg rounded-lg ">
                 Ancient Architect
             </div>
-            <AnimatedStart navTo={navTo} />
+            <AnimatedStart navTo={navTo} setPlayBGM={setPlayBGM} />
         </>
     );
 }
