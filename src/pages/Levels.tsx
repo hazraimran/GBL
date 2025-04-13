@@ -188,7 +188,7 @@ const Levels: React.FC = () => {
                     <img src="./map.webp" className="h-[160vh]" alt="" />
                     {LEVEL_COORDINATES.map((level, idx) => {
                         return (
-                            <Tooltip>
+                            <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
                                     <button
                                         key={idx}
