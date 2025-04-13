@@ -115,7 +115,7 @@ export class MainScene extends Phaser.Scene {
                     spacing: 60
                 }
             },
-            speed: 0.7,
+            speed: 1.5,
             currentLevel: null
         };
     }
@@ -126,7 +126,6 @@ export class MainScene extends Phaser.Scene {
             frameHeight: 132
         });
 
-        this.load.image('character', 'src/assets/animation/character/character.jpg');
         this.load.image('stone', './stone.jpg');
         this.load.image('stoneShadow', './shadow_stone.jpg');
         this.load.image('humanShadow', './shadow_human.jpg');
@@ -137,7 +136,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private resetGameState(): void {
-        console.log('Resetting game state');
         this.inputQueue = [];
         this.outputQueue = [];
         this.cmdExcCnt = 0;
@@ -1296,7 +1294,6 @@ export class MainScene extends Phaser.Scene {
                 ease: 'Linear'
             });
 
-            console.log('Stone carried:', this.worker.stoneCarried);
             if (this.worker.stoneCarried) {
 
                 this.worker.sprite.play('holdWalk', true);
@@ -1317,48 +1314,6 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    private async tweenStoneTo(stone: Stone, x: number, y: number, baseSpeed: number = 2, ease: string = 'Linear'): Promise<void> {
-        return new Promise((resolve) => {
-            if (!stone) return;
-
-            const distance = Phaser.Math.Distance.Between(
-                stone.sprite.x,
-                stone.sprite.y,
-                x,
-                y
-            );
-
-            // const baseSpeed = 2;
-            const duration = (distance * baseSpeed) / this.config.speed;
-
-            let tweensCompleted = 0;
-            const onComplete = () => {
-                tweensCompleted++;
-                if (tweensCompleted === 2) {
-                    resolve();
-                }
-            };
-
-            this.tweens.add({
-                targets: stone.sprite,
-                x: x,
-                y: y,
-                duration: duration,
-                ease: ease,
-                onComplete: onComplete
-            });
-
-            this.tweens.add({
-                targets: stone.text,
-                x: x,
-                y: y,
-                duration: duration,
-                ease: ease,
-                onComplete: onComplete
-            });
-        });
-    }
-
     private async preValidateOutput(): Promise<void> {
         if (this.ans.length !== this.outputQueue.length) {
             return;
@@ -1375,25 +1330,12 @@ export class MainScene extends Phaser.Scene {
 
         if (isCorrect) {
             this.stopExecution();
-            await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
                 executeCnt: this.cmdExcCnt,
                 commandCnt: this.commandsToExecute ? this.commandsToExecute.length : 0
             });
         }
-    }
-
-    private async gameDoneAnimation(): Promise<void> {
-        // let tasks = [];
-        // for (let i = 0; i < this.outputStones.length; i++) {
-        //     let stone = this.outputStones[i];
-        //     tasks.push(this.tweenStoneTo(stone, this.config.layout.outputArea.x_origin, this.config.layout.outputArea.y_origin, 8, 'linear').then(() => {
-        //         stone.sprite.destroy();
-        //         stone.text.destroy();
-        //     }))
-        // }
-        // await Promise.all(tasks);
     }
 
     private async validateOutput(): Promise<void> {
@@ -1422,7 +1364,6 @@ export class MainScene extends Phaser.Scene {
 
         if (isCorrect) {
             this.stopExecution();
-            await this.gameDoneAnimation();
             // show popup
             EventManager.emit('levelCompleted', {
                 executeCnt: this.cmdExcCnt,
