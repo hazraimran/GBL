@@ -43,16 +43,16 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330,
+            "x": 422.5,
+            "y": 380,
             "value": 5
         }, {
-            "x": 462.5,
-            "y": 330,
+            "x": 522.5,
+            "y": 380,
             "value": 2
         }, {
-            "x": 562.5,
-            "y": 330,
+            "x": 622.5,
+            "y": 380,
             "value": 0
         }],
         "expectedCommandCnt": 8,
@@ -73,14 +73,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 25,
@@ -100,14 +100,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 7,
         "expectedExecuteCnt": 20,
@@ -127,14 +127,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 7,
         "expectedExecuteCnt": 20,
@@ -154,14 +154,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 10,
         "expectedExecuteCnt": 29,
@@ -186,14 +186,14 @@
         "commands": ["INPUT", "OUTPUT", "ADD", "COPYFROM", "COPYTO", "JUMP", "JUMP = 0"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 25,
@@ -213,14 +213,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 25,
@@ -240,14 +240,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 25,
@@ -267,14 +267,14 @@
         "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 362.5,
-            "y": 330
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 462.5,
-            "y": 330
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 562.5,
-            "y": 330
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 40,
@@ -294,8 +294,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "SUB", "JUMP IF NEGATIVE"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
+        }, {
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 10,
         "expectedExecuteCnt": 30,
@@ -321,11 +327,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "ADD", "JUMP"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 400,
-            "y": 300
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 12,
         "expectedExecuteCnt": 45,
@@ -351,8 +360,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "SUB", "JUMP IF NEGATIVE"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
+        }, {
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 8,
         "expectedExecuteCnt": 25,
@@ -378,11 +393,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "SUB", "JUMP", "JUMP IF ZERO"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 400,
-            "y": 300
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 12,
         "expectedExecuteCnt": 40,
@@ -408,14 +426,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "SUB", "JUMP IF NEGATIVE"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 400,
-            "y": 300
+            "x": 522.5,
+            "y": 380
         }, {
-            "x": 500,
-            "y": 300
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 15,
         "expectedExecuteCnt": 50,
@@ -441,11 +459,14 @@
         "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "ADD"],
         "commandsUsed": [],
         "constructionSlots": [{
-            "x": 300,
-            "y": 300
+            "x": 422.5,
+            "y": 380
         }, {
-            "x": 400,
-            "y": 300
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
         }],
         "expectedCommandCnt": 12,
         "expectedExecuteCnt": 45,
