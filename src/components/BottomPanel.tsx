@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from 'react';
+import React, { useState, useRef, useContext, useEffect, useCallback, memo } from 'react';
 import { RxReset } from "react-icons/rx";
 import { Play, Square, Gauge, Lock } from 'lucide-react';
 import GameContext from '../context/GameContext';
@@ -11,117 +11,124 @@ interface BottomPanelProps {
     onDrag: (progress: number) => void;
 }
 
-const BottomPanel: React.FC<BottomPanelProps> = ({
+const BottomPanel: React.FC<BottomPanelProps> = memo(({
     onExecute,
     onReset,
     onDrag
 }) => {
-    const [progress, setProgress] = useState(50);
+    const [progress, setProgress] = useState(33);
     const progressRef = useRef<HTMLDivElement>(null);
-    const { showFailurePrompt, showBottomPanel, navTo, setShowInfo, showInfo, muted, setMuted,
-        showOpenningInstruction, levelInfo, commandsUsed, exectuting } = useContext(GameContext);
+    const {
+        showFailurePrompt,
+        showBottomPanel,
+        navTo,
+        setShowInfo,
+        showInfo,
+        muted,
+        setMuted,
+        showOpenningInstruction,
+        levelInfo,
+        commandsUsed,
+        exectuting
+    } = useContext(GameContext);
     const { saveCommandsUsed } = useGameStorage();
     const [isShaking, setIsShaking] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
-    useEffect(() => {
-        if (showFailurePrompt) {
-            console.log('failure')
-            setIsShaking(true);
-            setTimeout(() => {
-                setIsShaking(false);
-            }, 1000);
-        }
-    }, [showFailurePrompt])
-
-    const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (exectuting) return;
+    // Optimize event handlers with useCallback to prevent unnecessary recreations
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (exectuting || !isDragging) return;
 
         const bar = progressRef.current;
         if (bar) {
             const barRect = bar.getBoundingClientRect();
             const barWidth = barRect.width;
-            const clickPosition = Math.min(Math.max(0, e.clientX - barRect.left), barWidth);
-            const newProgress = (clickPosition / barWidth) * 100;
-            setProgress(newProgress);
-            onDrag(newProgress / 100);
-        }
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-        if (exectuting) return;
-
-        const bar = progressRef.current;
-        if (bar && isDragging) {
-            const barRect = bar.getBoundingClientRect();
-            const barWidth = barRect.width;
             const movePosition = Math.min(Math.max(0, e.clientX - barRect.left), barWidth);
             const newProgress = (movePosition / barWidth) * 100;
             setProgress(newProgress);
-            onDrag(newProgress / 100);
+            onDrag(newProgress * 4.5 / 100);
         }
-    };
+    }, [exectuting, isDragging, onDrag]);
 
-    const [isDragging, setIsDragging] = useState(false);
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
 
-    React.useEffect(() => {
-        const handleMouseUp = () => {
-            setIsDragging(false);
-        };
+    const handleBackToLevels = useCallback(() => {
+        if (levelInfo) {
+            navTo('LEVELS');
+            saveCommandsUsed(levelInfo.id, commandsUsed);
+            onReset();
+        }
+    }, [navTo, saveCommandsUsed, levelInfo, commandsUsed, onReset]);
 
+    const handleToggleMute = useCallback(() => {
+        setMuted(!muted);
+    }, [muted, setMuted]);
+
+    const handleShowInfo = useCallback(() => {
+        setShowInfo(true);
+    }, [setShowInfo]);
+
+    // Shake effect, only executes when showFailurePrompt changes
+    useEffect(() => {
+        if (showFailurePrompt) {
+            setIsShaking(true);
+            const timer = setTimeout(() => {
+                setIsShaking(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [showFailurePrompt]);
+
+    // Drag event handling, only updates event listeners when isDragging or exectuting changes
+    useEffect(() => {
         if (isDragging && !exectuting) {
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
+
+            return () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+            };
         }
+    }, [isDragging, exectuting, handleMouseMove, handleMouseUp]);
 
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, exectuting]);
-
-    const getSpeedText = (progress: number) => {
-        const speed = (progress / 100 + 0.5).toFixed(1);
-        return `${speed}x`;
-    };
+    // Pre-calculate speed text to avoid recalculation during rendering
+    const speedText = `${(progress * 4.5 / 100 + 0.5).toFixed(1)}x`;
 
     return (
-        <footer className={`flex items-end absolute bottom-0 w-full `}>
+        <footer className="flex items-end absolute bottom-0 w-full">
             <button
                 className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={() => {
-                    navTo('LEVELS');
-                    saveCommandsUsed(levelInfo!.id, commandsUsed);
-                    onReset();
-                }}
+                onClick={handleBackToLevels}
             >
                 <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
             </button>
-            
+
             <button
                 className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={() => {
-                }}
+                onClick={handleToggleMute}
             >
                 {muted ?
-                    <VolumeOff onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
-                    <Volume2 onClick={() => setMuted(true)} className="w-[7rem] h-[4rem] text-yellow-600" />
+                    <VolumeOff className="w-[7rem] h-[4rem] text-yellow-600" /> :
+                    <Volume2 className="w-[7rem] h-[4rem] text-yellow-600" />
                 }
             </button>
 
-            {
-                !showInfo && !showOpenningInstruction && !showFailurePrompt && <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>
-                    <img src="./guide_read.webp" alt=""
-                        className=' h-[6rem]'
-                        onClick={() => {
-                            setShowInfo(true);
-                        }} />
+            {!showInfo && !showOpenningInstruction && !showFailurePrompt && (
+                <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>
+                    <img
+                        src="./guide_read.webp"
+                        alt="Guide"
+                        className='h-[6rem]'
+                        onClick={handleShowInfo}
+                    />
                 </div>
-            }
-
+            )}
 
             {showBottomPanel && (
-                <div className={`flex items-center space-x-4 p-4 bg-custom-bg rounded-lg m-auto ${isShaking && 'animate-shake'}`}>
-
+                <div className={`flex items-center space-x-4 p-4 bg-custom-bg rounded-lg m-auto ${isShaking ? 'animate-shake' : ''}`}>
                     <button
                         className={`w-[4rem] h-[4rem] ${exectuting ? 'bg-custom-red hover:scale-105' : 'bg-custom-gray'} rounded-lg flex items-center justify-center transition-transform duration-200`}
                         onClick={onReset}
@@ -136,7 +143,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 
                     <button
                         className={`w-[4rem] h-[4rem] ${exectuting ? 'bg-custom-gray' : 'bg-custom-green hover:scale-105'} rounded-lg flex items-center justify-center transition-transform duration-200`}
-                        onClick={!exectuting ? onExecute : () => { }}
+                        onClick={exectuting ? undefined : onExecute}
                         disabled={exectuting}
                     >
                         <Play
@@ -154,7 +161,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                             ) : (
                                 <Gauge className="ml-[2.5rem] w-8 h-8" />
                             )}
-                            <span className="text-xl mt-[0.25rem] mr-[2.5rem]">{getSpeedText(progress)}</span>
+                            <span className="text-xl mt-[0.25rem] mr-[2.5rem]">{speedText}</span>
                         </div>
 
                         {/* Progress bar container */}
@@ -163,7 +170,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
                             ref={progressRef}
                             onMouseDown={(e) => {
                                 if (!exectuting) {
-                                    handleDrag(e);
                                     setIsDragging(true);
                                 }
                             }}
@@ -192,6 +198,9 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
             )}
         </footer>
     );
-};
+});
+
+// Explicitly setting displayName helps with debugging in React Dev Tools
+BottomPanel.displayName = 'BottomPanel';
 
 export default BottomPanel;
