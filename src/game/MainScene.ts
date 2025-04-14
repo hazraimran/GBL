@@ -201,6 +201,12 @@ export class MainScene extends Phaser.Scene {
     }
 
     private createAnimations(): void {
+        
+        if (this.anims.exists('rest')) {
+            // Animations already created, so exit early
+            return;
+        }
+
         // Worker animations
         const animations = [
             {
@@ -241,7 +247,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setupInputArea(config: { x: number; y: number; spacing: number }): void {
-        console.log(window.innerWidth, window.innerHeight)
         for (let i = 0; i < this.inputQueue.length; i++) {
             const position = {
                 x: config.x,
