@@ -1,17 +1,16 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 // import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 const OpeningDialog = () => {
     const openningInstruction = [
-        "Ah, at last! The new architect has arrived at our ancient construction site. Welcome, young builder!",
-        "I see the sacred map has already revealed itself to you - each number marks a challenge that will test your architectural prowess along the Nile.From the lotus fields at the start to the great pyramids beyond, your journey awaits!",
-        "But first, you must learn our ways.You'll be working with our mystical construction system - a series of commands that you'll arrange to direct your worker.",
-        "Think of it as conducting a sacred dance: INPUT to gather materials, OUTPUT to place them, and more advanced movements as you progress.",
-        "Don't be intimidated by the grand structures before you. Like the ancient architects before you, you'll start with simple tasks and gradually master more complex techniques.",
-        "Shall we begin with your first assignment at the supply chamber ? Remember, young architect - I'll be here to guide you every step of the way!"
+        "Welcome, new architect! You've arrived just in time.",
+        "The sacred map shows your challenges along the Nile - from these lotus fields to the great pyramids beyond.",
+        "You'll need to master our construction system: simple commands to direct your worker, like INPUT to gather materials and OUTPUT to place them.",
+        "Start with the basics at the supply chamber. Each challenge builds upon the last.",
+        "I'll guide you on this journey. Are you ready to begin?"
     ];
-    // const { setShowInstructionPanel } = useContext(GameContext);
+
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,7 +43,6 @@ const OpeningDialog = () => {
                 setDisplayedText('');
                 setCurrentTextIndex(0);
                 setShowOpenningInstruction(false);
-                // setShowInstructionPanel(true);
                 return;
             }
             // reset all states
