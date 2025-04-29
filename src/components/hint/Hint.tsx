@@ -1,4 +1,5 @@
-import GameContext from '../context/GameContext';
+import GameContext from '../../context/GameContext';
+import { commandDescriptions } from '../../data';
 
 // src/types/index.ts
 export type Level = {
@@ -90,16 +91,7 @@ export function buildPrompt(
     currentHintLevel: number,
     level: Level
 ): string {
-    const commandDescriptions = {
-        "INPUT": "Take a number from the input belt into your hands",
-        "OUTPUT": "Put the number in your hands onto the output belt",
-        "JUMP": "Jump to the specified label and continue execution",
-        "COPYFROM": "Copy a number from a floor tile into your hands",
-        "COPYTO": "Copy the number in your hands to a floor tile",
-        "ADD": "Add the number from a floor tile to the number in your hands",
-        "JUMP = 0": "Jump to the specified label if the number in your hands is 0",
-        "SUB": "Subtract the number from a floor tile from the number in your hands"
-    };
+
 
     return `You are helping a player solve a programming puzzle in a game similar to "Human Resource Machine". This is an educational programming game where players write assembly-style programs to solve puzzles.
 
@@ -158,10 +150,10 @@ Remember:
 // src/components/SmartHintSystem.tsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Coins, Lightbulb, ChevronLeft, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { useGameStorage } from "../hooks/useStorage/useGameStorage";
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { useGameStorage } from "../../hooks/useStorage/useGameStorage";
 
 interface SmartHintSystemProps {
     level: Level;
@@ -173,7 +165,7 @@ interface SmartHintSystemProps {
     onCodeSuggestion?: (code: string) => void;
 }
 
-import TypingDialog from './TypingDialog';
+import TypingDialog from '../TypingDialog';
 
 const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     level,

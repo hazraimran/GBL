@@ -1,7 +1,7 @@
 import React,{ useContext } from 'react';
 import GameContext from '../context/GameContext';
 import FloatingMessage from '../components/FloatingMessage';
-import SmartHintSystem from '../components/Hint';
+import SmartHintSystem from '../components/hint/Hint';
 
 const PromptScene = () => {
     const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt } = useContext(GameContext);
