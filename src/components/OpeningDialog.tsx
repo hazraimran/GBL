@@ -22,7 +22,7 @@ const OpeningDialog = () => {
             const timer = setTimeout(() => {
                 setDisplayedText(prev => prev + openningInstruction[currentTextIndex][currentIndex]);
                 setCurrentIndex(prev => prev + 1);
-            }, 40);
+            }, 20);
 
             return () => clearTimeout(timer);
         }

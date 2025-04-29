@@ -16,7 +16,7 @@
         "isLocked": false,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Welcome to the construction site, young apprentice!", "Building in these ancient ruins is no small feat!", "Your first job will appear over there on the right side in a moment.", "Remember, you can always ask me for help."]
+        "openningInstruction": ["Welcome to the construction site, young apprentice!", "Building in these ancient ruins is no small feat!", "Your first job will appear over there on the right side in a moment.", "You are lucky to have me as your mentor!, I have completed this job before, so I know the best way to do it.", "Check the command area I have drop the commands for you."]
     }, {
         "id": 2,
         "title": "Busy Supply Chamber",

@@ -4,6 +4,8 @@ import { Play, Square, Gauge, Lock } from 'lucide-react';
 import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { Volume2, VolumeOff } from "lucide-react";
+import TutorialButton from "../components/buttons/tutorial";
+import SkillsButton from "../components/buttons/skillsButton";
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -115,6 +117,8 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
                     <Volume2 className="w-[7rem] h-[4rem] text-yellow-600" />
                 }
             </button>
+            <TutorialButton />
+            <SkillsButton/>
 
             {!showInfo && !showOpenningInstruction && !showFailurePrompt && (
                 <div className='h-[6rem] fixed top-0 left-0 cursor-pointer bg-custom-bg rounded-lg'>
@@ -152,6 +156,7 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
                             color="black"
                         />
                     </button>
+
 
                     <div className={`relative flex flex-col items-center w-[10rem] ${exectuting ? 'opacity-50' : ''}`}>
                         {/* Speed indicator */}

@@ -7,6 +7,8 @@ import { Volume2, VolumeOff, RotateCcw  } from "lucide-react";
 import { RxReset } from "react-icons/rx";
 import ResetGamePopup from "../components/ResetGamePopup";
 import TutorialButton from "../components/buttons/tutorial";
+import SkillsButton from "../components/buttons/skillsButton";
+
 import {
     Tooltip,
     TooltipContent,
@@ -251,6 +253,7 @@ const Levels: React.FC = () => {
                     </button>
 
                     <TutorialButton />
+                    <SkillsButton/>
                 </div>
             </TooltipProvider>
             <OpeningDialog />
