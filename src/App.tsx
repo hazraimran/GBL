@@ -1,3 +1,4 @@
+import React, { useContext, useEffect } from 'react';
 import GameScene from './pages/GameScene';
 import Landing from './pages/Landing';
 import GameProvider from './context/GameProvider';
@@ -6,9 +7,7 @@ import { Toaster } from "./components/ui/toaster"
 import JumpConnector from './components/InstructionPanel/JumpConnector';
 import ButtonScene from './components/ButtonScene';
 import GameContext from './context/GameContext';
-import { useContext } from 'react';
 import AudioPlayer from './components/AudioPlayer';
-import { useEffect } from 'react';
 
 function App() {
   const Modal: React.FC = () => {

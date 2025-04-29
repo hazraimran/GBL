@@ -58,6 +58,8 @@ interface GameContextType {
     setMuted: (muted: boolean) => void,
     playBGM: boolean,
     setPlayBGM: (play: boolean) => void,
+    tutorial: boolean,
+    setTutorial: (tutorial: boolean) => void,
 }
 
 // Create the context with a default value (optional)
@@ -77,6 +79,7 @@ const GameContext = createContext<GameContextType>({
         generatorFunction: '',
         outputFunction: '',
         commands: [],
+        commandsToUse: [],
         commandsUsed: [],
         constructionSlots: [],
         expectedCommandCnt: 0,
@@ -140,7 +143,9 @@ const GameContext = createContext<GameContextType>({
     muted: false,
     setMuted: () => { },
     playBGM: false,
-    setPlayBGM: () => { }
+    setPlayBGM: () => { },
+    tutorial: false,
+    setTutorial: () => { }
 });
 
 export default GameContext;

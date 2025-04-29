@@ -1,5 +1,5 @@
 // FloatingMessage.tsx
-import React from 'react';
+import React, {useState} from 'react';
 
 interface FloatingMessageProps extends React.HTMLAttributes<HTMLDivElement> {
     text: string;
@@ -10,7 +10,8 @@ interface FloatingMessageProps extends React.HTMLAttributes<HTMLDivElement> {
     arrowDirection?: 'down' | 'right';
     hint?: boolean
     withCharacter?: boolean,
-    setShowHint?: () => void
+    setShowHint?: () => void,
+    open?: boolean
 }
 
 const FloatingMessage: React.FC<FloatingMessageProps> = ({
@@ -22,11 +23,20 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
     arrowDirection = 'down',
     hint = false,
     withCharacter = false,
+    open = true,
     setShowHint,
     ...rest
 }) => {
+
+    const [visible, setVisible] = useState(open);
+
+    const toggleVisible = () => {
+        setVisible(!visible);
+    }
+
     return (
-        <div className="relative inline-block z-[100]" {...rest}>
+
+        <div className="relative inline-block z-[100] cursor-pointer" {...rest} onClick={toggleVisible}>
             {/* Main message box */}
             <div
                 className="px-6 py-3 rounded-lg shadow-lg animate-float"
@@ -35,7 +45,7 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
                     color: textColor,
                 }}
             >
-                <p className="text-lg font-medium">{text}</p>
+                <p className="text-lg font-medium">{visible ? text : 'View Hint'}</p>
                 {hint && <div className="mt-4 cursor-pointer flex gap-4 items-center" onClick={setShowHint}>
                     Need more hints?<div className=' animate-float border-t-custom-green w-0 h-0 border-t-[12px] border-l-8 border-r-8 border-l-transparent border-r-transparent'></div>
                 </div>}

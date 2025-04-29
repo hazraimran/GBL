@@ -6,7 +6,7 @@ export interface ConstructtionSlotConfig {
     value?: number;
 }
 
-export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS';
+export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS' | 'TUTORIAL';
 
 export interface LevelInfo {
     id: number;
@@ -15,6 +15,7 @@ export interface LevelInfo {
     generatorFunction: string;
     outputFunction: string;
     commands: CommandType[];
+    commandsToUse: CommandType[];
     commandsUsed: CommandWithArgType[];
     constructionSlots: ConstructtionSlotConfig[];
     expectedCommandCnt: number,

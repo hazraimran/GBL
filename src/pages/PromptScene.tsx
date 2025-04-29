@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React,{ useContext } from 'react';
 import GameContext from '../context/GameContext';
 import FloatingMessage from '../components/FloatingMessage';
 import SmartHintSystem from '../components/Hint';

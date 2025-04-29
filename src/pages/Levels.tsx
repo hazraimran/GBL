@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { Volume2, VolumeOff, RotateCcw } from "lucide-react";
+import { Volume2, VolumeOff, RotateCcw  } from "lucide-react";
+
 import { RxReset } from "react-icons/rx";
 import ResetGamePopup from "../components/ResetGamePopup";
+import TutorialButton from "../components/buttons/tutorial";
 import {
     Tooltip,
     TooltipContent,
@@ -28,7 +30,7 @@ type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
     const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction, muted, setMuted,
-        currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel } = useContext(GameContext);
+        currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel, setTutorial, tutorial, setCommandsUsed, commandsUsed } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
@@ -36,6 +38,8 @@ const Levels: React.FC = () => {
 
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
+
+        console.log('levelsInfo', levelsInfo);
         setLevelStatus(helper(levelsInfo));
         setLevelsInfo(levelsInfo);
     }, [currentScene]);
@@ -215,6 +219,8 @@ const Levels: React.FC = () => {
                             </Tooltip>
                         )
                     })}
+
+
                     <button
                         className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
                         onClick={() => {
@@ -243,6 +249,8 @@ const Levels: React.FC = () => {
                             <Volume2 onClick={() => setMuted(true)} className="w-[7rem] h-[4rem] text-yellow-600" />
                         }
                     </button>
+
+                    <TutorialButton />
                 </div>
             </TooltipProvider>
             <OpeningDialog />

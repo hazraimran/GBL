@@ -1,16 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
+import { openningInstruction } from '../data';
 
 const OpeningDialog = () => {
-    const openningInstruction = [
-        "Welcome, new architect! You've arrived just in time.",
-        "The sacred map shows your challenges along the Nile - from these lotus fields to the great pyramids beyond.",
-        "You'll need to master our construction system: simple commands to direct your worker, like INPUT to gather materials and OUTPUT to place them.",
-        "Start with the basics at the supply chamber. Each challenge builds upon the last.",
-        "I'll guide you on this journey. Are you ready to begin?"
-    ];
-
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);

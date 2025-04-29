@@ -6,6 +6,7 @@
         "outputFunction": "function (generatorFn) {\n    var len = 2;\n    var expected = [];\n    for (var i = 0; i < len; i++) {\n        expected.push(generatorFn(1, 20));\n    }\n    return expected;\n}",
         "commands": ["INPUT", "OUTPUT"],
         "commandsUsed": [],
+        "commandsToUse": ["INPUT", "OUTPUT", "INPUT", "OUTPUT"],
         "constructionSlots": [],
         "expectedCommandCnt": 4,
         "expectedExecuteCnt": 4,

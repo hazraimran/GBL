@@ -86,7 +86,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         let obj: CommandWithArgType = {
             command: e.dataTransfer.getData('command') as CommandType,
         }
-
+        
         if (e.dataTransfer.getData('arg') !== '') {
             obj.arg = CircularJSON.parse(e.dataTransfer.getData('arg'));
         };
@@ -110,6 +110,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     }
 
     const insert = async (commandWithArg: CommandWithArgType, from: number | null = null, to: number) => {
+
         if (from === null) {
             if (commandWithArg.command === 'COPYFROM' || commandWithArg.command === 'COPYTO'
                 || commandWithArg.command === 'ADD' || commandWithArg.command === 'SUB') {
@@ -216,5 +217,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         </div>
     );
 })
+
+CodingArea.displayName = 'CodingArea';
 
 export default CodingArea;

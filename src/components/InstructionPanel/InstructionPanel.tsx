@@ -1,13 +1,12 @@
-
 import React, { useContext, useEffect, useRef, useCallback, useState } from 'react';
 import GameContext from '../../context/GameContext';
 import InfoArea from './InfoArea';
 import CodingArea from './CodingArea';
 import CommandList from './CommandList';
 import Divider from './Divider';
-
 const InstructionPanel: React.FC = () => {
-    const { levelInfo, setCommandsUsed, resetFn, showInstructionPanel, showFirstTimePickPrompt } = useContext(GameContext);
+
+    const { levelInfo, setCommandsUsed, commandsUsed, resetFn, showInstructionPanel, showFirstTimePickPrompt, tutorial } = useContext(GameContext);
     const CommandListRef = useRef<HTMLDivElement>(null);
     const CodingAreaRef = useRef<(HTMLDivElement)>(null);
     const ContentRef = useRef<(HTMLDivElement)>(null);
@@ -17,6 +16,7 @@ const InstructionPanel: React.FC = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isReverseRotation, setIsReverseRotation] = useState(true);
     const [fps, setFps] = useState(6); // 4 frames per second
+
 
     const frames = [
         "./animation/menu_rotate_1.webp",
@@ -55,7 +55,8 @@ const InstructionPanel: React.FC = () => {
     }, [isPlaying, fps, nextFrame]);
 
     useEffect(() => {
-        setCommandsUsed(levelInfo.commandsUsed);
+        const commands = tutorial && levelInfo.commandsToUse ? levelInfo.commandsToUse.map(command => ({ command: command })) : commandsUsed;
+        setCommandsUsed(commands);
     }, []);
 
     useEffect(() => {
@@ -130,7 +131,7 @@ const InstructionPanel: React.FC = () => {
 
     return levelInfo && showInstructionPanel && (
         <aside
-            className="w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out overflow-hidden
+            className="w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out 
               absolute top-1/2 z-10 pt-[5rem] pb-[5rem] px-[5rem] -right-[2rem]"
             ref={instructionPanelRef}
             onWheel={handleWheel}
@@ -163,7 +164,7 @@ const InstructionPanel: React.FC = () => {
                     ></div>
                 </div>
 
-                <InfoArea title={levelInfo.title} description={levelInfo.description} />
+                <InfoArea title={levelInfo.title} description={levelInfo.description} tutorial={tutorial} />
                 {showFirstTimePickPrompt && <img src='/arrow.webp' className='absolute w-[3rem] top-[24rem] left-[10rem] rotate-[35deg] animate-arrowWiggle z-[100]' />}
 
                 <Divider />
