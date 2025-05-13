@@ -87,7 +87,7 @@ npm run deploy
 ## Team
 
 - Project Lead: Zack Hu
-- Developers: Zack Hu
+- Developers: Zack Hu, Alexander Hortua
 - Educational Advisors: Imran Hazra
 
 ## Contact
@@ -95,3 +95,5 @@ npm run deploy
 For questions or feedback, please reach out to:
 - Email: zackhu2001@gmail.com
 - WeChat: HZX2001227
+- Email: hortualeal.r@northeastern.edu
+- GitHub: [Alexander Hortua](https://github.com/AlexanderHMagno)
