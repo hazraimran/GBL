@@ -9,7 +9,7 @@ export const openningInstruction = [
 export const commandDescriptions = {
   "INPUT": "Take a number from the input belt into your hands",
   "OUTPUT": "Put the number in your hands onto the output belt",
-  "JUMP": "Jump to the specified label and continue execution",
+  "JUMP": "Jump to the specified command and continue execution",
   "COPYFROM": "Copy a number from a floor tile into your hands",
   "COPYTO": "Copy the number in your hands to a floor tile",
   "ADD": "Add the number from a floor tile to the number in your hands",

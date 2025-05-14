@@ -6,6 +6,7 @@ import CommandRow from './CommandRow';
 import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';
 import JumpConnector from './JumpConnector';
+import BigScreenAlert from '../alerts/bigScreenAlert';
 
 interface CodingAreaProps {
     setClearCommandsRef: (fn: () => void) => void;
@@ -213,6 +214,9 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                     )}
                     <EmptyRow commandsUsed={commandsUsed} onDrop={handleDrop} />
                 </div>
+            </div>
+            <div className="text-center flex justify-center items-center mt-10">
+                <BigScreenAlert imageUrl="/tutorial/initial.png" title="Welcome to the game!" />
             </div>
         </div>
     );

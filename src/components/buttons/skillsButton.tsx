@@ -1,6 +1,5 @@
-import React,{useContext, useState} from "react"
+import React,{useRef} from "react"
 import { Feather } from "lucide-react"
-import GameContext from "../../context/GameContext"
 import HelpArea from "../hint/HelpArea"
 import { commandDescriptions } from "../../data"
 import {
@@ -12,12 +11,10 @@ import {
 
 
 const TutorialButton = () => {
-  const {tutorial} = useContext(GameContext)
-  const [showInfo, setShowInfo] = useState(false);
+  const displayButton = useRef(false);
   const handleClickTutorial = () => {
-    setShowInfo(!showInfo);
+    displayButton.current = !displayButton.current;
   } 
-
 
   const Element = () => (
     <button
@@ -27,7 +24,7 @@ const TutorialButton = () => {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            {tutorial ? <Feather className="w-[7rem] h-[4rem] text-yellow-600" /> : <Feather className="w-[7rem] h-[4rem] text-white" />}
+            {displayButton.current ? <Feather className="w-[7rem] h-[4rem] text-yellow-600" /> : <Feather className="w-[7rem] h-[4rem] text-white" />}
           </TooltipTrigger>
           <TooltipContent className="text-lg" side="top">
             <p>Check your skills (Soon)</p>
@@ -43,11 +40,14 @@ const TutorialButton = () => {
         {Object.keys(commandDescriptions).map((command) => (
             <div key={command} className='pt-[0.2rem] m-2'>
               <p 
-              className='z-[102] my-2 w-full text-center rounded px-4 py-2 bg-white hover:scale-90 transition-all rotate-3'
+              className='mb-10 z-[102] my-2 w-full text-center rounded px-4 py-2 bg-white hover:scale-90 transition-all rotate-3'
               >{command}</p>
               <small 
-                className='text-sm'
+                className=' text-white '
                 >{commandDescriptions[command as keyof typeof commandDescriptions]}</small>
+
+              {/* Display video here */}
+              {/* <video src={`/data/videos/${command}.mov`} autoPlay loop muted playsInline className="w-full h-full object-cover" /> */}
             </div>
         ))}
       </div> 
