@@ -3,18 +3,22 @@ import React, {useState} from "react";
 type HelpAreaProps = {
     children: React.ReactNode;
     Trigger: React.ElementType;
+    disableClose?: boolean;
 };
 
-const HelpArea = ({children, Trigger}: HelpAreaProps) => {
+const HelpArea = ({children, Trigger, disableClose}: HelpAreaProps) => {
     
   const [showInfo, setShowInfo] = useState(false);
     const handleBackgroundClick = () => {
-        setShowInfo(!showInfo);
+        
+          setShowInfo(!showInfo);
     };
     
     return (
-      <div onClick={handleBackgroundClick}>
-        <Trigger />
+      <div >
+        <div onClick={handleBackgroundClick}>
+          <Trigger />
+        </div>
         
         {showInfo && <div
           className={`flex flex-row justify-center gap-20 items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
@@ -36,8 +40,8 @@ const HelpArea = ({children, Trigger}: HelpAreaProps) => {
         </div>
 
         {/* Dismiss text at the bottom of the modal */}
-        <div className="absolute bottom-3 left-0 right-0 text-center text-white text-xs opacity-70">
-            Click anywhere on modal to dismiss
+        <div onClick={handleBackgroundClick} className="absolute bottom-3 left-0 right-0 text-center text-white text-2xl opacity-70">
+            Click here to dismiss
         </div>
 
         <img className='w-[20rem] z-[102]' src='/guide_read.webp' />

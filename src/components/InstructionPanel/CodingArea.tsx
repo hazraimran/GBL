@@ -6,7 +6,8 @@ import CommandRow from './CommandRow';
 import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';
 import JumpConnector from './JumpConnector';
-import BigScreenAlert from '../alerts/bigScreenAlert';
+import BigScreenAlert from '../alerts/BigScreenAlert';
+import VideoScreenAlert from '../alerts/VideoScreenAlert';
 
 interface CodingAreaProps {
     setClearCommandsRef: (fn: () => void) => void;
@@ -215,8 +216,9 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                     <EmptyRow commandsUsed={commandsUsed} onDrop={handleDrop} />
                 </div>
             </div>
-            <div className="text-center flex justify-center items-center mt-10">
-                <BigScreenAlert imageUrl="/tutorial/initial.png" title="Welcome to the game!" />
+            <div className="text-center flex justify-center gap-2 items-center mt-10">
+                <BigScreenAlert imageUrl="/tutorial/initial.png" actionText="Tutorial" />
+                <VideoScreenAlert textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} actionText="Video" />
             </div>
         </div>
     );

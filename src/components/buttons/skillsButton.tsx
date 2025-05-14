@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../components/ui/tooltip"
+import VideoGallery from "../VideoGallery"
 
 
 const TutorialButton = () => {
@@ -27,7 +28,7 @@ const TutorialButton = () => {
             {displayButton.current ? <Feather className="w-[7rem] h-[4rem] text-yellow-600" /> : <Feather className="w-[7rem] h-[4rem] text-white" />}
           </TooltipTrigger>
           <TooltipContent className="text-lg" side="top">
-            <p>Check your skills (Soon)</p>
+            <p>Check your skills</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -35,24 +36,8 @@ const TutorialButton = () => {
   );
 
   return (
-    <HelpArea Trigger={Element}> 
-      <div className='flex flex-col gap-2 overflow-y-auto h-[20rem] w-[40rem] '>            
-        {Object.keys(commandDescriptions).map((command) => (
-            <div key={command} className='pt-[0.2rem] m-2'>
-              <p 
-              className='mb-10 z-[102] my-2 w-full text-center rounded px-4 py-2 bg-white hover:scale-90 transition-all rotate-3'
-              >{command}</p>
-              <small 
-                className=' text-white '
-                >{commandDescriptions[command as keyof typeof commandDescriptions]}</small>
-
-              {/* Display video here */}
-              <div className="w-full h-full object-cover">
-                <video src={`/videos/${command}.mov`}  autoPlay loop muted playsInline/>
-              </div>
-            </div>
-        ))}
-      </div> 
+    <HelpArea Trigger={Element} disableClose={true}> 
+      <VideoGallery />
     </HelpArea>
   )
 }
