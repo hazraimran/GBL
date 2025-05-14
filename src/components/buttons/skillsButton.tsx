@@ -36,7 +36,7 @@ const TutorialButton = () => {
 
   return (
     <HelpArea Trigger={Element}> 
-      <div className='flex flex-col gap-2 overflow-y-auto h-[20rem] w-[20rem] '>            
+      <div className='flex flex-col gap-2 overflow-y-auto h-[20rem] w-[40rem] '>            
         {Object.keys(commandDescriptions).map((command) => (
             <div key={command} className='pt-[0.2rem] m-2'>
               <p 
@@ -47,7 +47,9 @@ const TutorialButton = () => {
                 >{commandDescriptions[command as keyof typeof commandDescriptions]}</small>
 
               {/* Display video here */}
-              {/* <video src={`/data/videos/${command}.mov`} autoPlay loop muted playsInline className="w-full h-full object-cover" /> */}
+              <div className="w-full h-full object-cover">
+                <video src={`/videos/${command}.mov`}  autoPlay loop muted playsInline/>
+              </div>
             </div>
         ))}
       </div> 
