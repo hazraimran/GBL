@@ -3,10 +3,9 @@ import React, {useState} from "react";
 type HelpAreaProps = {
     children: React.ReactNode;
     Trigger: React.ElementType;
-    disableClose?: boolean;
 };
 
-const HelpArea = ({children, Trigger, disableClose}: HelpAreaProps) => {
+const HelpArea = ({children, Trigger}: HelpAreaProps) => {
     
   const [showInfo, setShowInfo] = useState(false);
     const handleBackgroundClick = () => {

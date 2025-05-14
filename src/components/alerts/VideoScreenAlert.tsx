@@ -15,8 +15,6 @@ export default function VideoScreenAlert({textHtml, actionText, title }: VideoSc
       title:title,
       html: textHtml,
       padding: "3em",
-      margin: "10px",
-      // grow: "fullscreen",
       width: "80vw",
       showConfirmButton: true,
       confirmButtonText: "Close",

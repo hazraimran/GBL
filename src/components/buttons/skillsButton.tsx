@@ -36,7 +36,7 @@ const TutorialButton = () => {
   );
 
   return (
-    <HelpArea Trigger={Element} disableClose={true}> 
+    <HelpArea Trigger={Element}> 
       <VideoGallery />
     </HelpArea>
   )
