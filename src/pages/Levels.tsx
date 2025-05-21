@@ -244,7 +244,7 @@ const Levels: React.FC = () => {
 
  
                     <SilentButton />
-                    <TutorialButton />
+                    {/* <TutorialButton /> */}
                     <SkillsButton/>
                 </div>
             </TooltipProvider>

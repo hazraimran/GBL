@@ -18,7 +18,7 @@ const TutorialButton = () => {
 
   const Element = () => (
     <button
-      className="fixed bottom-0 left-[24rem] bg-custom-bg rounded-lg flex items-center justify-center"
+      className="fixed bottom-0 left-[16rem] bg-custom-bg rounded-lg flex items-center justify-center"
       onClick={handleClickTutorial}
     > 
       <TooltipProvider>
