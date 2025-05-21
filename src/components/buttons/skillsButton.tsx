@@ -1,7 +1,6 @@
 import React,{useRef} from "react"
 import { Feather } from "lucide-react"
 import HelpArea from "../hint/HelpArea"
-import { commandDescriptions } from "../../data"
 import {
   Tooltip,
   TooltipContent,

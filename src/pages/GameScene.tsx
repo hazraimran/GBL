@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react';
-import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import GameContext from '../context/GameContext';
 import PhaserGame from '../game/PhaserGame';
 import Popup from '../components/Popup';
@@ -49,7 +48,6 @@ const GameScene: React.FC = () => {
             style={{ backgroundImage: `url('/game_bg.webp')` }}>
             <img src="./slots.webp" alt="" className='absolute' />
             <PhaserGame />
-            <InstructionPanel />
             <Popup />
             <PromptScene />
         </div>

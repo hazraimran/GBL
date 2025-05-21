@@ -123,18 +123,18 @@ const InstructionPanel: React.FC = () => {
 
         if (!element) return;
 
-        const height = ContentRef.current?.offsetHeight + CodingAreaRef.current?.offsetHeight
-
+        const height = (ContentRef.current?.offsetHeight ?? 0) + (CodingAreaRef.current?.offsetHeight ?? 0)
         setAsideHeight(height + remToPx(10));
 
     }, [ContentRef.current?.offsetHeight, CodingAreaRef.current?.offsetHeight]);
 
     return levelInfo && showInstructionPanel && (
         <aside
-            className="w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out 
+            className=" w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out 
               absolute top-1/2 z-10 pt-[5rem] pb-[5rem] px-[5rem] -right-[2rem]"
             ref={instructionPanelRef}
             onWheel={handleWheel}
+            draggable={false}
 
             style={{
                 transform: `translateY(-${translateY}%)`,
@@ -143,7 +143,7 @@ const InstructionPanel: React.FC = () => {
         >
 
             {/* 上面的卷轴头 */}
-            <img src={frames[11 - currentFrame]} alt="" className='absolute top-0 -translate-y-[5rem] select-none' />
+            <img draggable={false} src={frames[11 - currentFrame]} alt="" className='absolute top-0 -translate-y-[5rem] select-none' />
 
             <div ref={ContentRef} className='flex flex-col items-center'
                 onWheel={handleWheel}
@@ -175,6 +175,7 @@ const InstructionPanel: React.FC = () => {
 
             {/* 下面的卷轴头 */}
             <img
+                draggable={false}
                 src={frames[currentFrame]}
                 alt=""
                 className="select-none absolute duration-1000 ease-in-out"

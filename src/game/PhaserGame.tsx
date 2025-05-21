@@ -1,4 +1,4 @@
-import { useEffect, useRef, useContext } from 'react';
+import React,{ useEffect, useRef, useContext } from 'react';
 import Phaser from 'phaser';
 import { MainScene } from './MainScene';
 import BottomPanel from '../components/BottomPanel';
@@ -9,13 +9,14 @@ import EventManager from '../EventManager';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { UploadRecordService } from '../services/firestore/uploadRecordService';
 import VictorySoundPlayer from './VictorySoundPlayer';
+import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
-    const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn, resetFn,
+    const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn,
         commandsUsed, setGameStatus, setShowPopup, setExecuting, setErrorCnt, errorCnt } = useContext(GameContext);
     const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
 
@@ -146,14 +147,6 @@ const PhaserGame = () => {
         mainSceneRef.current.executeCommands(commandsUsed);
     };
 
-    const handleExecuteOneStep = () => {
-        if (!mainSceneRef.current) {
-            console.warn('Main scene not initialized');
-            return;
-        }
-
-        mainSceneRef.current.executeOneStep();
-    };
 
     const handleReset = () => {
         setShowFailurePrompt(false);
@@ -182,10 +175,9 @@ const PhaserGame = () => {
                 ref={gameRef}
                 className="fixed inset-0"
             />
-
+            <InstructionPanel />
             <BottomPanel
                 onExecute={handleRunCode}
-                onExecuteOneStep={handleExecuteOneStep}
                 onReset={handleReset}
                 onDrag={handleDrag}
             />

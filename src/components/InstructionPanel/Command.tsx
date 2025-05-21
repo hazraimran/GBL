@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef } from 'react';
+import React, {forwardRef } from 'react';
 import { CommandWithArgType } from '../../types/game';
 import CircularJSON from 'circular-json';
 
@@ -14,6 +14,9 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
     const [isShaking, setIsShaking] = React.useState(shaking);
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        // Stop event propagation to prevent parent elements from becoming draggable
+        e.stopPropagation();
+        
         if (idx !== undefined) {
             e.dataTransfer.setData('idx', idx.toString());
         }
@@ -29,7 +32,9 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
         }
     }
 
-    const handleDragEnd = () => {
+    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+        // Stop event propagation
+        e.stopPropagation();
         setDragging(false);
     }
 
