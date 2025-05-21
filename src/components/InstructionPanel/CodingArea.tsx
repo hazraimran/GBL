@@ -218,7 +218,11 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
             </div>
             <div className="text-center flex justify-center gap-2 items-center mt-10">
                 <BigScreenAlert imageUrl="/tutorial/initial.png" actionText="Tutorial" />
-                <VideoScreenAlert textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} actionText="Video" />
+                <VideoScreenAlert 
+                    title="Video"
+                    textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} 
+                    actionText={'INPUT'}
+                />
             </div>
         </div>
     );
