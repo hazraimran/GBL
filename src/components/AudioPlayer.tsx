@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../context/GameContext";
 
 // Define scene types to avoid string literals

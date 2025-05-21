@@ -16,6 +16,7 @@ import {
     TooltipTrigger,
 } from "../components/ui/tooltip"
 import OpeningDialog from "../components/OpeningDialog";
+import SilentButton from "../components/buttons/SilentButton";
 
 interface LevelCoordinate {
     x: number;
@@ -241,17 +242,8 @@ const Levels: React.FC = () => {
                         <RotateCcw onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
                     </button>
 
-                    <button
-                        className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
-                        onClick={() => {
-                        }}
-                    >
-                        {muted ?
-                            <VolumeOff onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
-                            <Volume2 onClick={() => setMuted(true)} className="w-[7rem] h-[4rem] text-yellow-600" />
-                        }
-                    </button>
-
+ 
+                    <SilentButton />
                     <TutorialButton />
                     <SkillsButton/>
                 </div>

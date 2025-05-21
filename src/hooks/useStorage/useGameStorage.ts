@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import GameStorageService from '../../services/storage/gameStorageService';
 import { LevelInfo } from '../../types/level';
 import { CommandWithArgType } from '../../types/game';
+import GameContext from '../../context/GameContext';
 
 export const useGameStorage = () => {
     const [gameStorage] = useState(GameStorageService);
     const [uid, setUid] = useState<string | null>(null);
     const [coins, setCoins] = useState<number>(0);
+    const {setMuted} = useContext(GameContext);
 
     useEffect(() => {
         const initUID = async () => {
@@ -17,6 +19,12 @@ export const useGameStorage = () => {
         };
         initUID();
     }, [gameStorage]);
+
+    // Initialize mute state
+    useEffect(() => {
+        const muteState = gameStorage.getMuteState();
+        setMuted(muteState);
+    }, []);
 
     // Helper function to update coins state
     const updateCoinsState = () => {
@@ -36,6 +44,13 @@ export const useGameStorage = () => {
             gameStorage.setCoins(amount);
             setCoins(amount);
             return amount;
+        },
+        setMuteState: (state: boolean) => {
+            gameStorage.setMuteState(state);
+            setMuted(state);
+        },
+        getMuteState: () => {
+            return gameStorage.getMuteState();
         },
         addCoins: (amount: number) => {
             const newAmount = gameStorage.addCoins(amount);

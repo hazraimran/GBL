@@ -157,6 +157,14 @@ class GameStorageService {
         return report;
     }
 
+    setMuteState(state: boolean): void {
+        localStorage.setItem(this.getKey('muteState'), state.toString());
+    }
+
+    getMuteState(): boolean {
+        return localStorage.getItem(this.getKey('muteState')) === 'true';
+    }
+
     resetGameData(): boolean {
         try {
             const currentUID = localStorage.getItem(this.getKey('uid'));

@@ -7,6 +7,7 @@ import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { Volume2, VolumeOff } from "lucide-react";
 import TutorialButton from "../components/buttons/tutorial";
 import SkillsButton from "../components/buttons/skillsButton";
+import SilentButton from './buttons/SilentButton';
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -36,8 +37,6 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
         navTo,
         setShowInfo,
         showInfo,
-        muted,
-        setMuted,
         showOpenningInstruction,
         levelInfo,
         commandsUsed,
@@ -77,9 +76,6 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
         }
     }, [navTo, saveCommandsUsed, levelInfo, commandsUsed, onReset]);
 
-    const handleToggleMute = useCallback(() => {
-        setMuted(!muted);
-    }, [muted, setMuted]);
 
     const handleShowInfo = useCallback(() => {
         setShowInfo(true);
@@ -119,15 +115,7 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
                 <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
             </button>
 
-            <button
-                className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={handleToggleMute}
-            >
-                {muted ?
-                    <VolumeOff className="w-[7rem] h-[4rem] text-yellow-600" /> :
-                    <Volume2 className="w-[7rem] h-[4rem] text-yellow-600" />
-                }
-            </button>
+            <SilentButton />
             <TutorialButton />
             <SkillsButton/>
 
