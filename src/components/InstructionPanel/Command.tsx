@@ -14,6 +14,8 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
     const [isShaking, setIsShaking] = React.useState(shaking);
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+
+        window.getSelection()?.removeAllRanges();
         // Stop event propagation to prevent parent elements from becoming draggable
         e.stopPropagation();
         
@@ -41,7 +43,7 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
     return value.command === "" ? (
         <div
             ref={ref}
-            draggable
+            draggable={true}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             className={`z-[100] px-2 py-1 w-8 h-8 bg-primary/5 hover:bg-primary/10 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
@@ -49,17 +51,20 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
         >
         </div>
     ) : (
-        <div
-            ref={ref}
-            draggable
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            className={`flex flex-row justify-center items-center z-[100] px-2 py-1  hover:bg-primary/5 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
-             space-x-2 cursor-pointer ${dragging ? 'opacity-50' : ''}`}
-        >
-            <span className='pt-[0.2rem]'>{value.command}</span>
-            {(typeof value.arg === 'number') && <span className=' text-center text-orange-500 text-xl bg-amber-200 rounded w-6 h-6 '>{value.arg + 1}</span>}
+        <div className="command-container select-none flex flex-row justify-center items-center">
+            <div
+                ref={ref}
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                className={`flex select-none flex-row justify-center items-center z-[100] px-2 py-1  hover:bg-primary/5 transition-colors text-black rounded-md ${isShaking && 'animate-wiggle'}
+                space-x-2 cursor-pointer ${dragging ? 'opacity-50' : ''}`}
+            >
+                {value.command}
+            </div>
+            {(typeof value.arg === 'number') && <span draggable={false} className=' text-center text-orange-500 text-xl bg-amber-200 rounded w-6 h-6 '>{value.arg + 1}</span>}
         </div>
+        
     )
 
 });
