@@ -11,8 +11,6 @@ const SilentButton = () => {
       setMuteState(!muted);
     }, [muted]);
 
-    console.log('muted from button', muted);
-
     return (
       <div className="fixed bottom-0 left-[8rem] bg-custom-bg rounded-lg">
           <button

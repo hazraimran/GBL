@@ -11,19 +11,33 @@ interface VideoScreenAlertProps {
 export default function VideoScreenAlert({textHtml, actionText, title }: VideoScreenAlertProps) {
 
   const handleClick = () => {
-    Swal.fire({
-      title:title,
-      html: textHtml,
-      padding: "3em",
-      width: "80vw",
-      showConfirmButton: true,
-      confirmButtonText: "Close",
-      customClass: {
-        confirmButton: 'bg-red-500 min-w-[200px] min-h-[50px] rounded-lg',
-        actions: 'absolute top-0 right-0'
-      },
-      animation: false, 
-    });
+    const videoElement = document.createElement('video');
+    videoElement.src = `/videos/${actionText}.mov`;
+
+    videoElement.onloadeddata = () => {
+      Swal.fire({
+        title: title,
+        html: textHtml,
+        padding: "3em", 
+        width: "80vw",
+        showConfirmButton: true,
+        confirmButtonText: "Close",
+        customClass: {
+          confirmButton: 'bg-red-500 min-w-[200px] min-h-[50px] rounded-lg',
+          actions: 'absolute top-0 right-0'
+        },
+        animation: false,
+      });
+    };
+
+    videoElement.onerror = () => {
+      console.error('Error loading video');
+      Swal.fire({
+        title: 'Error',
+        text: 'Failed to load video',
+        icon: 'error'
+      });
+    };
   };
 
     return (
