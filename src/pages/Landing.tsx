@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { ChevronRight } from "lucide-react";
@@ -40,7 +40,6 @@ const Landing: React.FC = () => {
     const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
     useGameStorage();
 
-
     return currentScene === 'LANDING' && (
         <>
             <div
@@ -54,7 +53,7 @@ const Landing: React.FC = () => {
             <div className="absolute top-1/3 -translate-y-full left-1/2 -translate-x-1/2 px-[2rem] pt-[2rem] text-7xl text-yellow-600 filter backdrop-blur-lg rounded-lg ">
                 Ancient Architect
             </div>
-            <AnimatedStart navTo={navTo} setPlayBGM={setPlayBGM} />
+            <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
         </>
     );
 }

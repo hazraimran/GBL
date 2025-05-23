@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../context/GameContext";
 
 // Define scene types to avoid string literals
-type SceneType = 'LANDING' | 'GAME' | 'LEVELS';
+type SceneType = 'LANDING' | 'GAME' | 'LEVELS' | 'SELECT_CHARACTER';
 
 // Define interface for the context
 interface GameContextType {
@@ -39,6 +39,7 @@ function AudioPlayer() {
                 audioUrl = './home.mp3';
                 break;
             default:
+                audioUrl = './home.mp3';
                 return; // If no matching scene, return early
         }
 

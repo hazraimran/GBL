@@ -101,11 +101,14 @@ export class MainScene extends Phaser.Scene {
             speed: 1.5,
             currentLevel: null
         };
-    }
 
+    }
+    
     preload(): void {
         // Load sprites and images
-        this.load.spritesheet('worker', './worker.png', {
+
+        const character = localStorage.getItem('selectedCharacter');
+        this.load.spritesheet('worker', character === 'Darius'? './worker1.png' : './worker.png', {
             frameWidth: 132,
             frameHeight: 132
         });
@@ -211,31 +214,31 @@ export class MainScene extends Phaser.Scene {
         const animations = [
             {
                 key: 'rest',
-                frames: this.anims.generateFrameNumbers('worker', { start: 0, end: 7 }),
+                frames: this.anims.generateFrameNumbers('worker', { start: 0, end: 0 }),
                 frameRate: 8,
                 repeat: -1
             },
             {
                 key: 'walk',
-                frames: this.anims.generateFrameNumbers('worker', { start: 8, end: 13 }),
+                frames: this.anims.generateFrameNumbers('worker', { start: 7, end: 12 }),
                 frameRate: 8,
                 repeat: -1
             },
             {
                 key: 'pick',
-                frames: this.anims.generateFrameNumbers('worker', { start: 14, end: 21 }),
+                frames: this.anims.generateFrameNumbers('worker', { start: 14, end: 22 }),
                 frameRate: 9,
                 repeat: 0
             },
             {
                 key: 'drop',
-                frames: this.anims.generateFrameNumbers('worker', { start: 22, end: 29 }),
+                frames: this.anims.generateFrameNumbers('worker', { start: 23, end: 30 }),
                 frameRate: 9,
                 repeat: 0
             },
             {
                 key: 'holdWalk',
-                frames: this.anims.generateFrameNumbers('worker', { start: 30, end: 34 }),
+                frames: this.anims.generateFrameNumbers('worker', { start: 31, end: 35 }),
                 frameRate: 8,
                 repeat: -1
             }
