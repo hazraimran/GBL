@@ -32,13 +32,6 @@ const SelectCharacter: React.FC = () => {
       }}
   >
         <Container className="h-full select-character-container  flex flex-col justify-center items-center">
-            <h1 className="text-center mb-4 text-white relative">
-                <span className="absolute -left-8 top-1/2 -translate-y-1/2 w-6 h-6 border-t-2 border-l-2 border-yellow-600"></span>
-                <span className="absolute -right-8 top-1/2 -translate-y-1/2 w-6 h-6 border-t-2 border-r-2 border-yellow-600"></span>
-                <span className="absolute left-1/2 -translate-x-1/2 -top-4 w-12 h-4 border-t-2 border-l-2 border-r-2 border-yellow-600 rounded-t-lg"></span>
-                <span className="absolute left-1/2 -translate-x-1/2 -bottom-4 w-12 h-4 border-b-2 border-l-2 border-r-2 border-yellow-600 rounded-b-lg"></span>
-                Select Your Character
-            </h1>
             <Container>
             <Row className="justify-content-center">
                 <Col md={5}>
@@ -62,12 +55,12 @@ const SelectCharacter: React.FC = () => {
             </Container>
             <div className="text-center mt-4">
                 <Button 
-                    variant="primary" 
+                    variant="secondary" 
                     size="lg"
                     disabled={!selectedCharacter}
                     onClick={handleContinue}
                 >
-                    Continue
+                    Select an Architect
                 </Button>
             </div>
         </Container>
@@ -79,7 +72,7 @@ const SelectCharacter: React.FC = () => {
 const CharacterCard: React.FC<{ name: string; description: string; isSelected: boolean; onSelect: (character: string) => void; }> = ({ name, description, isSelected, onSelect }) => {
     return (
       <Card 
-          className="character-card cursor-pointer"
+          className="character-card cursor-pointer rounded-lg"
           style={{
             border: 'none',
             backgroundColor: 'transparent'
@@ -89,10 +82,10 @@ const CharacterCard: React.FC<{ name: string; description: string; isSelected: b
       <Card.Img 
           variant=""
           style={{
-            opacity: isSelected ? 1 : 0.5,
-            backgroundImage: isSelected ? 'linear-gradient(to bottom, rgba(0, 0, 255, 0.5), rgba(128, 0, 128, 1))' : 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))',
+            opacity: isSelected ? 1 : 0.8,
+            backgroundImage: isSelected ? 'linear-gradient(to top, rgba(0, 0, 255, 0.2), rgba(128, 0, 128, 0.5))' : 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))',
           }}
-          className="h-[400px] w-auto hover:opacity-100"
+          className="h-[400px] w-auto hover:opacity-100 rounded-lg"
           src={`./playercard/${name}.png`} 
           alt={name}
           
