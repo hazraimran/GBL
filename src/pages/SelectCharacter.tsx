@@ -79,7 +79,7 @@ const SelectCharacter: React.FC = () => {
 const CharacterCard: React.FC<{ name: string; description: string; isSelected: boolean; onSelect: (character: string) => void; }> = ({ name, description, isSelected, onSelect }) => {
     return (
       <Card 
-          className={`character-card cursor-pointer`}
+          className="character-card cursor-pointer"
           style={{
             border: 'none',
             backgroundColor: 'transparent'
@@ -89,9 +89,10 @@ const CharacterCard: React.FC<{ name: string; description: string; isSelected: b
       <Card.Img 
           variant=""
           style={{
+            opacity: isSelected ? 1 : 0.5,
             backgroundImage: isSelected ? 'linear-gradient(to bottom, rgba(0, 0, 255, 0.5), rgba(128, 0, 128, 1))' : 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))',
           }}
-          className="h-[500px] w-auto"
+          className="h-[400px] w-auto hover:opacity-100"
           src={`./playercard/${name}.png`} 
           alt={name}
           

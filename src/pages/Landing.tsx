@@ -21,11 +21,11 @@ const AnimatedStart: React.FC<AnimatedStartProps> = ({ navTo, setPlayBGM }) => {
 
     return (
         <div
-            className={`absolute top-2/3 -translate-y-full left-1/2 -translate-x-1/2 pl-4 pr-2 pt-6 pb-4 text-2xl filter backdrop-blur-md rounded-lg cursor-pointer ${isAnimating ? 'w-16' : 'w-32'} transition-[width] duration-500`}
+            className={`py-4 px-2 text-3xl  backdrop-blur-md rounded-lg cursor-pointer w-32  duration-1000 hover:bg-slate-700 hover:text-white `}
             onClick={handleClick}
         >
             <span className="relative block text-center">
-                <span className={`transition-opacity duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+                <span className={` duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                     Start
                 </span>
                 <ChevronRight
@@ -43,18 +43,20 @@ const Landing: React.FC = () => {
     return currentScene === 'LANDING' && (
         <>
             <div
-                className={`bg-cover bg-center bg-no-repeat h-screen animate-bg-zoom-loop`}
+                className={`bg-cover bg-center bg-no-repeat h-screen `}
                 style={{
                     backgroundImage: `url('/landing_bg.webp')`,
                     transition: 'filter 500ms ease-out'
                 }}
             >
             </div>
-            <div className="absolute top-1/3 -translate-y-full left-1/2 -translate-x-1/2 px-[2rem] pt-[2rem] text-7xl text-yellow-600 filter backdrop-blur-lg rounded-lg ">
-                Ancient Architect
+            <div className="absolute top-0 right-0  left-0 max-w-[40vw] max-h-[100vh] m-auto bottom-0 flex flex-col justify-center items-center">
+                
+                <img src="/Ancient-architect-logo.png" alt="Ancient Architect" className="w-full" />
+            
+                <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
             </div>
-            <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
-        </>
+            </>
     );
 }
 
