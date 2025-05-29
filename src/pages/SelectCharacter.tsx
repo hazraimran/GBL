@@ -85,7 +85,7 @@ const CharacterCard: React.FC<{ name: string; description: string; isSelected: b
             opacity: isSelected ? 1 : 0.8,
             backgroundImage: isSelected ? 'linear-gradient(to top, rgba(0, 0, 255, 0.2), rgba(128, 0, 128, 0.5))' : 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))',
           }}
-          className="h-[400px] w-auto hover:opacity-100 rounded-lg"
+          className="h-[400px] w-auto hover:opacity-100 rounded-lg object-contain"
           src={`./playercard/${name}.png`} 
           alt={name}
           
