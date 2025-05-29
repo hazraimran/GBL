@@ -22,7 +22,7 @@ const outputFn = (generatorFn: (min: number, max: number) => number) => {
 const level = {
     "id": 10,
     "title": "Sub Hallway",
-    "description": "For each two things in the INBOX, first subtract the 1 st from the 2nd and put the result in the OUTBOX.AND THEN, subtract the 2n d from the Ist and put the result in the OUTBOX.Repeat.\n\nYou got a new command!SUBtracts the contents of a tile on the floor FROM whatever value you 're currently holding.",
+    "description": "For each two rocks in the INBOX, first subtract the 1 st from the 2nd and put the result in the OUTBOX.AND THEN, subtract the 2n d from the Ist and put the result in the OUTBOX.Repeat.\n\nYou got a new command!SUBtracts the contents of a tile on the floor FROM whatever value you 're currently holding.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],

@@ -17,7 +17,7 @@ var outputFn = function (generatorFn) {
 var level = {
     "id": 5,
     "title": "Replica Slate",
-    "description": "For each two things in the INBOX, add them together, and put the result in the OUTBOX.\n\nYou got a new command!It ADDs the contents of a tile on the floor to whatever value you 're currently holding.",
+    "description": "For each two rocks in the INBOX, add them together, and put the result in the OUTBOX.\n\nYou got a new command!It ADDs the contents of a tile on the floor to whatever value you 're currently holding.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],

@@ -17,7 +17,7 @@ var outputFn = function (generatorFn) {
 var level = {
     "id": 2,
     "title": "Busy Supply Chamber",
-    "description": "Grab each thing from the INBOX, and drop each one into the OUTBOX.\n\n You got a new command!You can drag JUMP 's arrow to jump to different lines within your program.\n\n With this new ability, you can complete this assignment using only 3 total commands.",
+    "description": "Grab each rock from the INBOX, and drop each one into the OUTBOX.\n\n You got a new command!You can drag JUMP 's arrow to jump to different lines within your program.\n\n With this new ability, you can complete this assignment using only 3 total commands.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP"],

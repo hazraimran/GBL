@@ -29,9 +29,9 @@ const PromptScene = () => {
             <SmartHintSystem level={{
                 "id": "1",
                 "title": "Supply Chamber",
-                "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each thing from the INBOX, and drop it into the OUTBOX.",
+                "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
                 "commands": ["INPUT", "OUTPUT"],
-                "goal": "Your program should tell your worker to grab each thing from the INBOX, and drop it into the OUTBOX.",
+                "goal": "Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
                 "input": [1, 2, 3, 4],
                 "expectOutput": [1, 2, 3, 4]
             }}

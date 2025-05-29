@@ -20,7 +20,7 @@ const outputFn = (generatorFn: (min: number, max: number) => number) => {
 const level = {
     "id": 7,
     "title": "Octoplier Suite",
-    "description": "For each thing in the INBOX, multiply it by 8, and put the result in the OUTBOX. \n\nUsing a bunch of ADD commands is easy, but WASTEFUL!Can you do it using only 3 ADD commands ?Management is watching.",
+    "description": "For each rock in the INBOX, multiply it by 8, and put the result in the OUTBOX. \n\nUsing a bunch of ADD commands is easy, but WASTEFUL!Can you do it using only 3 ADD commands ?Management is watching.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],

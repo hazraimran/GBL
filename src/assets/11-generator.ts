@@ -28,7 +28,7 @@ const outputFn = (generatorFn: (min: number, max: number) => number) => {
 const level = {
     "id": 11,
     "title": "Equalization Room",
-    "description": "Get two things from the INBOX.If they are EQUAL, put ONE of them in the OUTBOX.Discard non - equal pairs.\nRepeat!",
+    "description": "Get two rocks from the INBOX.If they are EQUAL, put ONE of them in the OUTBOX.Discard non - equal pairs.\nRepeat!",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD", "JUMP = 0", "SUB"],

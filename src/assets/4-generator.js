@@ -22,7 +22,7 @@ var outputFn = function (generatorFn) {
 var level = {
     "id": 4,
     "title": "Scrambler Handler",
-    "description": "Grab the first TWO things from the INBOX and drop them into the OUTBOX in the reverse order.Repeat until the INBOX is empty.\n\nYou got a new command!Feel free to COPYTO wherever you like on the carpet.It will be cleaned later.",
+    "description": "Grab the first TWO rocks from the INBOX and drop them into the OUTBOX in the reverse order.Repeat until the INBOX is empty.\n\nYou got a new command!Feel free to COPYTO wherever you like on the carpet.It will be cleaned later.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO"],

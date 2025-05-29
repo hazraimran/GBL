@@ -20,7 +20,7 @@ const outputFn = (generatorFn: (min: number, max: number) => number) => {
 const level1 = {
     "id": 1,
     "title": "Supply Chamber",
-    "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each thing from the INBOX, and drop it into the OUTBOX.",
+    "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT"],

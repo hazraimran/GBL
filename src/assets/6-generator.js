@@ -17,7 +17,7 @@ var outputFn = function (generatorFn) {
 var level = {
     "id": 6,
     "title": "Tripler Room",
-    "description": "For each thing in the INBOX, TRIPLE it!",
+    "description": "For each rock in the INBOX, TRIPLE it!",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "JUMP", "COPYFROM", "COPYTO", "ADD"],

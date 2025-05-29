@@ -18,7 +18,7 @@ const outputFn = (generatorFn: (min: number, max: number) => number) => {
 const level = {
     "id": 8,
     "title": "Zero Exterminator",
-    "description": "Send all things that ARE NOT ZERO to the OUTBOX.\n\nYou got a new command!It jumps ONLY if the value you are holding is ZERO.Otherwise it continues to the next line.",
+    "description": "Send all rocks that ARE NOT ZERO to the OUTBOX.\n\nYou got a new command!It jumps ONLY if the value you are holding is ZERO.Otherwise it continues to the next line.",
     "generatorFunction": inputFn.toString(),
     "outputFunction": outputFn.toString(),
     "commands": ["INPUT", "OUTPUT", "ADD", "COPYFROM", "COPYTO", "JUMP", "JUMP = 0"],
