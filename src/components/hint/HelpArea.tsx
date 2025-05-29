@@ -20,12 +20,10 @@ const HelpArea = ({children, Trigger}: HelpAreaProps) => {
         </div>
         
         {showInfo && <div
-          className={`flex flex-row justify-center gap-20 items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+          className={`fixed flex flex-row justify-center gap-20 items-center select-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
           style={{
               opacity: 1,
               pointerEvents: 'auto',
-              top: '25vh',
-              left: '20vw',
               width: '60vw',
             height: '50vh',
             boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',

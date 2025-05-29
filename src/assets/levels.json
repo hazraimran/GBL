@@ -16,7 +16,13 @@
         "isLocked": false,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Welcome to the construction site, young apprentice!", "Building in these ancient ruins is no small feat!", "Your first job will appear over there on the right side in a moment.", "You are lucky to have me as your mentor!, I have completed this job before, so I know the best way to do it.", "Check the command area I have drop the commands for you."]
+        "openningInstruction": ["Welcome to the construction site, young apprentice!", "Building in these ancient ruins is no small feat!", "Your first job will appear over there on the right side in a moment.", "You are lucky to have me as your mentor!, I have completed this job before, so I know the best way to do it.", "Check the command area I have drop the commands for you."],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the INPUT and OUTPUT commands to move things between the INBOX and OUTBOX."
+        }
     }, {
         "id": 2,
         "title": "Busy Supply Chamber",
@@ -34,7 +40,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Congratulations on your promotion to Apprentice Craftsman!", "But don’t get too comfortable—the challenges only get harder from here.", "Here is your new assignment."]
+        "openningInstruction": ["Congratulations on your promotion to Apprentice Craftsman!", "But don’t get too comfortable—the challenges only get harder from here.", "Here is your new assignment."],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP command to jump to different lines within your program."
+        }
     }, {
         "id": 3,
         "title": "Replica Slate",
@@ -64,7 +76,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Oh no!", "The rolling log system that transports stones has broken down!", "But construction can’t wait.", "You’ll have to bypass the system and grab stones directly from the construction slot.", "Think fast and adapt, young craftsman—the structure depends on you!"]
+        "openningInstruction": ["Oh no!", "The rolling log system that transports stones has broken down!", "But construction can’t wait.", "You’ll have to bypass the system and grab stones directly from the construction slot.", "Think fast and adapt, young craftsman—the structure depends on you!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     }, {
         "id": 4,
         "title": "Scrambler Handler",
@@ -91,7 +109,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Good news!", "The rolling log system is fixed, but now the stones are arriving completely out of order!", "Your task is to sort them correctly and ensure each one ends up in its proper place.", "Precision is key—an unorganized foundation could spell disaster for the entire structure!"]
+        "openningInstruction": ["Good news!", "The rolling log system is fixed, but now the stones are arriving completely out of order!", "Your task is to sort them correctly and ensure each one ends up in its proper place.", "Precision is key—an unorganized foundation could spell disaster for the entire structure!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYTO command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     }, {
         "id": 5,
         "title": "Replica Slate",
@@ -118,7 +142,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Sigh…", "The rainy season is here, and the site is a muddy mess.", "The old architect always said, “Stay calm and focused, and not even the rain can stop a great building.", "Don’t worry; math isn’t the key here—just take it one step at a time."]
+        "openningInstruction": ["Sigh…", "The rainy season is here, and the site is a muddy mess.", "The old architect always said, “Stay calm and focused, and not even the rain can stop a great building.", "Don’t worry; math isn’t the key here—just take it one step at a time."],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the ADD command to add the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     }, {
         "id": 6,
         "title": "Tripler Room",
@@ -145,7 +175,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Who are you ? !", "This secret area is reserved for only the most exceptional architects.", "And you’re late—seven years late!", "From now on, I expect a 100% increase in efficiency.", "Every task will be scrutinized with the utmost care.", "Good luck!"]
+        "openningInstruction": ["Who are you ? !", "This secret area is reserved for only the most exceptional architects.", "And you’re late—seven years late!", "From now on, I expect a 100% increase in efficiency.", "Every task will be scrutinized with the utmost care.", "Good luck!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the TRIPLE command to multiply the contents of a tile on the floor by 3."
+        }
     }, {
         "id": 7,
         "title": "Octoplier Suite",
@@ -177,7 +213,13 @@
             "Every stone here must be precisely transformed to eight times its original weight.",
             "But resources are scarce—you must complete this task with minimal tools.",
             "Remember, a true master isn't defined by how many tools they possess, but by how cleverly they use them."
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the MULTIPLY command to multiply the contents of a tile on the floor by 8."
+        }
     }, {
         "id": 8,
         "title": "Zero Exterminator",
@@ -204,7 +246,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Where do you see yourself in 5 years?", "Or 10 years?", "I have a note here from your other boss that says…", "From this point on, YOUR PERFORMANCE WILL BE EVALUATED WITH EXTRA SCRUTINY.", "What a treat!"]
+        "openningInstruction": ["Where do you see yourself in 5 years?", "Or 10 years?", "I have a note here from your other boss that says…", "From this point on, YOUR PERFORMANCE WILL BE EVALUATED WITH EXTRA SCRUTINY.", "What a treat!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative."
+        }
     }, {
         "id": 9,
         "title": "Zero Preservation",
@@ -231,7 +279,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Recently, someone suggested we pay more attention to the underappreciated materials.", "This time, you’ll only keep the “zero-weight” stones.", "What about the other materials ? That’s for you to decide!"]
+        "openningInstruction": ["Recently, someone suggested we pay more attention to the underappreciated materials.", "This time, you’ll only keep the “zero-weight” stones.", "What about the other materials ? That’s for you to decide!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative."
+        }
     }, {
         "id": 10,
         "title": "Sub Hallway",
@@ -258,7 +312,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Subtraction?!", "In construction, reducing errors means increasing success.", "Did you learn this in school?", "Don’t worry—we’re a good team, and I know you can figure it out!"]
+        "openningInstruction": ["Subtraction?!", "In construction, reducing errors means increasing success.", "Did you learn this in school?", "Don’t worry—we’re a good team, and I know you can figure it out!"],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the SUB command to subtract the contents of a tile on the floor from whatever value you 're currently holding."
+        }
     }, {
         "id": 11,
         "title": "Equalization Room",
@@ -285,7 +345,13 @@
         "isLocked": true,
         "timeSpent": 0,
         "timeAccessed": 0,
-        "openningInstruction": ["Sometimes…", "…one stone is stronger than another.", "And sometimes…", "…they’re exactly the same!", "Learn to identify and balance them—that’s the essence of great architecture."]
+        "openningInstruction": ["Sometimes…", "…one stone is stronger than another.", "And sometimes…", "…they’re exactly the same!", "Learn to identify and balance them—that’s the essence of great architecture."],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     }, {
         "id": 12,
         "title": "Maximum Finder",
@@ -317,7 +383,13 @@
             "The ancient scrolls speak of a mystical number - the mightiest among its peers.",
             "Your task is to examine each stone's weight and find the heaviest one.",
             "Remember: even the smallest detail can reveal something grand."
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     },
     {
         "id": 13,
@@ -350,7 +422,13 @@
             "We need you to calculate the total stones needed for each design.",
             "An experienced craftsman would use their abacus, but I believe in your ability to find a... creative solution.",
             "Time is of essence - show me what you've learned!"
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP command to jump to a line if the value you are holding is negative."
+        }
     },
     {
         "id": 14,
@@ -383,7 +461,13 @@
             "The ancient masters taught us that negativity has no place in perfect architecture.",
             "Your task is to find the true value in every measurement, no matter how it appears.",
             "Remember: every shadow can be transformed into light!"
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative."
+        }
     },
     {
         "id": 15,
@@ -416,7 +500,13 @@
             "Each stone must be sorted by the ancient principle of balance - the way of odd and even.",
             "Mark each stone's nature - a circle for harmony, a line for discord.",
             "Don't let their numbers deceive you - sometimes the simplest path requires patience."
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the JUMP IF ZERO command to jump to a line if the value you are holding is zero."
+        }
     },
     {
         "id": 16,
@@ -449,7 +539,13 @@
             "These stones must be arranged from smallest to largest before sunset.",
             "I know it's a daunting task, but remember what the old master used to say:",
             "'Even the greatest wall begins with two perfectly aligned stones.'"
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     },
     {
         "id": 17,
@@ -482,6 +578,12 @@
             "Each number is born from the union of its predecessors, creating perfect harmony.",
             "Build this sequence until you reach the prescribed height.",
             "This is no ordinary task - it's the very pattern of creation itself!"
-        ]
+        ],
+        "learningOutcome": {
+            "concept": "Memory Buffering and Temporary Variable Storage",
+            "descr": "This level simulates how computers use temporary memory (buffers) to reverse or reorder values. Players must store one value, retrieve the next, and output them in reverse order — similar to how stacks or memory slots are used in low-level programming.",
+            "why": "This models the logic used in sorting algorithms, instruction reordering, and operand swapping — skills essential in control flow and data structure operations.",
+            "how": "You learned how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding."
+        }
     }
 ]

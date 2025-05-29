@@ -11,7 +11,6 @@ const VideoGallery = () => {
     //Preload videos
 
     const preloadVideos = useCallback(() => {
-      console.log("preloading videos");
         actions.forEach((action) => {
             const video = document.createElement('video');
             video.src = `/videos/${action}.mov`;

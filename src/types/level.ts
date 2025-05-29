@@ -12,6 +12,12 @@ export interface LevelInfo {
     id: number;
     title: string;
     description: string;
+    learningOutcome: {
+        concept: string;
+        descr: string;
+        why: string;
+        how: string;
+    };
     generatorFunction: string;
     outputFunction: string;
     commands: CommandType[];

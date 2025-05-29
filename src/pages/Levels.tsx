@@ -17,6 +17,7 @@ import {
 } from "../components/ui/tooltip"
 import OpeningDialog from "../components/OpeningDialog";
 import SilentButton from "../components/buttons/SilentButton";
+import ConceptButton from "../components/buttons/ConceptButton";
 
 interface LevelCoordinate {
     x: number;
@@ -38,7 +39,7 @@ const Levels: React.FC = () => {
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
-
+    
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
 
@@ -215,9 +216,17 @@ const Levels: React.FC = () => {
                                     </button>
                                 </TooltipTrigger>
 
-                                <TooltipContent className="text-lg">
+                                <TooltipContent className="text-lg max-w-[300px]">
                                     {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
+                                    {levelsInfo[idx] && <p> <span className="font-bold">CS Concept:</span>{levelsInfo[idx].learningOutcome.concept}</p>}
                                     {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
+
+                                    <ConceptButton title="View More">
+                                        <div className="flex flex-col gap-2 text-white text-lg">
+                                        {levelsInfo[idx] && <p> <span className="font-bold">Why It Matters: </span>{levelsInfo[idx].learningOutcome.why}</p>}
+                                        {levelsInfo[idx] && <p> <span className="font-bold">How This level teaches it: </span>{levelsInfo[idx].learningOutcome.how}</p>}
+                                        </div>
+                                    </ConceptButton>
                                 </TooltipContent>
                             </Tooltip>
                         )
