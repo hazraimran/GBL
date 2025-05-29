@@ -63,8 +63,8 @@ const Landing: React.FC = () => {
                 
 
                 <div className="flex flex-col justify-center items-center backdrop-blur-sm">
-                    
-                        <img src="/Ancient-architect-logo.png" alt="Ancient Architect" className=" max-w-[60%]" />
+
+                        <Carousel images={carrouselImages.map(image => `/intro/${image}`)} />
                         <Login />   
                         <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
 
@@ -72,7 +72,8 @@ const Landing: React.FC = () => {
                 <div className="flex flex-col justify-center items-center">
 
                     <div>
-                        <Carousel images={carrouselImages.map(image => `/intro/${image}`)} />
+                        
+                        <img src="/Ancient-architect-logo.png" alt="Ancient Architect" className=" max-w-[60%]" />
                     </div>
                     <div className="mt-4">
                      
