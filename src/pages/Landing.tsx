@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { ChevronRight } from "lucide-react";
+import Login from "../components/login/login";
+import Carousel from "../components/Carrousel";
 
 interface AnimatedStartProps {
     navTo: (scene: string) => void;
@@ -21,7 +23,7 @@ const AnimatedStart: React.FC<AnimatedStartProps> = ({ navTo, setPlayBGM }) => {
 
     return (
         <div
-            className={`py-4 px-2 text-3xl  backdrop-blur-md rounded-lg cursor-pointer w-32  duration-1000 hover:bg-slate-700 hover:text-white `}
+            className={`py-4 px-2 text-xl  backdrop-blur-md rounded-lg cursor-pointer w-32  duration-1000 hover:bg-slate-700 hover:text-white `}
             onClick={handleClick}
         >
             <span className="relative block text-center">
@@ -40,6 +42,13 @@ const Landing: React.FC = () => {
     const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
     useGameStorage();
 
+    const carrouselImages = [
+        'guide_speak1.webp',
+        'icon2.png',
+        'Darius.png',
+        'Isis.png'
+    ]
+
     return currentScene === 'LANDING' && (
         <>
             <div
@@ -50,11 +59,28 @@ const Landing: React.FC = () => {
                 }}
             >
             </div>
-            <div className="absolute top-0 right-0  left-0 max-w-[40vw] max-h-[100vh] m-auto bottom-0 flex flex-col justify-center items-center">
+            <div className="absolute top-0 right-0 left-0 m-auto bottom-0 grid grid-cols-2 gap-8 w-full mx-auto ">
                 
-                <img src="/Ancient-architect-logo.png" alt="Ancient Architect" className="w-full" />
+
+                <div className="flex flex-col justify-center items-center backdrop-blur-sm">
+                    
+                        <img src="/Ancient-architect-logo.png" alt="Ancient Architect" className=" max-w-[60%]" />
+                        <Login />   
+                        <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
+
+                </div>
+                <div className="flex flex-col justify-center items-center">
+
+                    <div>
+                        <Carousel images={carrouselImages.map(image => `/intro/${image}`)} />
+                    </div>
+                    <div className="mt-4">
+                     
+                    </div>
+                    
             
-                <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
+                </div>
+                
             </div>
             </>
     );
