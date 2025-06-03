@@ -1,17 +1,25 @@
-              import React, { useState } from 'react';
-              import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+              import React, { useContext, useState} from 'react';
               import { authService } from '../../services/firestore/authentication';
+              import GameContext from '../../context/GameContext';
 
               const Login: React.FC = () => {
                 const [email, setEmail] = useState('');
                 const [password, setPassword] = useState('');
                 const [error, setError] = useState('');
+                const {navTo } = useContext(GameContext);  
+
+                const handleStorageLogin = () => {
+                  localStorage.setItem('game:isLoggedIn', 'true');
+                  localStorage.setItem('game:userEmail', email);
+                  navTo('LEVELS')
+                };
+
 
                 const handleLogin = async (e: React.FormEvent) => {
                   e.preventDefault();
-                  const auth = getAuth();
-                  try {
-                    await signInWithEmailAndPassword(auth, email, password);
+                  try { 
+                    await authService.signIn(email, password);
+                    handleStorageLogin()
                   } catch (err) {
                     setError('Failed to login');
                     console.error(err);
@@ -21,6 +29,7 @@
                 const handleSignUp = async () => {
                   try {
                     await authService.signUp(email, password);
+                    handleStorageLogin()
                   } catch (err) {
                     setError('Failed to sign up');
                     console.error(err);
@@ -38,6 +47,7 @@
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50"
+                          autoComplete="email"
                         />
                       </div>
                       <div>

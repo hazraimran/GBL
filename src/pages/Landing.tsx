@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { ChevronRight } from "lucide-react";
@@ -40,7 +40,20 @@ const AnimatedStart: React.FC<AnimatedStartProps> = ({ navTo, setPlayBGM }) => {
 
 const Landing: React.FC = () => {
     const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
+    const [isLoading, setIsLoading] = useState(true);
     useGameStorage();
+
+    const checkLoginStatus = () => {
+        const isLoggedIn = localStorage.getItem('game:isLoggedIn') === 'true';
+        if (isLoggedIn) {
+          navTo('LEVELS');
+        }
+      };
+
+    useEffect(() => {
+        checkLoginStatus();
+        setIsLoading(false);
+    }, []);
 
     const carrouselImages = [
         {image: 'intro/guide_speak1.webp'},
@@ -62,7 +75,7 @@ const Landing: React.FC = () => {
         {image: 'guide_speak1.webp', name: 'Khepri', description: 'Khepri is your in-game logic mentor. He offers adaptive support through contextual feedback, structured hints, and reflection prompts — all framed to promote computational thinking and strategic improvement.'},
     ]
 
-    return currentScene === 'LANDING' && (
+    return currentScene === 'LANDING' && !isLoading && (
         <>
             <div
                 className={`bg-cover bg-center bg-no-repeat h-screen relative`}
@@ -82,7 +95,7 @@ const Landing: React.FC = () => {
                     <div className="flex flex-col justify-center items-center">  
                         <Carousel options={carrouselImages} />
                         <Login />   
-                        <AnimatedStart navTo={() => navTo("LEVELS")} setPlayBGM={setPlayBGM} />  
+                        {/* <AnimatedStart navTo={() => navTo("LEVELS")} setPlayBGM={setPlayBGM} />   */}
                         
                     </div>
                     

@@ -23,22 +23,24 @@ function App() {
   }
 
   useEffect(() => {
-    const preventZoom = (event: { ctrlKey: any; metaKey: any; preventDefault: () => void; }) => {
+    const preventZoom = (event: { ctrlKey: boolean; metaKey: boolean; preventDefault: () => void; }) => {
       if (event.ctrlKey || event.metaKey) {
         event.preventDefault();
       }
     };
 
-    const preventKeyZoom = (event: { ctrlKey: any; metaKey: any; key: string; preventDefault: () => void; }) => {
-      event.preventDefault();
+    const preventRefresh = (event: { ctrlKey: boolean; metaKey: boolean; key: string; preventDefault: () => void; }) => {
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'r' || event.key === 'R')) {
+        event.preventDefault();
+      }
     };
 
     window.addEventListener('wheel', preventZoom, { passive: false });
-    window.addEventListener('keydown', preventKeyZoom);
+    window.addEventListener('keydown', preventRefresh);
 
     return () => {
       window.removeEventListener('wheel', preventZoom);
-      window.removeEventListener('keydown', preventKeyZoom);
+      window.removeEventListener('keydown', preventRefresh);
     };
   }, []);
 
