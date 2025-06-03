@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { useSpring, animated } from 'react-spring';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -57,32 +57,32 @@ const Carousel: React.FC<CarouselProps> = ({
           const withTitle = title? 50 : 100;
           
           return (
-          <>
-          {title && (
-            <div 
-              className="flex flex-col justify-center items-center p-44"
-              style={{ width: `${withTitle / options.length}%` }}> 
-              <h1 className="text-black text-6xl font-bold mb-10">{title}</h1>
-              <p className="text-white text-3xl">{description}</p>
-            </div>
-          )}
-          <div
-            key={index}
-            className="relative"
-            style={{ 
-              width: `${withTitle / options.length}%`,
-              flexShrink: 0,
-              flexGrow: 0
-            }}
-          >
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className="w-full h-full object-contain"
-              style={{ maxWidth: '100%' }}
-            />            
-          </div>
-          </>
+            <Fragment key={index}>
+              {title && (
+                <div 
+                  className="flex flex-col justify-center items-center p-10 large:p-44"
+                  style={{ width: `${withTitle / options.length}%` }}> 
+                  <h1 className="text-black text-6xl font-bold mb-10">{title}</h1>
+                  <p className="text-white text-3xl">{description}</p>
+                </div>
+              )}
+              <div
+                key={index}
+                className="relative"
+                style={{ 
+                  width: `${withTitle / options.length}%`,
+                  flexShrink: 0,
+                  flexGrow: 0
+                }}
+              >
+                <img
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  className="w-full h-full object-contain"
+                  style={{ maxWidth: '100%' }}
+                />            
+              </div>
+            </Fragment>
         )})}
 
       

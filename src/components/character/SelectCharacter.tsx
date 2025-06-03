@@ -1,35 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React , {useContext, useEffect, useState} from 'react';
 import SelectCharacter2 from './SelectCharacter2';
+import GameContext from '../../context/GameContext';
 
 const OpeningDialog = () => {
+    const { character } = useContext(GameContext);
+    const [showSelectCharacter, setShowSelectCharacter] = useState(true);
 
-
-    const [showSelectCharacter, setShowSelectCharacter] = useState(false);
-
+  
     useEffect(() => {
-        setShowSelectCharacter(true);
-    }, []);
-
-
-    useEffect(() => {
-
-      const character = localStorage.getItem('game:selectedCharacter');
-      if (character) {
+      if(character) {
         setShowSelectCharacter(false);
       }
-    }, [showSelectCharacter]);
-
-
-    const handleSelectCharacter = (character: string) => {
-        localStorage.setItem('game:selectedCharacter', character);
-        setShowSelectCharacter(false);
-    }
+    }, [character]);
 
 
     if (!showSelectCharacter) {
         return null;
     }
-  
     return (
       <>
         <div
@@ -48,7 +35,7 @@ const OpeningDialog = () => {
         >
       
 
-            <SelectCharacter2 handleSelectCharacter={handleSelectCharacter} />
+            <SelectCharacter2/>
     
         
         </div>

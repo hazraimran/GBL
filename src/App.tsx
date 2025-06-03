@@ -8,6 +8,7 @@ import JumpConnector from './components/InstructionPanel/JumpConnector';
 import ButtonScene from './components/ButtonScene';
 import GameContext from './context/GameContext';
 import AudioPlayer from './components/AudioPlayer';
+import { AuthProvider } from './context/AuthProvider';
 
 function App() {
   const Modal: React.FC = () => {
@@ -45,19 +46,22 @@ function App() {
   }, []);
 
   return (
-    <GameProvider>
-      <AudioPlayer />
-      <div className='h-[100vh] w-[100vw] relative'>
-        <Toaster />
-        <Landing />
-        <GameScene />
-        <Levels />
-        <JumpConnector />
-        <ButtonScene />
-      </div>
-      <Modal />
-    </GameProvider >
+    <AuthProvider>
+      <GameProvider>
+        <AudioPlayer />
+        <div className='h-[100vh] w-[100vw] relative'>
+          <Landing />
+          <Toaster />
+          <GameScene />
+          <Levels />
+          <JumpConnector />
+          <ButtonScene />
+        </div>
+        <Modal />
+      </GameProvider >
+    </AuthProvider>
   )
 }
 
 export default App
+

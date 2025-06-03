@@ -58,6 +58,8 @@ interface GameContextType {
     setMuted: (muted: boolean) => void,
     playBGM: boolean,
     setPlayBGM: (play: boolean) => void,
+    character: string,
+    setCharacter: (character: string) => void,
     tutorial: boolean,
     setTutorial: (tutorial: boolean) => void,
 }
@@ -90,7 +92,13 @@ const GameContext = createContext<GameContextType>({
         isLocked: false,
         timeSpent: 0,
         timeAccessed: 0,
-        openningInstruction: []
+        openningInstruction: [],
+        learningOutcome: {
+            concept: '',
+            descr: '',
+            why: '',
+            how: ''
+        }
     },
     setLevelInfo: () => { },
     commandsUsed: [],
@@ -145,7 +153,9 @@ const GameContext = createContext<GameContextType>({
     playBGM: false,
     setPlayBGM: () => { },
     tutorial: false,
-    setTutorial: () => { }
+    setTutorial: () => { },
+    character: '',
+    setCharacter: () => { }
 });
 
 export default GameContext;

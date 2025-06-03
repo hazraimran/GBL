@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, UserCredential } from "firebase/auth";
 import { auth } from "../../api/firebase";
 
 export const authService = {
@@ -17,5 +17,13 @@ export const authService = {
         } catch (error: unknown) {  
             throw new Error(error instanceof Error ? error.message : 'Unknown error');
         }
-    }
+    },
+    async signOut(): Promise<void> {
+        try {
+            await signOut(auth);
+        } catch (error: unknown) {
+            throw new Error(error instanceof Error ? error.message : 'Unknown error');
+        }
+    },
+
 };  

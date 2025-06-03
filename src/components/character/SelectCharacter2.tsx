@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, Button, Container, Row, Col } from 'react-bootstrap';
+import GameContext from '../../context/GameContext';
 
 
 
-interface SelectCharacterProps {
-    handleSelectCharacter: (character: string) => void;
-}
 
-
-const SelectCharacter: React.FC<SelectCharacterProps> = ({ handleSelectCharacter }) => {
+const SelectCharacter: React.FC  = () => {
     const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+    const { setCharacter } = useContext(GameContext);
     
     const handleCharacterSelect = (character: string) => {
         setSelectedCharacter(character);
     };
+
+    const handleSelectCharacter = (character: string) => {
+        localStorage.setItem('game:selectedCharacter', character);
+        setCharacter(character);
+    }
 
 
     return (

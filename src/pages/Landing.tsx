@@ -1,59 +1,23 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { ChevronRight } from "lucide-react";
 import Login from "../components/login/login";
 import Carousel from "../components/Carrousel";
+import { useAuth } from "../context/AuthProvider";
 
-interface AnimatedStartProps {
-    navTo: (scene: string) => void;
-    setPlayBGM: (play: boolean) => void;
-}
 
-const AnimatedStart: React.FC<AnimatedStartProps> = ({ navTo, setPlayBGM }) => {
-    const [isAnimating, setIsAnimating] = useState(false);
 
-    const handleClick = () => {
-        setIsAnimating(true);
-        setPlayBGM(true);
-        setTimeout(() => {
-            navTo('LEVELS');
-        }, 500);
-    };
-
-    return (
-        <div
-            className={`py-4 px-2 text-xl  backdrop-blur-md rounded-lg cursor-pointer w-32  duration-1000 hover:bg-slate-700 hover:text-white `}
-            onClick={handleClick}
-        >
-            <span className="relative block text-center">
-                <span className={` duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
-                    Start
-                </span>
-                <ChevronRight
-                    className={`w-8 h-8 absolute -translate-y-[2.25rem] left-0 transition-transform duration-500 ${isAnimating ? 'translate-x-0' : '-translate-x-2'}`}
-                />
-            </span>
-        </div>
-    );
-};
 
 const Landing: React.FC = () => {
     const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
-    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useAuth();
     useGameStorage();
 
-    const checkLoginStatus = () => {
-        const isLoggedIn = localStorage.getItem('game:isLoggedIn') === 'true';
-        if (isLoggedIn) {
-          navTo('LEVELS');
-        }
-      };
-
     useEffect(() => {
-        checkLoginStatus();
-        setIsLoading(false);
-    }, []);
+        if (user) {
+            navTo('LEVELS');
+        } 
+    }, [user]);
 
     const carrouselImages = [
         {image: 'intro/guide_speak1.webp'},
@@ -75,7 +39,7 @@ const Landing: React.FC = () => {
         {image: 'guide_speak1.webp', name: 'Khepri', description: 'Khepri is your in-game logic mentor. He offers adaptive support through contextual feedback, structured hints, and reflection prompts — all framed to promote computational thinking and strategic improvement.'},
     ]
 
-    return currentScene === 'LANDING' && !isLoading && (
+    return currentScene === 'LANDING' && (
         <>
             <div
                 className={`bg-cover bg-center bg-no-repeat h-screen relative`}
@@ -94,9 +58,7 @@ const Landing: React.FC = () => {
                     </div>
                     <div className="flex flex-col justify-center items-center">  
                         <Carousel options={carrouselImages} />
-                        <Login />   
-                        {/* <AnimatedStart navTo={() => navTo("LEVELS")} setPlayBGM={setPlayBGM} />   */}
-                        
+                        <Login />       
                     </div>
                     
                 </div>
@@ -169,13 +131,13 @@ const Landing: React.FC = () => {
                     </div>
                     
 
-                    <div className="flex flex-row justify-center gap-5 items-center h-[80%]">
+                    <div className="flex flex-row justify-center  gap-5  items-center h-[80%]">
                     {characters.map((character, index) => (
-                        <div className="flex h-[80%] flex-col justify-center items-center w-[20%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
+                        <div className="flex h-[80%] flex-col justify-center items-center md:w-[20%] w-[30%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
 
-                            <img src={`${character.image}`} alt="Ancient Architect" className="w-[400px] h-[400px] object-fit " />
-                            <p className="text-6xl font-bold text-center mt-4">{character.name}</p>
-                            <p className="h-[20%] text-center pt-20 text-gray-700 italic w-[80%]">{character.description}</p>
+                            <img src={`${character.image}`} alt="Ancient Architect" className="w-[40%] h-[40%] object-fit " />
+                            <p className="text-2xl md:text-6xl font-bold text-center mt-4">{character.name}</p>
+                            <p className="h-[20%] text-center pt-2 text-sm md:text-base md:pt-20 text-gray-700 italic md:w-[80%] w-[90%]">{character.description}</p>
                         </div>
                     ))}
                     </div>

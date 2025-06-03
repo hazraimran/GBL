@@ -17,7 +17,7 @@ import {
 import OpeningDialog from "../components/OpeningDialog";
 import SilentButton from "../components/buttons/SilentButton";
 import ConceptButton from "../components/buttons/ConceptButton";
-
+import { authService } from "../services/firestore/authentication";
 interface LevelCoordinate {
     x: number;
     y: number;
@@ -33,12 +33,12 @@ type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
     const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction, muted, setMuted,
-        currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel, setTutorial, tutorial, setCommandsUsed, commandsUsed } = useContext(GameContext);
+        currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel, setPlayBGM, character, setCharacter } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
-    const [showSelectCharacter, setShowSelectCharacter] = useState('Isis');
+    
     
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
@@ -47,11 +47,15 @@ const Levels: React.FC = () => {
     }, [currentScene]);
 
     useEffect(() => {
-        const character = localStorage.getItem('game:selectedCharacter');
-        if (character) {
-            setShowSelectCharacter(character);
+        setPlayBGM(!muted)
+    }, [muted]);
+
+    useEffect(() => {
+        const selectedCharacter = localStorage.getItem('game:selectedCharacter');
+        if (selectedCharacter) {
+            setCharacter(selectedCharacter);
         }
-    }, []);
+    }, [character]);
 
     const handleClickLevel = (level: LevelInfo) => {
         if (!level.isLocked) {
@@ -216,7 +220,7 @@ const Levels: React.FC = () => {
                                             levelStatus[idx]?.visited && <img src="./tick.png" />
                                         }
                                         {
-                                            levelStatus[idx]?.current && <img src={`./playercard/${showSelectCharacter}.png`} className="animate-breath duration-3000" />
+                                            levelStatus[idx]?.current && <img src={`./playercard/${character}.png`} className="animate-breath duration-3000" />
                                         }
                                     </button>
                                 </TooltipTrigger>
@@ -241,6 +245,7 @@ const Levels: React.FC = () => {
                     <button
                         className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
                         onClick={() => {
+                            authService.signOut();
                             navTo('LANDING');
                         }}
                     >
