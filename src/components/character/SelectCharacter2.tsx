@@ -23,7 +23,7 @@ const SelectCharacter: React.FC  = () => {
       <div className={`bg-cover bg-center bg-no-repeat h-full w-full`}>
         <Container className="flex flex-col justify-center items-center h-full">
             <div className='h-full flex flex-col justify-center items-center'>
-                <Row className="flex flex-row justify-center align-middle">
+                <Row className="flex flex-col sm:flex-row justify-center align-middle">
                     <Col md={5}>
                         <CharacterCard
                             name="Darius"
@@ -62,10 +62,11 @@ const SelectCharacter: React.FC  = () => {
 const CharacterCard: React.FC<{ name: string; description: string; isSelected: boolean; onSelect: (character: string) => void; }> = ({ name, description, isSelected, onSelect }) => {
     return (
       <Card 
-          className="character-card cursor-pointer rounded-lg flex flex-col justify-between items-center h-full"
+          className="character-card cursor-pointer rounded-lg flex flex-col justify-between items-center h-full bg-transparent"
           style={{
             border: 'none',
-            backgroundColor: 'transparent'
+            borderRadius: '50px',
+            backgroundImage: (isSelected ? 'linear-gradient(to top, rgba(0, 0, 255, 0.2), rgba(128, 0, 128, 01))' : 'none'),
           }}
           onClick={() => onSelect(name)}
       >
@@ -73,7 +74,8 @@ const CharacterCard: React.FC<{ name: string; description: string; isSelected: b
           variant=""
           style={{
             opacity: isSelected ? 1 : 0.8,
-            backgroundImage: isSelected ? 'linear-gradient(to top, rgba(0, 0, 255, 0.2), rgba(128, 0, 128, 0.5))' : 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0))',
+            backgroundColor: 'transparent'
+            
           }}
           className="w-auto h-72 hover:opacity-100 rounded-lg object-contain"
           src={`./playercard/${name}.png`} 

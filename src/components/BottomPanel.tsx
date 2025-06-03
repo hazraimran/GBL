@@ -46,7 +46,6 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 
     // Memoize speed text calculation
     const speedText = useCallback(() => {
-        console.log(progress);
         return `${(progress * 4.5 / 100 + 0.5).toFixed(1)}x`;
     }, [progress]);
 
