@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { openningInstruction } from '../data';
+import SelectCharacter from './character/SelectCharacter';
 
 const OpeningDialog = () => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
@@ -9,8 +10,10 @@ const OpeningDialog = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { getAndUpdateIsFirstTime } = useGameStorage();
     const [showOpenningInstruction, setShowOpenningInstruction] = useState(false);
+    const [showSelectCharacter, setShowSelectCharacter] = useState(false);
 
     useEffect(() => {
+        console.log("showSelectCharacter", showSelectCharacter);
         const isFirstTime = getAndUpdateIsFirstTime();
         if (isFirstTime) {
             setShowOpenningInstruction(true);
@@ -27,6 +30,12 @@ const OpeningDialog = () => {
             return () => clearTimeout(timer);
         }
     }, [currentIndex, openningInstruction, currentTextIndex]);
+
+    useEffect(() => {
+
+        setShowSelectCharacter(currentIndex === 0 && !showOpenningInstruction);
+        
+    }, [showOpenningInstruction]);
 
     const handleClick = () => {
         if (currentIndex === openningInstruction[currentTextIndex].length) {
@@ -50,6 +59,11 @@ const OpeningDialog = () => {
         }
     };
 
+    if (showSelectCharacter) {
+        return <SelectCharacter/>
+    }
+
+  
     return showOpenningInstruction && <>
         <div
             className={`fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}

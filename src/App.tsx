@@ -8,7 +8,6 @@ import JumpConnector from './components/InstructionPanel/JumpConnector';
 import ButtonScene from './components/ButtonScene';
 import GameContext from './context/GameContext';
 import AudioPlayer from './components/AudioPlayer';
-import SelectCharacter from './pages/SelectCharacter';
 
 function App() {
   const Modal: React.FC = () => {
@@ -52,7 +51,6 @@ function App() {
         <GameScene />
         <Levels />
         <JumpConnector />
-        <SelectCharacter />
         <ButtonScene />
       </div>
       <Modal />

@@ -6,7 +6,7 @@ export interface ConstructtionSlotConfig {
     value?: number;
 }
 
-export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS' | 'TUTORIAL' | 'SELECTCHARACTER';
+export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS' | 'TUTORIAL';
 
 export interface LevelInfo {
     id: number;

@@ -66,7 +66,7 @@ const Landing: React.FC = () => {
 
                         <Carousel images={carrouselImages.map(image => `/intro/${image}`)} />
                         <Login />   
-                        <AnimatedStart navTo={() => navTo("SELECTCHARACTER")} setPlayBGM={setPlayBGM} />
+                        <AnimatedStart navTo={() => navTo("LEVELS")} setPlayBGM={setPlayBGM} />
 
                 </div>
                 <div className="flex flex-col justify-center items-center">

@@ -2,11 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { Volume2, VolumeOff, RotateCcw  } from "lucide-react";
+import { RotateCcw  } from "lucide-react";
 
 import { RxReset } from "react-icons/rx";
 import ResetGamePopup from "../components/ResetGamePopup";
-import TutorialButton from "../components/buttons/tutorial";
 import SkillsButton from "../components/buttons/skillsButton";
 
 import {
@@ -258,6 +257,7 @@ const Levels: React.FC = () => {
                 </div>
             </TooltipProvider>
             <OpeningDialog />
+            
             {showResetPopup && <ResetGamePopup setShowResetPopup={setShowResetPopup} />}
         </>
     );

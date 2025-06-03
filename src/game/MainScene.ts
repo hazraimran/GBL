@@ -107,7 +107,7 @@ export class MainScene extends Phaser.Scene {
     preload(): void {
         // Load sprites and images
 
-        const character = localStorage.getItem('selectedCharacter');
+        const character = localStorage.getItem('game:selectedCharacter');
         this.load.spritesheet('worker', character === 'Darius'? './worker1.png' : './worker.png', {
             frameWidth: 132,
             frameHeight: 132
