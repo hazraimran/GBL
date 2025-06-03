@@ -38,6 +38,7 @@ const Levels: React.FC = () => {
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
+    const [showSelectCharacter, setShowSelectCharacter] = useState('Isis');
     
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
@@ -46,6 +47,15 @@ const Levels: React.FC = () => {
         setLevelStatus(helper(levelsInfo));
         setLevelsInfo(levelsInfo);
     }, [currentScene]);
+
+    useEffect(() => {
+        const character = localStorage.getItem('game:selectedCharacter');
+
+        console.log('character', character);
+        if (character) {
+            setShowSelectCharacter(character);
+        }
+    }, []);
 
     const handleClickLevel = (level: LevelInfo) => {
         if (!level.isLocked) {
@@ -210,7 +220,7 @@ const Levels: React.FC = () => {
                                             levelStatus[idx]?.visited && <img src="./tick.png" />
                                         }
                                         {
-                                            levelStatus[idx]?.current && <img src="./circle.png" className="animate-breath duration-3000" />
+                                            levelStatus[idx]?.current && <img src={`./playercard/${showSelectCharacter}.png`} className="animate-breath duration-3000" />
                                         }
                                     </button>
                                 </TooltipTrigger>
