@@ -98,7 +98,7 @@ export class MainScene extends Phaser.Scene {
                     x: 300, y: 300, spacing: 60
                 }
             },
-            speed: 1.5,
+            speed: 3.5,
             currentLevel: null
         };
 

@@ -22,7 +22,7 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 }) => {
     // Group related state
     const [uiState, setUiState] = useState({
-        progress: 33,
+        progress: 66,
         isShaking: false,
         isDragging: false
     });
@@ -46,9 +46,11 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 
     // Memoize speed text calculation
     const speedText = useCallback(() => {
+        console.log(progress);
         return `${(progress * 4.5 / 100 + 0.5).toFixed(1)}x`;
     }, [progress]);
 
+    
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         if (exectuting || !isDragging) return;
