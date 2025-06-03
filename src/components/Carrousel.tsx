@@ -3,13 +3,13 @@ import { useSpring, animated } from 'react-spring';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CarouselProps {
-  images: string[];
+  options: {image: string, title?: string, description?: string}[];
   width?: string;
   height?: string;
 }
 
 const Carousel: React.FC<CarouselProps> = ({ 
-  images,
+  options,
   width = '100%',
   height = '400px'
 }) => {
@@ -17,43 +17,60 @@ const Carousel: React.FC<CarouselProps> = ({
 
   const props = useSpring({
     from: { transform: 'translateX(0%)' },
-    to: { transform: `translateX(-${currentIndex * 100 /images.length}%)` },
+    to: { transform: `translateX(-${currentIndex * 100 /options.length}%)` },
     config: { tension: 220, friction: 20 },
     immediate: false
   });
 
   const nextSlide = () => {
     setCurrentIndex(current => 
-      current === images.length - 1 ? 0 : current + 1
+      current === options.length - 1 ? 0 : current + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex(current => 
-      current === 0 ? images.length - 1 : current - 1
+      current === 0 ? options.length - 1 : current - 1
     );
   };
 
   return (
     <div 
-      className="relative overflow-hidden" 
+      className="relative overflow-hidden " 
       style={{ width, height }}
     >
       <animated.div
         className="flex h-full"
         style={{
           ...props,
-          width: `${images.length * 100}%`,
+          width: `${options.length * 100}%`,
           display: 'flex',
           flexDirection: 'row'
         }}
       >
-        {images.map((image, index) => (
+        
+        {options.map((option, index) => {
+          
+          const title = option.title;
+          const description = option.description;
+          const image = option.image;
+          const withTitle = title? 50 : 100;
+          
+          return (
+          <>
+          {title && (
+            <div 
+              className="flex flex-col justify-center items-center p-44"
+              style={{ width: `${withTitle / options.length}%` }}> 
+              <h1 className="text-black text-6xl font-bold mb-10">{title}</h1>
+              <p className="text-white text-3xl">{description}</p>
+            </div>
+          )}
           <div
             key={index}
             className="relative"
             style={{ 
-              width: `${100 / images.length}%`,
+              width: `${withTitle / options.length}%`,
               flexShrink: 0,
               flexGrow: 0
             }}
@@ -63,9 +80,12 @@ const Carousel: React.FC<CarouselProps> = ({
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-contain"
               style={{ maxWidth: '100%' }}
-            />
+            />            
           </div>
-        ))}
+          </>
+        )})}
+
+      
       </animated.div>
 
       <button
@@ -83,7 +103,7 @@ const Carousel: React.FC<CarouselProps> = ({
       </button>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-        {images.map((_, index) => (
+        {options.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}

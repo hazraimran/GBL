@@ -22,6 +22,9 @@ const ButtonScene: React.FC = () => {
         y: (originalSpacing / referenceScreen.height) * 100
     };
 
+    if (currentScene !== 'GAME') {
+        return null;
+    }
     return (
         <div className="w-full h-full">
             {

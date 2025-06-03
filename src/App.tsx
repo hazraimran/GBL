@@ -45,7 +45,7 @@ function App() {
   return (
     <GameProvider>
       <AudioPlayer />
-      <div className='h-[100vh] w-[100vw] relative overflow-hidden'>
+      <div className='h-[100vh] w-[100vw] relative'>
         <Toaster />
         <Landing />
         <GameScene />
