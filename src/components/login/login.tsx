@@ -21,7 +21,7 @@
                     await authService.signIn(email, password);
                     handleStorageLogin()
                   } catch (err) {
-                    setError('Failed to login');
+                    setError('Add a valid email and password (min 6 characters)');
                     console.error(err);
                   }
                 };
@@ -31,7 +31,7 @@
                     await authService.signUp(email, password);
                     handleStorageLogin()
                   } catch (err) {
-                    setError('Failed to sign up');
+                    setError('Add a valid email and password (min 6 characters)');
                     console.error(err);
                   }
                 };
