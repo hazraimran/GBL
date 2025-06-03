@@ -10,7 +10,6 @@ interface BigScreenAlertProps {
 export default function BigScreenAlert({ imageUrl, title }: BigScreenAlertProps) {
 
   const handleClick = () => {
-    console.log("clicked");
     Swal.fire({
       title: title,
       padding: "3em",

@@ -42,16 +42,12 @@ const Levels: React.FC = () => {
     
     useEffect(() => {
         const levelsInfo = getLevelsInfo();
-
-        console.log('levelsInfo', levelsInfo);
         setLevelStatus(helper(levelsInfo));
         setLevelsInfo(levelsInfo);
     }, [currentScene]);
 
     useEffect(() => {
         const character = localStorage.getItem('game:selectedCharacter');
-
-        console.log('character', character);
         if (character) {
             setShowSelectCharacter(character);
         }

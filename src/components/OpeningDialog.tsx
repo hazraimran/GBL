@@ -13,7 +13,6 @@ const OpeningDialog = () => {
     const [showSelectCharacter, setShowSelectCharacter] = useState(false);
 
     useEffect(() => {
-        console.log("showSelectCharacter", showSelectCharacter);
         const isFirstTime = getAndUpdateIsFirstTime();
         if (isFirstTime) {
             setShowOpenningInstruction(true);

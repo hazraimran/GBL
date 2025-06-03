@@ -58,7 +58,6 @@ const PhaserGame = () => {
             setShowPopup(true);
 
             const report = extractUploadReport(errorCnt);
-            console.log('Upload report:', report);
             UploadRecordService.uploadRecord(report, uid);
 
             // unlock next level

@@ -21,7 +21,6 @@ const ConnectLines: React.FC<ConnectLinesProps> = ({ refA, refB }) => {
                     x2: rectB.left + rectB.width / 2,
                     y2: rectB.top + rectB.height / 2,
                 });
-                console.log('linePosition:', linePosition);
             }
         };
 
