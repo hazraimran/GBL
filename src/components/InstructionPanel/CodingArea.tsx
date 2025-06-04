@@ -6,8 +6,8 @@ import CommandRow from './CommandRow';
 import EmptyRow from './EmptyRow';
 import CircularJSON from 'circular-json';
 import JumpConnector from './JumpConnector';
-import BigScreenAlert from '../alerts/BigScreenAlert';
 import VideoScreenAlert from '../alerts/VideoScreenAlert';
+import ConceptButton from '../buttons/ConceptButton';
 
 interface CodingAreaProps {
     setClearCommandsRef: (fn: () => void) => void;
@@ -217,7 +217,13 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 </div>
             </div>
             <div className="text-center flex justify-center gap-2 items-center mt-10">
-                <BigScreenAlert imageUrl="/tutorial/initial.png" actionText="Tutorial" />
+                {/* <BigScreenAlert imageUrl="/tutorial/initial.png" actionText="Tutorial" /> */}
+                <ConceptButton title="View More" className="-translate-x-3/4">
+                    <div className="flex flex-col gap-2 text-white text-lg ">
+                    {levelInfo && <p> <span className="font-bold">Why It Matters: </span>{levelInfo.learningOutcome.why}</p>}
+                    {levelInfo && <p> <span className="font-bold">How This level teaches it: </span>{levelInfo.learningOutcome.how}</p>}
+                    </div>
+                </ConceptButton>
                 <VideoScreenAlert 
                     title="Video"
                     textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} 

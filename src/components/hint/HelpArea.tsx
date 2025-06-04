@@ -3,9 +3,10 @@ import React, {useState} from "react";
 type HelpAreaProps = {
     children: React.ReactNode;
     Trigger: React.ElementType;
+    className?: string;
 };
 
-const HelpArea = ({children, Trigger}: HelpAreaProps) => {
+const HelpArea = ({children, Trigger, className}: HelpAreaProps) => {
     
   const [showInfo, setShowInfo] = useState(false);
     const handleBackgroundClick = () => {
@@ -20,7 +21,7 @@ const HelpArea = ({children, Trigger}: HelpAreaProps) => {
         </div>
         
         {showInfo && <div
-          className={`fixed flex flex-row justify-center gap-20 items-center select-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+          className={`${className} fixed flex flex-row justify-center gap-20 items-center select-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl `}
           style={{
               opacity: 1,
               pointerEvents: 'auto',

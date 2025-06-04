@@ -2,7 +2,7 @@ import React,{useRef} from "react"
 import { ZoomIn } from "lucide-react"
 import HelpArea from "../hint/HelpArea"
 
-const ConceptButton = ( {children, title} : {children: React.ReactNode, title: string} ) => {
+const ConceptButton = ( {children, title, className} : {children: React.ReactNode, title: string, className?:   string} ) => {
   const displayButton = useRef(false);
   const handleClickConcept = () => {
     displayButton.current = !displayButton.current;
@@ -20,7 +20,7 @@ const ConceptButton = ( {children, title} : {children: React.ReactNode, title: s
   );
 
   return (
-    <HelpArea Trigger={Element}> 
+    <HelpArea Trigger={Element} className={className}> 
       {children}
     </HelpArea>
   )
