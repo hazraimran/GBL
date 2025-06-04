@@ -33,4 +33,5 @@ export interface LevelInfo {
     timeSpent: number;
     timeAccessed: number;
     openningInstruction: string[];
+    hints: string[];
 };

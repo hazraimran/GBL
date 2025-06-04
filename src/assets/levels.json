@@ -23,7 +23,12 @@
             "why": "Foundational for understanding how computer instructions are processed in sequence.",
             "how": "You will learn how to use the INPUT and OUTPUT commands to move rocks between the INBOX and OUTBOX.",
             "summary": "Move rocks from INBOX to OUTBOX"
-        }
+        },
+        "hints": [
+            "Move each rock from INBOX to OUTBOX. No storing or swapping—just direct transfer.",
+            "Use only INPUT and OUTPUT. Each command runs one after the other—no skipping steps.",
+            "Repeat INPUT and OUTPUT commands until all rocks are moved."
+        ]
     }, {
         "id": 2,
         "title": "Manual Loop Simulation (Goto-style Control)",
@@ -48,7 +53,12 @@
             "why": "Essential for understanding how control flow manages repeated instructions — a core part of programming and computer architecture.",
             "how": "You will learn how to use the JUMP command to jump to different lines within your program.",
             "summary": "Use JUMP to loop: grab rock, place in OUTBOX, repeat"
-        }
+        },
+        "hints": [
+            "This level introduces loops—commands that repeat.",
+            "You’ll need to use JUMP to loop back to the start of your instructions.",
+            "Keep looping: grab a rock (INPUT), put it in OUTBOX (OUTPUT), and JUMP back."
+        ]
     }, {
         "id": 3,
         "title": "Constant Memory Access / Register Fetching",
@@ -85,7 +95,12 @@
             "why": "Fundamental to understanding constant data access and initialization in low-level systems.",
             "how": "You will learn how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Output fixed sequence (5,2,0) using COPYFROM"
-        }
+        },
+        "hints": [
+            "You must output a fixed sequence of numbers: 5, 2, 0.",
+            "Use COPYFROM to fetch the numbers instead of relying on INBOX.",
+            "COPYFROM each memory slot in order—no need for INPUT."
+        ]
     }, {
         "id": 4,
         "title": "Scrambler Handler",
@@ -119,7 +134,12 @@
             "why": "Models key logic in sorting algorithms, operand swapping, and instruction reordering — core low-level programming skills.",
             "how": "You will learn how to use the COPYTO command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Reverse pairs using COPYTO as buffer"
-        }
+        },
+        "hints": [
+            "Reverse pairs of numbers using temporary storage.",
+            "COPYTO lets you store the first number; use COPYFROM to swap and output.",
+            "Save the first number, fetch the second, output both in reverse order."
+        ]
     }, {
         "id": 5,
         "title": "Register Arithmetic: ADD with Local Storage",
@@ -153,7 +173,12 @@
             "why": "Fundamental for understanding how processors perform arithmetic with registers and temporary storage.",
             "how": "You will learn how to use the ADD command to add the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Add pairs of rocks and output result"
-        }
+        },
+        "hints": [
+            "Add pairs of numbers together and output the result.",
+            "Use COPYTO to store the first number and ADD to calculate the sum.",
+            "Don’t forget to OUTPUT after each addition!"
+        ]
     }, {
         "id": 6,
         "title": "Arithmetic via Instruction-Level Reuse",
@@ -187,7 +212,12 @@
             "why": "Illustrates how to use basic instructions to build complex operations, crucial in efficient programming and low-level hardware emulation.",
             "how": "You will learn how to use the TRIPLE command to multiply the contents of a tile on the floor by 3.",
             "summary": "Triple each number using repeated ADD commands"
-        }
+        },
+        "hints": [
+            "Triple each number in INBOX without using multiplication.",
+            "Use ADD repeatedly to build up the total—like adding a number to itself twice.",
+            "Use COPYTO to save, then ADD twice to triple."
+        ]
     }, {
         "id": 7,
         "title": "Efficient Arithmetic Composition (8x via ADD)",
@@ -226,7 +256,12 @@
             "why": "Encourages decomposing operations for optimized, performant code — essential in real-world programming and embedded systems.",
             "how": "You will learn how to use the MULTIPLY command to multiply the contents of a tile on the floor by 8.",
             "summary": "Multiply each rock by 8 using only 3 ADD commands"
-        }
+        },
+        "hints": [
+            "Multiply each number by 8 using as few ADDs as possible.",
+            "Think of 8 as doubling three times—use this to reduce ADD commands.",
+            "COPYTO the number, then add and double it efficiently—don’t just ADD eight times."
+        ]
     }, {
         "id": 8,
         "title": "Control Flow: Conditional Execution (Jump if Zero)",
@@ -260,7 +295,12 @@
             "why": "Teaches fundamental concepts of conditional logic in programs — how processors “branch” based on conditions.",  
             "how": "You will learn how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative.",
             "summary": "Send only non-zero values to OUTBOX"
-        }
+        },
+        "hints": [
+            "Only send non-zero numbers to OUTBOX.",
+            "Use JUMP=0 to skip zero values, preventing extra OUTPUTs.",
+            "Check each number: if zero, skip it; if not, OUTPUT it."
+        ]
     }, {
         "id": 9,
         "title": "Selective Output via Zero Flag Evaluation",
@@ -294,7 +334,12 @@
             "why": "Builds understanding of how conditional inclusion/exclusion is managed at hardware and software levels.",
             "how": "You will learn how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative.",
             "summary": "Send only zeros to OUTBOX"
-        }
+        },
+        "hints": [
+            "This time, only send zero values to OUTBOX.",
+            "Reverse your condition: use JUMP=0 to detect zeros and OUTPUT only those.",
+            "Check if a number is zero—if it is, send it to OUTBOX; otherwise skip."
+        ]
     }, {
         "id": 10,
         "title": "Arithmetic Logic Unit Behavior: SUB Operation",
@@ -328,7 +373,12 @@
             "why": "Emphasizes operand order awareness in calculations, critical for low-level programming and assembly logic.",
             "how": "You will learn how to use the SUB command to subtract the contents of a tile on the floor from whatever value you 're currently holding.",
             "summary": "Subtract 1st from 2nd, then 2nd from 1st; output both results"
-        }
+        },
+        "hints": [
+            "Subtract two numbers from each other in both orders, output both results.",
+            "Use COPYTO to store each number, and remember operand order matters in subtraction.",
+            "First subtract 1st - 2nd, then 2nd - 1st; OUTPUT both results in order." 
+        ]
     }, {
         "id": 11,
         "title": "Equality Detection Using SUB + Zero Flag",
@@ -362,7 +412,12 @@
             "why": "Underpins the logic for condition-based actions in programming, showing how processors evaluate equality without dedicated comparison instructions.",
             "how": "You will learn how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Output one of the pair if two numbers are equal"
-        }
+        },
+        "hints": [
+            "Check if two numbers are equal by subtracting them.",
+            "If the subtraction result is zero, the numbers are equal—use this to decide when to OUTPUT.",
+            "Only OUTPUT if subtraction gives zero; that’s how you know they’re equal."   
+        ]
     }, {
         "id": 12,
         "title": "Efficient Max/Min Evaluation",
@@ -401,7 +456,12 @@
             "why": "Reinforces logic for evaluating and selecting extreme values, key in algorithms and hardware design.",
             "how": "You will learn how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Find the largest number in a sequence"
-        }
+        },
+        "hints": [
+            "Find the largest number in the sequence.",
+            "Use COPYTO to track the current maximum as you go—update it when you find a bigger number.",
+            "Use subtraction to compare—if the result is negative, you’ve found a bigger number to save."
+        ]
     },
     {
         "id": 13,
@@ -441,7 +501,12 @@
             "why": "Builds understanding of instruction-level loops and repeated operations — foundational in microprocessor programming.",
             "how": "You will learn how to use the JUMP command to jump to a line if the value you are holding is negative.",
             "summary": "Multiply each number by 40 using repeated addition"
-        }
+        },
+        "hints": [
+            "Multiply each number by 40 through repeated addition.",
+            "Break 40 into parts—like 4 x 10—to minimize repeated ADDs.",
+            "Use loops and doubling tricks to reach 40 efficiently."  
+        ]
     },
     {
         "id": 14,
@@ -481,7 +546,12 @@
             "why": "Underpins sign management, used in numeric normalization and absolute value calculations.",
             "how": "You will learn how to use the SUB command to subtract the contents of a tile on the floor from whatever value you 're currently holding.",
             "summary": "Convert negative numbers to positive before output"
-        }
+        },
+        "hints": [
+            "Convert any negative numbers to positive before sending them to OUTBOX.",
+            "Use JUMP IF NEGATIVE to detect negative numbers and flip them.",
+            "If a number is negative, subtract it from zero to make it positive." 
+        ]
     },
     {
         "id": 15,
@@ -521,7 +591,12 @@
             "why": "Reinforces parity checking and loop-based modulus calculation, common in hardware arithmetic units.",
             "how": "You will learn how to use the JUMP IF ZERO command to jump to a line if the value you are holding is zero.",
             "summary": "Determine odd/even by reducing number via -2"
-        }
+        },
+        "hints": [
+            "Determine if a number is odd or even using subtraction.",
+            "Repeatedly subtract 2 from the number until you hit zero or can’t subtract anymore.",
+            "If the number reaches zero, it’s even; if you’re left with 1, it’s odd." 
+        ]
     },
     {
         "id": 16,
@@ -561,7 +636,12 @@
             "why": "Foundational for understanding sorting at low-level and hardware logic, used in algorithms and data organization.",
             "how": "You will learn how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Sort sequence in INBOX and output in ascending order"
-        }
+        },
+        "hints": [
+            "Sort numbers in ascending order before sending to OUTBOX.",
+            "Use comparisons and swapping (like bubble sort) to arrange the numbers.",
+            "Always compare pairs and swap if needed—keep doing this until fully sorted."
+        ]
     },
     {
         "id": 17,
@@ -601,6 +681,57 @@
             "why": "Emphasizes recursion, memory, and control flow — foundational for understanding function calls, recursion, and iterative sequence generation in programming.",
             "how": "You will learn how to use the COPYFROM command to copy the contents of a tile on the floor to whatever value you 're currently holding.",
             "summary": "Generate Fibonacci sequence up to input number"
-        }
+        },
+        "hints": [
+            "Generate the Fibonacci sequence up to the number in INBOX.",
+            "Start with 0 and 1—add them to get the next number, and keep going until you reach the INBOX number.",
+            "Keep track of the last two numbers to generate the next one—like how Fibonacci works."
+        ]
+    },
+    {
+        "id": 18,
+        "title": "Sign Checking and Conditional Output",
+        "description": "Demonstrates sign comparison logic, crucial for control flow, boolean checks, and data validation in low-level systems.",
+        "generatorFunction": "function (generatorFn) {\n    return [generatorFn(-10, 10), generatorFn(-10, 10)];\n}",
+        "outputFunction": "function (generatorFn) {\n    var n = generatorFn(-10, 10);\n    var m = generatorFn(-10, 10);\n    return [Math.sign(n) === Math.sign(m) ? 0 : 1];\n}",
+        "commands": ["INPUT", "OUTPUT", "COPYFROM", "COPYTO", "SUB", "JUMP IF NEGATIVE"],
+        "commandsUsed": [],
+        "constructionSlots": [{ 
+            "x": 422.5,
+            "y": 380
+        }, {
+            "x": 522.5,
+            "y": 380
+        }, {
+            "x": 622.5,
+            "y": 380
+        }], 
+        "expectedCommandCnt": 12,
+        "expectedExecuteCnt": 45,
+        "executeCnt": -1,
+        "commandCountAchievement": null,
+        "executeCountAchievement": null,
+        "isLocked": true,
+        "timeSpent": 0,
+        "timeAccessed": 0,
+        "openningInstruction": [
+            "Behold! The sacred sequence of the ancients!",
+            "Each number is born from the union of its predecessors, creating perfect harmony.",
+            "Build this sequence until you reach the prescribed height.",
+            "This is no ordinary task - it's the very pattern of creation itself!"
+        ],
+        "learningOutcome": {
+            "concept": "Negative/positive distinction logic",
+            "descr": "Models how negative/positive distinction is handled in low-level logic, crucial for control flow, boolean checks, and data validation in low-level systems.",
+            "why": "Emphasizes negative/positive distinction, used in conditional logic, data validation, and error handling in low-level systems.",
+            "how": "You will learn how to use the JUMP IF NEGATIVE command to jump to a line if the value you are holding is negative.",
+            "summary": "Check if two numbers have the same or different signs"
+        },
+        "hints": [  
+            "Check if two numbers have the same or different signs—output 0 for same, 1 for different.",
+            "Use JUMP IF NEGATIVE and subtraction to compare signs.",
+            "If both numbers have the same sign, output 0; if they’re different (one positive, one negative), output 1."
+        ]
     }
+    
 ]

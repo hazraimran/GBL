@@ -98,7 +98,8 @@ const GameContext = createContext<GameContextType>({
             descr: '',
             why: '',
             how: ''
-        }
+        },
+        hints: []
     },
     setLevelInfo: () => { },
     commandsUsed: [],
@@ -155,7 +156,7 @@ const GameContext = createContext<GameContextType>({
     tutorial: false,
     setTutorial: () => { },
     character: '',
-    setCharacter: () => { }
+    setCharacter: () => { },
 });
 
 export default GameContext;

@@ -4,8 +4,7 @@ import FloatingMessage from '../components/FloatingMessage';
 import SmartHintSystem from '../components/hint/Hint';
 
 const PromptScene = () => {
-    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt } = useContext(GameContext);
-
+    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt, levelInfo } = useContext(GameContext);
     return (
         <>
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
@@ -26,15 +25,7 @@ const PromptScene = () => {
 
             {showBottomPanel && showFailurePrompt && <FloatingMessage text='stop and reset' className='fixed bottom-28 left-1/2 -translate-x-[13rem] -rotate-[5deg]' />}
 
-            <SmartHintSystem level={{
-                "id": "1",
-                "title": "Supply Chamber",
-                "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
-                "commands": ["INPUT", "OUTPUT"],
-                "goal": "Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
-                "input": [1, 2, 3, 4],
-                "expectOutput": [1, 2, 3, 4]
-            }}
+            <SmartHintSystem level={levelInfo}
                 currentCode={["INPUT", "OUTPUT"]}
                 apiKeys={{ anthropic: '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' }} />
         </>
