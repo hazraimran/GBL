@@ -131,9 +131,9 @@ const Landing: React.FC = () => {
                     </div>
                     
 
-                    <div className="flex flex-row justify-center  gap-5  items-center h-[80%]">
+                    <div className="flex flex-row justify-evenly items-center h-[80%]">
                     {characters.map((character, index) => (
-                        <div className="flex h-[80%] flex-col justify-center items-center md:w-[20%] w-[30%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
+                        <div className="flex h-[80%] flex-col justify-center items-center  w-[30%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
 
                             <img src={`${character.image}`} alt="Ancient Architect" className="w-[40%] h-[40%] object-fit " />
                             <p className="text-2xl md:text-6xl font-bold text-center mt-4">{character.name}</p>
