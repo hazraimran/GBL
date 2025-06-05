@@ -2,9 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { RotateCcw  } from "lucide-react";
+import { LogOut, LayoutDashboard, MessageSquareWarning, OctagonAlert,  } from "lucide-react";
 
-import { RxReset } from "react-icons/rx";
 import ResetGamePopup from "../components/ResetGamePopup";
 import SkillsButton from "../components/buttons/skillsButton";
 
@@ -18,6 +17,7 @@ import OpeningDialog from "../components/OpeningDialog";
 import SilentButton from "../components/buttons/SilentButton";
 import ConceptButton from "../components/buttons/ConceptButton";
 import { authService } from "../services/firestore/authentication";
+import AlertButton from "../components/buttons/AlertButton";
 interface LevelCoordinate {
     x: number;
     y: number;
@@ -241,25 +241,23 @@ const Levels: React.FC = () => {
                         )
                     })}
 
+                    <AlertButton onClick={() => {
+                        authService.signOut();
+                        navTo('LANDING');
+                    }} 
+                    title="Logout" 
+                    Icon={LogOut} 
+                    colorIcon="yellow-600" 
+                    position="bottom-0 left-0" />
 
-                    <button
-                        className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
-                        onClick={() => {
-                            authService.signOut();
-                            navTo('LANDING');
-                        }}
-                    >
-                        <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
-                    </button>
-
-                    <button
-                        className="fixed bottom-0 right-0 bg-custom-bg rounded-lg flex items-center justify-center py-1"
-                        onClick={() => {
-                            setShowResetPopup(true);
-                        }}
-                    >
-                        <RotateCcw onClick={() => setMuted(false)} className="w-[7rem] h-[4rem] text-yellow-600" /> :
-                    </button>
+                    <AlertButton onClick={() => {
+                        setShowResetPopup(true);
+                    }} 
+                    title="Reset Game" 
+                    Icon={OctagonAlert} 
+                    colorIcon="red-600" 
+                    position="bottom-0 right-0" />
+  
 
  
                     <SilentButton />

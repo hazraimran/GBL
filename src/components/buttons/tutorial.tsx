@@ -18,21 +18,23 @@ const TutorialButton = () => {
       setTutorial(!tutorial);
   }
   return (
-    <button
-        className="fixed bottom-0 left-[16rem] bg-custom-bg rounded-lg flex items-center justify-center"
-        onClick={handleClickTutorial}
-    > 
+
     <TooltipProvider>
     <Tooltip>
         <TooltipTrigger >
+        <button
+        className="fixed bottom-0 left-[16rem] bg-custom-bg rounded-lg flex items-center justify-center"
+        onClick={handleClickTutorial}
+    > 
           {tutorial ? <ShieldQuestion className="w-[7rem] h-[4rem] text-yellow-600" /> : <ShieldQuestion className="w-[7rem] h-[4rem] text-white" />}
+        </button>
         </TooltipTrigger>
         <TooltipContent className="text-lg" side="top">
             <p>Turn on tutorial mode: Status {tutorial ? 'ON' : 'OFF'}</p>
             </TooltipContent>
         </Tooltip>
     </TooltipProvider>
-    </button>
+    
     )
 }
 

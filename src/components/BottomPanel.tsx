@@ -1,13 +1,12 @@
 import React, { useState, useRef, useContext, useEffect, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
-import { RxReset } from "react-icons/rx";
-import { Play, Square, Gauge, Lock } from 'lucide-react';
+import { Play, Square, Gauge, Lock, ArrowLeft } from 'lucide-react';
 import GameContext from '../context/GameContext';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
-import { Volume2, VolumeOff } from "lucide-react";
 import TutorialButton from "../components/buttons/tutorial";
 import SkillsButton from "../components/buttons/skillsButton";
 import SilentButton from './buttons/SilentButton';
+import AlertButton from './buttons/AlertButton';
 
 interface BottomPanelProps {
     onExecute: () => void;
@@ -109,12 +108,14 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 
     return (
         <footer className="flex items-end absolute bottom-0 w-full z-20">
-            <button
-                className="fixed bottom-0 left-0 bg-custom-bg rounded-lg flex items-center justify-center"
-                onClick={handleBackToLevels}
-            >
-                <RxReset className="w-[7rem] h-[4rem] text-yellow-600" />
-            </button>
+
+            <AlertButton 
+                onClick={handleBackToLevels} 
+                title="Go Back to main Level" 
+                Icon={ArrowLeft} 
+                colorIcon="yellow-600" 
+                position="bottom-0 left-0" 
+            />
 
             <SilentButton />
             <TutorialButton />
