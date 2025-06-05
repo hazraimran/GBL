@@ -26,7 +26,7 @@ const VideoGallery = () => {
     return (
         <div className="flex flex-col items-center gap-4 p-4">
            <h2 className='text-3xl font-bold text-yellow-600'>Your Skills</h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-11">
                 {actions.map((action) => (
                     <VideoScreenAlert 
                         key={action}

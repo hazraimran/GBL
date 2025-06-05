@@ -1,15 +1,18 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import GameContext from '../context/GameContext';
-import { HelpCircle, ChevronRight, Check, X } from 'lucide-react';
+import { HelpCircle, ChevronRight, Check, X, Coins } from 'lucide-react';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 const Popup = () => {
     const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo } = useContext(GameContext);
+    const { addCoins } = useGameStorage();
+    
     
     const getStatusColor = (current, target) => {
         return current <= target ? 'bg-lime-200' : 'bg-red-400';
@@ -20,6 +23,12 @@ const Popup = () => {
     };
 
     const isSuccessful = (current, target) => current <= target;
+
+    useEffect(() => {
+        if (isSuccessful(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)) {
+            addCoins(1);
+        }
+    }, [gameStatus.commandCnt, levelInfo?.expectedCommandCnt])
 
     return showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
@@ -97,6 +106,10 @@ const Popup = () => {
                             </TooltipProvider>
                         </div>
                     </div>
+                </div>
+                <div className="flex items-center justify-center font-bold gap-2 mb-3">
+                    <Coins className="h-10 w-10 text-blue-400" />
+                    <p className="text-xl text-[#8B4513] mb-2">You have won 1 coin</p>
                 </div>
 
                 {/* Buttons */}

@@ -1,14 +1,16 @@
 import React from "react";
 import Swal from "sweetalert2";
+import { HelpCircle, Play } from "lucide-react";
 
 
 interface VideoScreenAlertProps {
     textHtml: string;
     actionText: string;
     title: string;
+    icon?: string;
 }
 
-export default function VideoScreenAlert({textHtml, actionText, title }: VideoScreenAlertProps) {
+export default function VideoScreenAlert({textHtml, actionText, title, icon }: VideoScreenAlertProps) {
 
   const handleClick = () => {
     const videoElement = document.createElement('video');
@@ -31,7 +33,6 @@ export default function VideoScreenAlert({textHtml, actionText, title }: VideoSc
     };
 
     videoElement.onerror = () => {
-      console.error('Error loading video');
       Swal.fire({
         title: 'Error',
         text: 'Failed to load video',
@@ -43,13 +44,13 @@ export default function VideoScreenAlert({textHtml, actionText, title }: VideoSc
     return (
         
             <button 
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  className="w-fit flex items-center px-4 gap-2 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                 onClick={handleClick}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
-                </svg>
-                {actionText}
+              <span className="flex items-center">
+                {icon === 'help' ? <HelpCircle className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </span>
+              <span className="whitespace-nowrap">{actionText}</span>
             </button>
         
     );

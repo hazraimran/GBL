@@ -276,8 +276,8 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     };
 
     const earnCoins = () => {
-        window.open('https://google.com', '_blank', 'noopener,noreferrer');
-        addCoins(1);
+        setHint("You can earn 1 coin by completing a level. You can revisit previous levels to earn more coins.")
+        
     }
 
     // Click handler for background
@@ -290,14 +290,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
     return (showInfo || showOpenningInstruction) && (
         <div
-            className={`flex flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+            className={`flex  h-3/4 md:h-3/4  lg:h-1/2 p-4 top-0 left-0 right-0 bottom-0 m-auto flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
                 opacity: 1,
                 pointerEvents: 'auto',
-                top: '25vh',
-                left: '20vw',
-                width: '60vw',
-                height: '50vh',
                 boxShadow: '0 0 15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -385,7 +381,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
                         {hint && (
                             <Alert className={`max-h-[17rem] overflow-auto ${hintLevel > 2 ? "border-destructive" : ""}`}>
-                                <AlertTitle>Hint Level {hintLevel - 1}</AlertTitle>
+                                <AlertTitle>{(hintLevel - 1 ?"Hint Level" : "Get more Coins")} {hintLevel - 1}</AlertTitle>
                                 <AlertDescription className="mt-2 whitespace-pre-wrap">
                                     {hint}
                                 </AlertDescription>
