@@ -125,19 +125,21 @@ const Landing: React.FC = () => {
 
                     <div className="flex flex-col justify-center items-center backdrop-blur-sm">
                         <div className="flex flex-col justify-center items-center">
-                                <h1 className="text-4xl font-bold">Meet The Team</h1>
+                                <h1 className="text-4xl font-bold">Meet The Team!</h1>
                                 <p className="text-xl">Ancient Architects characters</p>
                         </div>
                     </div>
                     
 
-                    <div className="flex flex-row justify-evenly items-center h-[80%]">
+                    <div className="flex flex-col md:flex-row justify-evenly items-center h-[80%]">
                     {characters.map((character, index) => (
-                        <div className="flex h-[80%] flex-col justify-center items-center  w-[30%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
+                        <div className="flex h-[80%] sm:flex-row md:flex-col justify-center items-center  sm:w-[80%] md:w-[30%] border-2 border-gray-300 rounded-lg shadow-lg"  key={index}>
 
                             <img src={`${character.image}`} alt="Ancient Architect" className="w-[40%] h-[40%] object-fit " />
-                            <p className="text-2xl md:text-6xl font-bold text-center mt-4">{character.name}</p>
-                            <p className="h-[20%] text-center pt-2 text-sm md:text-base md:pt-20 text-gray-700 italic md:w-[80%] w-[90%]">{character.description}</p>
+                            <div className="flex flex-col justify-center items-center">
+                                <p className="text-2xl md:text-6xl font-bold text-center mt-4">{character.name}</p>
+                                <p className="h-[20%] flex-grow text-center pt-2 text-sm md:text-base md:pt-20 text-gray-700 italic md:w-[80%] w-[90%] whitespace-normal">{character.description}</p>
+                            </div>
                         </div>
                     ))}
                     </div>
