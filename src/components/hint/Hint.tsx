@@ -290,7 +290,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
     return (showInfo || showOpenningInstruction) && (
         <div
-            className={`flex  h-3/4 md:h-3/4  lg:h-1/2 p-4 top-0 left-0 right-0 bottom-0 m-auto flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+            className={`flex  h-3/4 md:h-full p-4 top-0 left-0 right-0 bottom-0 m-auto flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
                 opacity: 1,
                 pointerEvents: 'auto',
@@ -327,17 +327,12 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                 <div className='absolute top-[10px] -right-[10px] w-0 h-0 border-l-white border-l-[12px] border-t-8 border-t-transparent border-b-8 border-b-transparent'></div>
                             </button>
                         </div>
-
-                        {/* Dismiss text at the bottom of the modal */}
-                        <div className="absolute bottom-3 left-0 right-0 text-center text-white text-xs opacity-70">
-                            Click anywhere on modal to dismiss
-                        </div>
                     </>
                 )
             )}
 
             {showHint && (
-                <Card className="w-full h-full max-w-2xl z-[102]" onClick={(e) => e.stopPropagation()}>
+                <Card className=" h-2/3  z-[102]" onClick={(e) => e.stopPropagation()}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-2">
@@ -354,7 +349,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                         </div>
                     </CardHeader>
 
-                    <CardContent className="space-y-4">
+                    <CardContent className='flex flex-col justify-end gap-4'>
                         {!hint && (
                             <>
                                 <div className="bg-gray-100 p-4 rounded-lg">
@@ -452,7 +447,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
             )}
 
             {!showOpenningInstruction && <img className='w-[20rem] z-[102]' src='/guide_speak1.webp' />}
-
+                  {/* Dismiss text at the bottom of the modal */}
+                <div className="absolute bottom-3 left-0 right-0 text-center text-white text-xs opacity-70">
+                    Click anywhere on modal to dismiss
+                </div>
         </div>
     );
 };
