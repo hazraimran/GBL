@@ -20,10 +20,10 @@ const SelectCharacter: React.FC  = () => {
 
 
     return (
-      <div className={`bg-cover bg-center bg-no-repeat h-full w-full`}>
+      <div className={`bg-cover bg-center bg-no-repeat h-full w-full overflow-auto`}>
         <Container className="flex flex-col justify-center items-center h-full">
             <div className='h-full flex flex-col justify-center items-center'>
-                <Row className="flex flex-col sm:flex-row justify-center align-middle">
+                <Row className="flex  flex-row sm:flex-col justify-center align-middle gap-4">
                     <Col md={5}>
                         <CharacterCard
                             name="Darius"
@@ -62,7 +62,7 @@ const SelectCharacter: React.FC  = () => {
 const CharacterCard: React.FC<{ name: string; description: string; isSelected: boolean; onSelect: (character: string) => void; }> = ({ name, description, isSelected, onSelect }) => {
     return (
       <Card 
-          className="character-card cursor-pointer rounded-lg flex flex-col justify-between items-center h-full bg-transparent"
+          className="cursor-pointer rounded-lg flex sm:flex-col  h-full bg-transparent justify-between"
           style={{
             border: 'none',
             borderRadius: '50px',
@@ -77,14 +77,14 @@ const CharacterCard: React.FC<{ name: string; description: string; isSelected: b
             backgroundColor: 'transparent'
             
           }}
-          className="w-auto h-72 hover:opacity-100 rounded-lg object-contain"
+          className="w-auto h-52 md:h-72 hover:opacity-100 rounded-lg object-contain self-center flex-grow"
           src={`./playercard/${name}.png`} 
           alt={name}
           
       />
       <Card.Body
       
-          className='flex flex-col justify-center items-center bg-black text-white'
+          className='flex flex-col justify-center items-center bg-black text-white  md:max-w-[100%]'
           >
           <Card.Title className="">{name}</Card.Title>
           <Card.Text>

@@ -20,7 +20,7 @@ const OpeningDialog = () => {
     return (
       <>
         <div
-            className={`fixed sm:h-full sm:w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+            className={`fixed h-full w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
                 opacity: 1,
                 pointerEvents: 'auto',
