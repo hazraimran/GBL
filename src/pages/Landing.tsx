@@ -161,8 +161,11 @@ const Landing: React.FC = () => {
                                 <h1 className="text-4xl font-bold">Working Area</h1>
                                 <p className="text-xl">Rock the blocks</p>
                         </div>
-                    <div className="relative p-20 h-[90%]">
-                    <Carousel height="80%" options={tutorialImages} />   
+                    <div className="relative p-20 h-[90%] sm:hidden md:flex ">
+                        <Carousel height="80%" options={tutorialImages} />   
+                    </div>
+                    <div className="relative p-20 h-[90%] md:hidden">
+                        <Carousel height="80%" options={tutorialImages.map(image =>  { return {image: image.image}} )} />   
                     </div>
 
                 </div>
