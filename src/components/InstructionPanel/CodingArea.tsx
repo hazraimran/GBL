@@ -217,7 +217,6 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 </div>
             </div>
             <div className="text-center flex justify-center gap-2 items-center mt-10">
-                {/* <BigScreenAlert imageUrl="/tutorial/initial.png" actionText="Tutorial" /> */}
                 <ConceptButton title="CS Concept" className="-translate-x-3/4">
                     <div className="flex flex-col gap-2 text-white text-lg ">
                     {levelInfo && <p> <span className="font-bold">Why It Matters: </span>{levelInfo.learningOutcome.why}</p>}
@@ -225,9 +224,9 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                     </div>
                 </ConceptButton>
                 <VideoScreenAlert 
-                    title="Video"
+                    title="Drag and Drop"
                     textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} 
-                    actionText={'Help'}
+                    actionText={'INPUT'}
                     icon={'help'}
                 />
             </div>
