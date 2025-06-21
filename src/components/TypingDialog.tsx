@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import GameContext from '../context/GameContext';
 
 const TypingDialog = () => {
-    const { showOpenningInstruction, setShowOpenningInstruction, openningInstruction, setShowInstructionPanel } = useContext(GameContext);
+    const { showOpenningInstruction, setShowOpenningInstruction, openningInstruction, setShowInstructionPanel, isAiHelperON } = useContext(GameContext);
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,7 +42,7 @@ const TypingDialog = () => {
         }
     };
 
-    return showOpenningInstruction && <>
+    return showOpenningInstruction && isAiHelperON && <>
         <div
             className={`cursor-pointer transition-shadow select-none z-[102]`}
             onClick={handleClick}

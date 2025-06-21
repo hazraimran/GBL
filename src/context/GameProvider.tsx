@@ -37,7 +37,8 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       descr: '',
       why: '',
       how: ''
-    }
+    },
+    hints: []
   });
   const [showBottomPanel, setShowBottomPanel] = useState<boolean>(true);
   const [commandsUsed, setCommandsUsed] = useState<CommandWithArgType[]>([{ command: 'INPUT' }]);
@@ -67,6 +68,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [playBGM, setPlayBGM] = useState<boolean>(false);
   const [tutorial, setTutorial] = useState<boolean>(false);
   const [character, setCharacter] = useState<string>('');
+  const [isAiHelperON, setIsAiHelperON] = useState<boolean>(false);
 
   const registerReset = useCallback((fn: () => void) => {
     resetFnRef.current = fn;
@@ -146,7 +148,9 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       tutorial,
       setTutorial,
       character,
-      setCharacter
+      setCharacter,
+      isAiHelperON,
+      setIsAiHelperON
     }}>
       {children}
     </GameContext.Provider>

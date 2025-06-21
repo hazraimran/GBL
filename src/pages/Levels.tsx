@@ -16,6 +16,7 @@ import {
 import OpeningDialog from "../components/OpeningDialog";
 import SilentButton from "../components/buttons/SilentButton";
 import ConceptButton from "../components/buttons/ConceptButton";
+import HelperActionButton from "../components/buttons/HelperActionButton";
 import { authService } from "../services/firestore/authentication";
 import AlertButton from "../components/buttons/AlertButton";
 interface LevelCoordinate {
@@ -260,9 +261,9 @@ const Levels: React.FC = () => {
   
 
  
-                    <SilentButton />
-                    {/* <TutorialButton /> */}
+                    <SilentButton />                
                     <SkillsButton/>
+                    <HelperActionButton/>
                 </div>
             </TooltipProvider>
             <OpeningDialog />

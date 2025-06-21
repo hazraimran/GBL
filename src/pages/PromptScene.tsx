@@ -4,12 +4,12 @@ import FloatingMessage from '../components/FloatingMessage';
 import SmartHintSystem from '../components/hint/Hint';
 
 const PromptScene = () => {
-    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt, levelInfo } = useContext(GameContext);
+    const { showBottomPanel, showReadyPrompt, showFailurePrompt, failurePromptMessage, showPickSlotPrompt, setShowInfo, setShowFailurePrompt, levelInfo, isAiHelperON } = useContext(GameContext);
     return (
         <>
             {showPickSlotPrompt && <div className='fixed bottom-24 left-48'>pick a slot to place the command</div>}
             
-            {showFailurePrompt && <>
+            {showFailurePrompt && isAiHelperON && <>
                 <FloatingMessage className='fixed top-24 left-60 max-w-[14rem]' text={failurePromptMessage} arrowDirection='right' hint={true} setShowHint={() => {
                     setShowInfo(true)
                     setShowFailurePrompt(false)

@@ -181,6 +181,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         setShowInfo,
         showOpenningInstruction,
         setShowOpenningInstruction,
+        isAiHelperON,
     } = useContext(GameContext);
 
     // State
@@ -288,7 +289,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         }
     };
 
-    return (showInfo || showOpenningInstruction) && (
+    return (showInfo || (showOpenningInstruction && isAiHelperON)) && (
         <div
             className={`flex  h-3/4 md:h-full p-4 top-0 left-0 right-0 bottom-0 m-auto flex-row justify-center items-center select-none fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{

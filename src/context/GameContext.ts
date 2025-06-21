@@ -62,6 +62,8 @@ interface GameContextType {
     setCharacter: (character: string) => void,
     tutorial: boolean,
     setTutorial: (tutorial: boolean) => void,
+    isAiHelperON: boolean,
+    setIsAiHelperON: (isOn: boolean) => void,
 }
 
 // Create the context with a default value (optional)
@@ -157,6 +159,8 @@ const GameContext = createContext<GameContextType>({
     setTutorial: () => { },
     character: '',
     setCharacter: () => { },
+    isAiHelperON: false,
+    setIsAiHelperON: () => { },
 });
 
 export default GameContext;

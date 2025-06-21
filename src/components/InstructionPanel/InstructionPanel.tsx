@@ -128,7 +128,7 @@ const InstructionPanel: React.FC = () => {
 
     }, [ContentRef.current?.offsetHeight, CodingAreaRef.current?.offsetHeight]);
 
-    return levelInfo && showInstructionPanel && (
+    return levelInfo && (
         <aside
             className="select-none w-[35rem] flex flex-col items-center transition-height duration-1000 ease-in-out 
               absolute top-1/2 z-10 pt-[5rem] pb-[5rem] px-[5rem] -right-[2rem]"
