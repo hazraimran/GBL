@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { LogOut, LayoutDashboard, MessageSquareWarning, OctagonAlert,  } from "lucide-react";
+import { LogOut, OctagonAlert } from "lucide-react";
 import { authService } from "../services/firestore/authentication";
 
 import ResetGamePopup from "../components/ResetGamePopup";
@@ -20,6 +20,7 @@ import ConceptButton from "../components/buttons/ConceptButton";
 import HelperActionButton from "../components/buttons/HelperActionButton";
 import SurveyButton from "../components/buttons/SurveyButton";
 import AlertButton from "../components/buttons/AlertButton";
+
 interface LevelCoordinate {
     x: number;
     y: number;
@@ -34,7 +35,7 @@ interface LevelStatus {
 type LevelCoordinates = LevelCoordinate[];
 
 const Levels: React.FC = () => {
-    const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction, muted, setMuted,
+    const { setShowFirstTimePickPrompt, setShowReadyPrompt, setShowOpenningInstruction, setOpenningInstruction, muted,
         currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel, setPlayBGM, character, setCharacter } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
@@ -91,7 +92,7 @@ const Levels: React.FC = () => {
         let current = false;
         const levelsStatus: LevelStatus[] = new Array(levels.length);
         for (let i = levels.length - 1; i >= 0; i--) {
-            let status: LevelStatus = {
+            const status: LevelStatus = {
                 visited: false,
                 current: false
             };
