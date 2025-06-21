@@ -55,4 +55,3 @@ var level = {
         "What a treat!"
     ]
 };
-console.log(JSON.stringify(level));

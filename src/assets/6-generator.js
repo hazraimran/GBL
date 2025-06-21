@@ -51,4 +51,3 @@ var level = {
         "Good luck!"
     ]
 };
-console.log(JSON.stringify(level));

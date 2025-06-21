@@ -56,4 +56,3 @@ var level = {
         "Learn to identify and balance them—that’s the essence of great architecture."
     ]
 };
-console.log(JSON.stringify(level));

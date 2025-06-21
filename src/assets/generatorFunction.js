@@ -9,16 +9,16 @@ var inputFn = function (generatorFn) {
 var outputFn = function (generatorFn) {
     var len = 6;
     var arr = [];
-    for (var i = 0; i < len; i++) {
+    for (var j = 0; j < len; j++) {
         arr.push(generatorFn.nextInt(1, 20));
     }
     var expected = [];
-    for (var i = 0; i < 3; i++) {
-        expected.push(arr[i * 2] - arr[i * 2 + 1]);
+    for (var k = 0; k < 3; k++) {
+        expected.push(arr[k * 2] - arr[k * 2 + 1]);
     }
     return expected;
 };
-var level1 = {
+const level1 = {
     // id: 1,
     // title: 'Command Post',
     // description: 'You got a new command! SUBtracts the contents of a tile on the floor FROM whatever value you\'re currently holding.',
@@ -46,4 +46,5 @@ var level1 = {
     // executeCountAchievement: null,
     // isLocked: false
 };
-console.log(JSON.stringify(level1));
+
+export default level1;

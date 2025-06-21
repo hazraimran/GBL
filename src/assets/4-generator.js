@@ -54,4 +54,3 @@ var level = {
         "Precision is key—an unorganized foundation could spell disaster for the entire structure!"
     ]
 };
-console.log(JSON.stringify(level));

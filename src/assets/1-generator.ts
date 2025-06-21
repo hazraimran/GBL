@@ -41,4 +41,3 @@ const level1 = {
     ]
 }
 
-console.log(JSON.stringify(level1))

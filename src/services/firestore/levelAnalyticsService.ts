@@ -30,19 +30,20 @@ export class LevelAnalyticsService {
 
     // Ensure user document exists
     private static async ensureUserDocument(userId: string): Promise<void> {
-        console.log('ensureUserDocument', userId);
-        const userDocRef = doc(db, this.collectionName, userId);
-        const docSnap = await getDoc(userDocRef);
-        console.log('docSnap', docSnap.data());
-        
-        if (!docSnap.exists()) {
-            console.log('Creating new user document for:', userId);
-            await setDoc(userDocRef, {
-                uid: userId,
-                level_analytics: {},
-                lastPlayed: new Date().toISOString(),
-                createdAt: new Date().toISOString()
-            });
+        try {
+            const userDocRef = doc(db, this.collectionName, userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                // User document exists, no action needed
+            } else {
+                // Create new user document with level_analytics field
+                await setDoc(userDocRef, {
+                    level_analytics: {}
+                });
+            }
+        } catch (error) {
+            console.error('Error ensuring user document:', error);
         }
     }
 
@@ -97,16 +98,6 @@ export class LevelAnalyticsService {
         const startTime = new Date(analytics.start_time);
         const timeSpentSec = Math.floor((new Date(endTime).getTime() - startTime.getTime()) / 1000);
 
-        // Log timing information for verification
-        console.log('Level Analytics Timing:', {
-            levelId: analytics.level_id,
-            startTime: analytics.start_time,
-            endTime: endTime,
-            timeSpentSec: timeSpentSec,
-            daySession: analytics.day_session,
-            sessionTimestamp: analytics.session_timestamp
-        });
-
         const completedAnalytics = {
             ...analytics,
             ...finalData,
@@ -127,15 +118,7 @@ export class LevelAnalyticsService {
             
             if (docSnap.exists()) {
                 const userData = docSnap.data();
-                console.log('Existing user document data:', {
-                    uid: userData.uid,
-                    hasLevelAnalytics: !!userData.level_analytics,
-                    levelAnalyticsKeys: userData.level_analytics ? Object.keys(userData.level_analytics) : [],
-                    lastPlayed: userData.lastPlayed
-                });
                 existingLevelAnalytics = userData.level_analytics || {};
-            } else {
-                console.log('User document does not exist, will be created with level_analytics');
             }
 
             // Add the new session to the existing level analytics
@@ -148,38 +131,11 @@ export class LevelAnalyticsService {
                 [analytics.level_id]: updatedLevelSessions
             };
 
-            console.log('Saving level analytics:', {
-                userId: currentUserId,
-                levelId: analytics.level_id,
-                existingLevels: Object.keys(existingLevelAnalytics),
-                updatedLevels: Object.keys(completeLevelAnalytics),
-                sessionCount: updatedLevelSessions.length,
-                totalSessions: Object.values(completeLevelAnalytics).reduce((sum, sessions) => sum + sessions.length, 0)
-            });
-
             // Update with all level analytics preserved
             await updateDoc(userDocRef, {
                 level_analytics: completeLevelAnalytics,
                 lastPlayed: new Date().toISOString()
             });
-
-            console.log('Level analytics saved successfully to user document');
-            
-            // Verify the data was saved correctly
-            const verificationDoc = await getDoc(userDocRef);
-            if (verificationDoc.exists()) {
-                const savedData = verificationDoc.data();
-                const savedLevelAnalytics = savedData.level_analytics || {};
-                const savedSessionCount = savedLevelAnalytics[analytics.level_id]?.length || 0;
-                
-                console.log('Verification - Saved level analytics:', {
-                    levelId: analytics.level_id,
-                    expectedSessions: updatedLevelSessions.length,
-                    actualSessions: savedSessionCount,
-                    allLevels: Object.keys(savedLevelAnalytics),
-                    totalSessions: Object.values(savedLevelAnalytics).reduce((sum: number, sessions: unknown) => sum + (Array.isArray(sessions) ? sessions.length : 0), 0)
-                });
-            }
         } catch (error) {
             console.error('Error saving level analytics to user profile:', error);
             throw error;

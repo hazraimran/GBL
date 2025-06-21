@@ -1,9 +1,8 @@
 import React, { forwardRef, useContext } from 'react';
 import Command from './Command';
 import GameContext from '../../context/GameContext';
-import FloatingMessage from '../FloatingMessage';
 const CommandList = forwardRef<HTMLDivElement>((props, ref) => {
-    const { levelInfo, tutorial } = useContext(GameContext);
+    const { levelInfo } = useContext(GameContext);
 
     return (
         <>
@@ -28,13 +27,6 @@ const CommandList = forwardRef<HTMLDivElement>((props, ref) => {
 
                 ))}
 
-                {tutorial && <FloatingMessage
-                    backgroundColor='#7FA147'
-                    text='Drag and drop commands to build your program'
-                    className='fixed  bottom-1/3 left-1/2 -translate-x-[20rem] z-[1000] rotate-[-5deg]'
-                    arrowDirection='right'
-                    open={false}
-                    />}
             </div>
             
             {

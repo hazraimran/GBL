@@ -52,4 +52,3 @@ const level = {
         "Remember, a true master isn't defined by how many tools they possess, but by how cleverly they use them."]
 }
 
-console.log(JSON.stringify(level))

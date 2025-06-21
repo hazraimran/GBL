@@ -1,4 +1,3 @@
-
 import React,{useContext} from "react"
 import { ShieldQuestion } from "lucide-react"
 import GameContext from "../../context/GameContext"
@@ -21,7 +20,7 @@ const TutorialButton = () => {
 
     <TooltipProvider>
     <Tooltip>
-        <TooltipTrigger >
+        <TooltipTrigger asChild>
         <button
         className="fixed bottom-0 left-[16rem] bg-custom-bg rounded-lg flex items-center justify-center"
         onClick={handleClickTutorial}

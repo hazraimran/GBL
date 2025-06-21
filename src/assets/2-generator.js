@@ -36,4 +36,3 @@ var level = {
         "Here is your new assignment."
     ]
 };
-console.log(JSON.stringify(level));

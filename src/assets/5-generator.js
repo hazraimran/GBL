@@ -49,4 +49,3 @@ var level = {
         "Don’t worry; math isn’t the key here—just take it one step at a time."
     ]
 };
-console.log(JSON.stringify(level));

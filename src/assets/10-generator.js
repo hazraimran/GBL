@@ -50,4 +50,3 @@ var level = {
         "Don’t worry—we’re a good team, and I know you can figure it out!"
     ]
 };
-console.log(JSON.stringify(level));

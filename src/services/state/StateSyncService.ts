@@ -27,7 +27,7 @@ export class StateSyncService {
                     gameStorageService.setCoins(firebaseData.coins);
                 }
             } else {
-                console.log('No user document found in Firebase. Local state will be used.');
+                // No user document found in Firebase. Local state will be used.
             }
         } catch (error) {
             console.error('Error syncing state with Firebase:', error);

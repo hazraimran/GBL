@@ -47,4 +47,3 @@ var level = {
         "What about the other materials ? That’s for you to decide!"
     ]
 };
-console.log(JSON.stringify(level));

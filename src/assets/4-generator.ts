@@ -59,4 +59,3 @@ const level = {
     ]
 }
 
-console.log(JSON.stringify(level))

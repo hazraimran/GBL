@@ -38,4 +38,3 @@ var level1 = {
         "Remember, you can always ask me for help."
     ]
 };
-console.log(JSON.stringify(level1));

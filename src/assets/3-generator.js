@@ -48,4 +48,3 @@ var level = {
         "Think fast and adapt, young craftsman—the structure depends on you!"
     ]
 };
-console.log(JSON.stringify(level));
