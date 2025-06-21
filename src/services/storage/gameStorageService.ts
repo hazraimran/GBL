@@ -107,6 +107,22 @@ class GameStorageService {
         return CircularJSON.parse(levels);
     }
 
+    setRecords(records: any[]): void {
+        const levels = this.getLevelsInfo();
+        
+        records.forEach(record => {
+            const levelIndex = levels.findIndex(l => l.id === record.id);
+            if (levelIndex !== -1) {
+                levels[levelIndex] = {
+                    ...levels[levelIndex],
+                    ...record
+                };
+            }
+        });
+
+        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+    }
+
     getLevelInfo(levelId: number): LevelInfo {
         const levels = this.getLevelsInfo();
         return levels[levelId];
