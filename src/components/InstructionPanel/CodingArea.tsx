@@ -17,8 +17,7 @@ interface CodingAreaProps {
 const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     const { setClearCommandsRef, marginTop } = props;
     const { levelInfo, setReadyToPickSlot, slotPicked, commandsUsed, setShowFirstTimePickPrompt,
-        setCommandsUsed, setShowBottomPanel, connection, setConnection } = useContext(GameContext);
-    const [waitingForResult, setWaitingForResult] = useState(false);
+        setCommandsUsed, setShowBottomPanel, setConnection } = useContext(GameContext);
     const [isOver, setIsOver] = useState(false);
     const commandRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -53,21 +52,20 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         if (commandsUsed.length === 0 && levelInfo.id === 1) {
             setShowFirstTimePickPrompt(true);
         }
-    }, [commandsUsed]);
+    }, [commandsUsed, setConnection, levelInfo.id, setShowFirstTimePickPrompt]);
 
     useEffect(() => {
         if (!slotPicked || !commandRef.current) return;
-        let idx = commandsUsed.indexOf(commandRef.current);
 
         commandRef.current.arg = slotPicked;
         const copy = JSON.parse(JSON.stringify(commandsUsed));
         setCommandsUsed(copy);
         // commandRef.current = null;
-    }, [slotPicked])
+    }, [slotPicked, commandsUsed, setCommandsUsed])
 
     useEffect(() => {
         setClearCommandsRef(clearCommands);
-    }, [])
+    }, [setClearCommandsRef])
 
     useEffect(() => {
         // window.addEventListener('beforeunload', (e) => {
@@ -81,7 +79,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         } else {
             setShowBottomPanel(true);
         }
-    }, [commandsUsed])
+    }, [commandsUsed, setShowBottomPanel])
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -91,7 +89,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        let obj: CommandWithArgType = {
+        const obj: CommandWithArgType = {
             command: e.dataTransfer.getData('command') as CommandType,
         }
         
@@ -124,7 +122,6 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 || commandWithArg.command === 'ADD' || commandWithArg.command === 'SUB') {
 
                 setReadyToPickSlot(true);
-                setWaitingForResult(true);
 
                 const newCommands = [...(commandsUsed ?? [])];
                 const newCommand: CommandWithArgType = {
@@ -157,9 +154,9 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 setCommandsUsed(newCommands);
             }
         } else {
-            let newCommands = [...(commandsUsed ?? [])];
+            const newCommands = [...(commandsUsed ?? [])];
 
-            let command = newCommands.splice(from, 1);
+            const command = newCommands.splice(from, 1);
             if (from < to) {
                 to--;
             }
@@ -172,8 +169,8 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     const deleteCommand = (idx: number) => {
         const newCommands = [...(commandsUsed ?? [])];
         if (newCommands[idx].command === 'JUMP' || newCommands[idx].command === 'JUMP = 0' || newCommands[idx].command === 'JUMP < 0') {
-            let ext = newCommands[idx].arg as CommandWithArgType;
-            let pos = commandsUsed.indexOf(ext);
+            const ext = newCommands[idx].arg as CommandWithArgType;
+            const pos = commandsUsed.indexOf(ext);
             if (pos > idx) {
                 newCommands.splice(idx, 1);
                 newCommands.splice(pos - 1, 1);
@@ -191,7 +188,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
     return (
         <div className={`absolute px-4 w-[25rem] select-none z-[10] pb-[3rem] `} ref={ref} style={{ marginTop: `${marginTop}px` }}>
-            <JumpConnector connection={connection} />
+            <JumpConnector />
 
             <div
                 className={cn(
