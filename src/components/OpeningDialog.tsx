@@ -62,7 +62,7 @@ const OpeningDialog = () => {
 
     return showOpenningInstruction && isAiHelperON && <>
         <div
-            className={`fixed z-[1000] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
+            className={`fixed z-[2] transition-opacity duration-500 ease-linear backdrop-blur-sm rounded-lg shadow-2xl`}
             style={{
                 opacity: 1,
                 pointerEvents: 'auto',
@@ -78,7 +78,7 @@ const OpeningDialog = () => {
         <div className='h-full flex flex-row justify-center items-center'>
 
             <div
-                className={`cursor-pointer transition-shadow select-none z-[1001]`}
+                className={`cursor-pointer transition-shadow select-none z-[5]`}
                 onClick={handleClick}
             >
                 <div className={`border-solid relative flex flex-col p-4 bg-gray-300 rounded-lg min-h-[2rem] z-[1001] ${currentTextIndex % 2 === 1 ? ' rotate-[-5deg]' : ' rotate-[5deg]'}
@@ -100,7 +100,7 @@ const OpeningDialog = () => {
                 </div>
             </div>
             {
-                currentTextIndex % 2 === 0 ? <img className='relative w-[20rem] z-[1002]' src='/guide_speak1.webp' /> : <img className='relative w-[20rem] z-[1002]' src='/guide_speak2.webp' />
+                currentTextIndex % 2 === 0 ? <img className='relative w-[20rem] z-[5]' src='/guide_speak1.webp' /> : <img className='relative w-[20rem] z-[1002]' src='/guide_speak2.webp' />
             }
         </div>
 

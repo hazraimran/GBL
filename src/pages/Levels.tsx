@@ -20,6 +20,7 @@ import ConceptButton from "../components/buttons/ConceptButton";
 import HelperActionButton from "../components/buttons/HelperActionButton";
 import SurveyButton from "../components/buttons/SurveyButton";
 import AlertButton from "../components/buttons/AlertButton";
+import FirstTimeSurveyModal from "../components/modals/FirstTimeSurveyModal";
 
 interface LevelCoordinate {
     x: number;
@@ -39,6 +40,7 @@ const Levels: React.FC = () => {
         currentScene, navTo, setLevel, setLevelInfo, setShowInstructionPanel, setShowBottomPanel, setPlayBGM, character, setCharacter } = useContext(GameContext);
     const [levelsInfo, setLevelsInfo] = useState<LevelInfo[]>([]);
     const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
+    const [showFirstTimeSurvey, setShowFirstTimeSurvey] = useState(false);
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
     
@@ -59,6 +61,28 @@ const Levels: React.FC = () => {
             setCharacter(selectedCharacter);
         }
     }, [character]);
+
+    // Check for first-time survey on component mount
+    useEffect(() => {
+        if (currentScene === 'LEVELS') {
+            const currentUserId = authService.getCurrentUserId();
+            if (currentUserId) {
+                const hasCompletedFirstTimeSurvey = localStorage.getItem(`firstTimeSurvey_${currentUserId}`);
+                if (!hasCompletedFirstTimeSurvey) {
+                    setShowFirstTimeSurvey(true);
+                }
+            }
+        }
+    }, [currentScene]);
+
+    const handleFirstTimeSurveyClose = () => {
+        // Mark that the user has completed the first-time survey
+        const currentUserId = authService.getCurrentUserId();
+        if (currentUserId) {
+            localStorage.setItem(`firstTimeSurvey_${currentUserId}`, 'completed');
+        }
+        setShowFirstTimeSurvey(false);
+    };
 
     const handleClickLevel = (level: LevelInfo) => {
         if (!level.isLocked) {
@@ -270,6 +294,12 @@ const Levels: React.FC = () => {
                 </div>
             </TooltipProvider>
             <OpeningDialog />
+            
+            {/* First Time Survey Modal */}
+            <FirstTimeSurveyModal 
+                isOpen={showFirstTimeSurvey} 
+                onClose={handleFirstTimeSurveyClose} 
+            />
             
             {showResetPopup && <ResetGamePopup setShowResetPopup={setShowResetPopup} />}
         </>

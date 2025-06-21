@@ -74,7 +74,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   });
 
   useEffect(() => {
-    localStorage.setItem('isAiHelperON', JSON.stringify(isAiHelperON));
+    localStorage.setItem('game:isAiHelperON', JSON.stringify(isAiHelperON));
   }, [isAiHelperON]);
 
   const registerReset = useCallback((fn: () => void) => {

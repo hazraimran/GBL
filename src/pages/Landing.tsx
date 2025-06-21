@@ -5,11 +5,8 @@ import Login from "../components/login/login";
 import Carousel from "../components/Carrousel";
 import { useAuth } from "../context/AuthProvider";
 
-
-
-
 const Landing: React.FC = () => {
-    const { currentScene, navTo, setPlayBGM } = useContext(GameContext);
+    const { currentScene, navTo } = useContext(GameContext);
     const { user } = useAuth();
     useGameStorage();
 
@@ -17,7 +14,7 @@ const Landing: React.FC = () => {
         if (user) {
             navTo('LEVELS');
         } 
-    }, [user]);
+    }, [user, navTo]);
 
     const carrouselImages = [
         {image: 'intro/guide_speak1.webp'},
@@ -31,7 +28,6 @@ const Landing: React.FC = () => {
         {image: 'intro/tutorial.png', title: 'Tutorial', description: 'The tutorial is the tutorial of the game.'},
         {image: 'intro/DragandDrop.png', title: 'Drag and Drop', description: 'The drag and drop is the drag and drop of the game.'},
     ]
-
 
     const characters = [
         {image: 'playercard/Isis.png', name: 'Isis', description: 'Isis is your in-game worker. Isis is a skilled worker with enhanced agility. Specializes in quick movements and accurate placements.'},
