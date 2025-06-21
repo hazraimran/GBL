@@ -1,7 +1,8 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { useAnalytics } from '../../context/AnalyticsContext';
 import GameContext from '../../context/GameContext';
 import { commandDescriptions } from '../../data';
 import { LevelInfo } from '../../types/level';
-import { useLevelAnalytics } from '../../hooks/useLevelAnalytics';
 
 // src/types/index.ts
 export type Level = {
@@ -150,7 +151,6 @@ Remember:
 }
 
 // src/components/SmartHintSystem.tsx
-import React, { useState, useEffect, useContext } from 'react';
 import { Coins, Lightbulb, ChevronLeft, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -186,7 +186,13 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
     } = useContext(GameContext);
 
     // Analytics tracking
-    const analytics = useLevelAnalytics(level.id);
+    let analytics;
+    try {
+        analytics = useAnalytics();
+    } catch {
+        // Analytics not available (e.g., outside of AnalyticsProvider)
+        analytics = null;
+    }
 
     // State
     const [hintService, setHintService] = useState<HintService | null>(null);
@@ -225,7 +231,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
     const getHint = () => {
         // Start hint timer for analytics
-        analytics.startHintTimer();
+        if (analytics) {
+            analytics.startHintTimer();
+        }
         
         if (level.hints && level.hints.length > 0) {
             setHint(level.hints[hintLevel - 1]);
@@ -233,7 +241,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
             removeCoins(1);
             
             // Track hint usage in analytics
-            analytics.endHintTimer();
+            if (analytics) {
+                analytics.endHintTimer();
+            }
         } else {
             setHint('No hints available');
             setHintLevel(3);

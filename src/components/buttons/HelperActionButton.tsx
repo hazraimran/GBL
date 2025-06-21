@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import GameContext from '../../context/GameContext';
+import { useAnalytics } from '../../context/AnalyticsContext';
 import { HelpCircle } from 'lucide-react';
 import {
     Tooltip,
@@ -7,17 +8,26 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
-import { useLevelAnalytics } from '../../hooks/useLevelAnalytics';
 
 const HelperActionButton: React.FC = () => {
-    const { isAiHelperON, setIsAiHelperON, levelInfo } = useContext(GameContext);
-    const analytics = useLevelAnalytics(levelInfo?.id || 1);
+    const { isAiHelperON, setIsAiHelperON } = useContext(GameContext);
+    
+    // Try to get analytics, but don't fail if not available
+    let analytics;
+    try {
+        analytics = useAnalytics();
+    } catch {
+        // Analytics not available (e.g., outside of AnalyticsProvider)
+        analytics = null;
+    }
 
     const toggleHelper = () => {
         setIsAiHelperON(!isAiHelperON);
         
-        // Track help button click in analytics
-        analytics.trackHelpButtonClick();
+        // Track help button click in analytics if available
+        if (analytics) {
+            analytics.trackHelpButtonClick();
+        }
     };
 
     return (

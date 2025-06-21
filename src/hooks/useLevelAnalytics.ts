@@ -18,14 +18,6 @@ export const useLevelAnalytics = (levelId: number) => {
             setIsTracking(true);
             startTimeRef.current = Date.now();
             
-            // Log when tracking starts
-            console.log('Level Analytics Started:', {
-                levelId: levelId,
-                startTime: newAnalytics.start_time,
-                startTimeRef: startTimeRef.current,
-                timestamp: new Date().toISOString()
-            });
-            
             // Set initial AI helper status
             setAnalytics(prev => prev ? LevelAnalyticsService.setAIHelperStatus(prev, isAiHelperON) : null);
         } catch (error) {
@@ -38,13 +30,6 @@ export const useLevelAnalytics = (levelId: number) => {
         if (!analytics) return;
 
         try {
-            // Log when tracking stops
-            console.log('Level Analytics Stopping:', {
-                levelId: analytics.level_id,
-                finalData: finalData,
-                timestamp: new Date().toISOString()
-            });
-            
             await LevelAnalyticsService.completeLevelSession(analytics, finalData || {});
             setIsTracking(false);
             setAnalytics(null);

@@ -1,19 +1,27 @@
-import React,{useRef, useContext} from "react"
+import React, { useRef } from "react"
 import { ZoomIn } from "lucide-react"
 import HelpArea from "../hint/HelpArea"
-import GameContext from "../../context/GameContext";
-import { useLevelAnalytics } from "../../hooks/useLevelAnalytics";
+import { useAnalytics } from '../../context/AnalyticsContext';
 
 const ConceptButton = ( {children, title, className} : {children: React.ReactNode, title: string, className?:   string} ) => {
   const displayButton = useRef(false);
-  const { levelInfo } = useContext(GameContext);
-  const analytics = useLevelAnalytics(levelInfo?.id || 1);
+  
+  // Try to get analytics, but don't fail if not available
+  let analytics;
+  try {
+    analytics = useAnalytics();
+  } catch {
+    // Analytics not available (e.g., outside of AnalyticsProvider)
+    analytics = null;
+  }
   
   const handleClickConcept = () => {
     displayButton.current = !displayButton.current;
     
-    // Track concept button click in analytics
-    analytics.trackConceptButtonClick();
+    // Track concept button click in analytics if available
+    if (analytics) {
+      analytics.trackConceptButtonClick();
+    }
   } 
 
   const Element = () => (

@@ -5,7 +5,6 @@ import { Tooltip } from "../ui/tooltip"
 import { TooltipProvider } from "../ui/tooltip";
 import { LucideIcon } from "lucide-react";
 
-
 interface AlertButtonProps {
     onClick: () => void;
     title: string;
@@ -18,20 +17,18 @@ const AlertButton = ({ onClick, title, Icon, colorIcon, position }: AlertButtonP
 
 return (
   <div className={`fixed ${position} bg-custom-bg rounded-lg flex items-center justify-center`}> 
-  <TooltipProvider>
-      <Tooltip>
-          <TooltipTrigger>
-          <button
-              onClick={onClick}
-          >
-              <Icon className={`w-[7rem] h-[4rem] text-${colorIcon}`} />
-          </button>
-          </TooltipTrigger>
-          <TooltipContent className="text-lg" side="bottom">
+      <TooltipProvider>
+          <Tooltip>
+              <TooltipTrigger asChild>
+                  <button onClick={onClick}>
+                      <Icon className={`w-[7rem] h-[4rem] text-${colorIcon}`} />
+                  </button>
+              </TooltipTrigger>
+              <TooltipContent className="text-lg" side="bottom">
                   <p>{title}</p>
-          </TooltipContent>
+              </TooltipContent>
           </Tooltip>
-  </TooltipProvider>
+      </TooltipProvider>
   </div>
 )
 }

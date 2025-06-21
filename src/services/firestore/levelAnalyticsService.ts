@@ -125,6 +125,7 @@ export class LevelAnalyticsService {
             
             if (docSnap.exists()) {
                 const userData = docSnap.data();
+                console.log('User data:', userData);
                 existingLevelAnalytics = userData.level_analytics || {};
             }
 

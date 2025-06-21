@@ -10,9 +10,9 @@ import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { UploadRecordService } from '../services/firestore/uploadRecordService';
 import VictorySoundPlayer from './VictorySoundPlayer';
 import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
-import { useLevelAnalytics } from '../hooks/useLevelAnalytics';
+import { AnalyticsProvider, useAnalytics } from '../context/AnalyticsContext';
 
-const PhaserGame = () => {
+const PhaserGameContent = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
@@ -20,8 +20,8 @@ const PhaserGame = () => {
         commandsUsed, setGameStatus, setShowPopup, setExecuting, setErrorCnt, errorCnt } = useContext(GameContext);
     const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
     
-    // Initialize analytics tracking
-    const analytics = useLevelAnalytics(levelInfo?.id || 1);
+    // Get analytics from context
+    const analytics = useAnalytics();
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -209,6 +209,16 @@ const PhaserGame = () => {
                 onDrag={handleDrag}
             />
         </div>
+    );
+};
+
+const PhaserGame = () => {
+    const { levelInfo } = useContext(GameContext);
+    
+    return (
+        <AnalyticsProvider levelId={levelInfo?.id || 1}>
+            <PhaserGameContent />
+        </AnalyticsProvider>
     );
 };
 
