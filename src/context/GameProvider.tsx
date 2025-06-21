@@ -1,5 +1,5 @@
 // src/context/GameProvider.tsx
-import React, { useState, ReactNode, useRef, useCallback } from 'react';
+import React, { useState, ReactNode, useRef, useCallback, useEffect } from 'react';
 import GameContext from './GameContext';
 import { CurrentSceneType, LevelInfo } from '../types/level';
 import { CommandWithArgType } from '../types/game';
@@ -66,9 +66,16 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(false);
   const [playBGM, setPlayBGM] = useState<boolean>(false);
-  const [tutorial, setTutorial] = useState<boolean>(false);
+  const [tutorial, setTutorial] = useState<boolean>(true);
   const [character, setCharacter] = useState<string>('');
-  const [isAiHelperON, setIsAiHelperON] = useState<boolean>(false);
+  const [isAiHelperON, setIsAiHelperON] = useState<boolean>(() => {
+    const storedValue = localStorage.getItem('isAiHelperON');
+    return storedValue !== null ? JSON.parse(storedValue) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('isAiHelperON', JSON.stringify(isAiHelperON));
+  }, [isAiHelperON]);
 
   const registerReset = useCallback((fn: () => void) => {
     resetFnRef.current = fn;
