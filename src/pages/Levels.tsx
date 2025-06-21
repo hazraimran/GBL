@@ -3,6 +3,7 @@ import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import { LogOut, LayoutDashboard, MessageSquareWarning, OctagonAlert,  } from "lucide-react";
+import { authService } from "../services/firestore/authentication";
 
 import ResetGamePopup from "../components/ResetGamePopup";
 import SkillsButton from "../components/buttons/skillsButton";
@@ -17,7 +18,7 @@ import OpeningDialog from "../components/OpeningDialog";
 import SilentButton from "../components/buttons/SilentButton";
 import ConceptButton from "../components/buttons/ConceptButton";
 import HelperActionButton from "../components/buttons/HelperActionButton";
-import { authService } from "../services/firestore/authentication";
+import SurveyButton from "../components/buttons/SurveyButton";
 import AlertButton from "../components/buttons/AlertButton";
 interface LevelCoordinate {
     x: number;
@@ -264,6 +265,7 @@ const Levels: React.FC = () => {
                     <SilentButton />                
                     <SkillsButton/>
                     <HelperActionButton/>
+                    <SurveyButton/>
                 </div>
             </TooltipProvider>
             <OpeningDialog />
