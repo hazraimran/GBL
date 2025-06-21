@@ -29,7 +29,7 @@ export class UploadRecordService {
 
             await setDoc(userDocRef, {
                 records: record
-            })
+            }, { merge: true });
         } catch (error) {
             console.error('Error uploading record:', error);
             throw error;

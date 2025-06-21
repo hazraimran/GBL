@@ -30,8 +30,10 @@ export class LevelAnalyticsService {
 
     // Ensure user document exists
     private static async ensureUserDocument(userId: string): Promise<void> {
+        console.log('ensureUserDocument', userId);
         const userDocRef = doc(db, this.collectionName, userId);
         const docSnap = await getDoc(userDocRef);
+        console.log('docSnap', docSnap.data());
         
         if (!docSnap.exists()) {
             console.log('Creating new user document for:', userId);
@@ -114,7 +116,7 @@ export class LevelAnalyticsService {
 
         // Save to user profile as array (preserve existing level analytics)
         const userDocRef = doc(db, this.collectionName, currentUserId);
-        
+                
         try {
             // Ensure user document exists
             await this.ensureUserDocument(currentUserId);
@@ -125,8 +127,15 @@ export class LevelAnalyticsService {
             
             if (docSnap.exists()) {
                 const userData = docSnap.data();
-                console.log('User data:', userData);
+                console.log('Existing user document data:', {
+                    uid: userData.uid,
+                    hasLevelAnalytics: !!userData.level_analytics,
+                    levelAnalyticsKeys: userData.level_analytics ? Object.keys(userData.level_analytics) : [],
+                    lastPlayed: userData.lastPlayed
+                });
                 existingLevelAnalytics = userData.level_analytics || {};
+            } else {
+                console.log('User document does not exist, will be created with level_analytics');
             }
 
             // Add the new session to the existing level analytics
@@ -144,7 +153,8 @@ export class LevelAnalyticsService {
                 levelId: analytics.level_id,
                 existingLevels: Object.keys(existingLevelAnalytics),
                 updatedLevels: Object.keys(completeLevelAnalytics),
-                sessionCount: updatedLevelSessions.length
+                sessionCount: updatedLevelSessions.length,
+                totalSessions: Object.values(completeLevelAnalytics).reduce((sum, sessions) => sum + sessions.length, 0)
             });
 
             // Update with all level analytics preserved
@@ -153,7 +163,23 @@ export class LevelAnalyticsService {
                 lastPlayed: new Date().toISOString()
             });
 
-            console.log('Level analytics saved successfully');
+            console.log('Level analytics saved successfully to user document');
+            
+            // Verify the data was saved correctly
+            const verificationDoc = await getDoc(userDocRef);
+            if (verificationDoc.exists()) {
+                const savedData = verificationDoc.data();
+                const savedLevelAnalytics = savedData.level_analytics || {};
+                const savedSessionCount = savedLevelAnalytics[analytics.level_id]?.length || 0;
+                
+                console.log('Verification - Saved level analytics:', {
+                    levelId: analytics.level_id,
+                    expectedSessions: updatedLevelSessions.length,
+                    actualSessions: savedSessionCount,
+                    allLevels: Object.keys(savedLevelAnalytics),
+                    totalSessions: Object.values(savedLevelAnalytics).reduce((sum: number, sessions: unknown) => sum + (Array.isArray(sessions) ? sessions.length : 0), 0)
+                });
+            }
         } catch (error) {
             console.error('Error saving level analytics to user profile:', error);
             throw error;
