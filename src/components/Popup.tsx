@@ -10,7 +10,7 @@ import {
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 
 const Popup = () => {
-    const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo } = useContext(GameContext);
+    const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo, resetFn } = useContext(GameContext);
     const { addCoins } = useGameStorage();
     
     
@@ -115,7 +115,10 @@ const Popup = () => {
                 {/* Buttons */}
                 <div className="flex justify-end gap-4">
                     <button
-                        onClick={() => setShowPopup(false)}
+                        onClick={() => {
+                            setShowPopup(false);
+                            resetFn();
+                        }}
                         className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-['Comic Sans MS'] text-lg"
                     >
                         Back
