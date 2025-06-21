@@ -25,6 +25,12 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     const commandRef = useRef<CommandWithArgType | null>(null);
 
     useEffect(() => {
+        if (levelInfo.id) {
+            setCommandsUsed([]);
+        }
+    }, [levelInfo.id, setCommandsUsed]);
+
+    useEffect(() => {
         const jumpConnections: Array<{ start: HTMLElement; end: HTMLElement }> = [];
 
         commandsUsed?.forEach((command, idx) => {
@@ -226,7 +232,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 <VideoScreenAlert 
                     title="Drag and Drop"
                     textHtml={`<video src="/videos/INPUT.mov" autoplay loop muted playsinline></video>`} 
-                    actionText={'INPUT'}
+                    actionText={'Help'}
                     icon={'help'}
                 />
             </div>
