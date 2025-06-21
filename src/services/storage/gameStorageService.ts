@@ -193,6 +193,14 @@ class GameStorageService {
                 }
             }
 
+            // Add keys that start with 'game:' to be removed
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('game:')) {
+                    keysToRemove.push(key);
+                }
+            }
+
             keysToRemove.forEach(key => localStorage.removeItem(key));
 
             this.createLevelInfoFromTemplate();
