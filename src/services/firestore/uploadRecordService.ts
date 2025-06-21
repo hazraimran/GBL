@@ -2,6 +2,7 @@
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { CommandWithArgType } from '../../types/game';
+import { authService } from './authentication';
 
 interface Record {
     id: number,
@@ -15,6 +16,12 @@ export class UploadRecordService {
     static async uploadRecord(record: Record, uid: string | null): Promise<void> {
         if (!uid) {
             throw new Error('User ID is required');
+        }
+
+        // Ensure the UID matches the authenticated user
+        const currentUserId = authService.getCurrentUserId();
+        if (currentUserId && uid !== currentUserId) {
+            throw new Error('User ID mismatch: Cannot upload record for different user');
         }
 
         try {
@@ -34,6 +41,12 @@ export class UploadRecordService {
             throw new Error('User ID is required');
         }
 
+        // Ensure the UID matches the authenticated user
+        const currentUserId = authService.getCurrentUserId();
+        if (currentUserId && uid !== currentUserId) {
+            throw new Error('User ID mismatch: Cannot access records for different user');
+        }
+
         try {
             const userDocRef = doc(db, 'users', uid);
             const userDoc = await getDoc(userDocRef);
@@ -46,10 +59,15 @@ export class UploadRecordService {
             const records = userData.records || {};
 
             // 将对象格式转回数组格式
-            return Object.values(records).map(record => ({
-                ...record,
-                commandsUsed: JSON.parse(record.commandsUsed)
-            }));
+            return Object.values(records).map((record: unknown) => {
+                const typedRecord = record as Record;
+                return {
+                    ...typedRecord,
+                    commandsUsed: typeof typedRecord.commandsUsed === 'string' 
+                        ? JSON.parse(typedRecord.commandsUsed) 
+                        : typedRecord.commandsUsed
+                };
+            });
         } catch (error) {
             console.error('Error getting records:', error);
             throw error;

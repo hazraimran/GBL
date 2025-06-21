@@ -3,6 +3,7 @@ import GameStorageService from '../../services/storage/gameStorageService';
 import { LevelInfo } from '../../types/level';
 import { CommandWithArgType } from '../../types/game';
 import GameContext from '../../context/GameContext';
+import { authService } from '../../services/firestore/authentication';
 
 export const useGameStorage = () => {
     const [gameStorage] = useState(GameStorageService);
@@ -12,12 +13,36 @@ export const useGameStorage = () => {
 
     useEffect(() => {
         const initUID = async () => {
-            const id = await gameStorage.getOrCreateUID();
-            setUid(id);
+            // First try to get the authenticated user's UID
+            const authUserId = authService.getCurrentUserId();
+            
+            if (authUserId) {
+                // Use authenticated user's UID
+                setUid(authUserId);
+            } else {
+                // Fallback to fingerprint-based UID for anonymous users
+                const id = await gameStorage.getOrCreateUID();
+                setUid(id);
+            }
+            
             // Initialize and get the coins amount
             updateCoinsState();
         };
+        
         initUID();
+        
+        // Listen for authentication state changes
+        const unsubscribe = authService.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in, use their UID
+                setUid(user.uid);
+            } else {
+                // User is signed out, fallback to fingerprint-based UID
+                gameStorage.getOrCreateUID().then(id => setUid(id));
+            }
+        });
+        
+        return () => unsubscribe();
     }, [gameStorage]);
 
     // Initialize mute state

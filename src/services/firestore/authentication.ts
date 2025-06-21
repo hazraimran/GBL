@@ -1,4 +1,4 @@
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, UserCredential } from "firebase/auth";
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, UserCredential, onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../api/firebase";
 
 export const authService = {
@@ -25,5 +25,13 @@ export const authService = {
             throw new Error(error instanceof Error ? error.message : 'Unknown error');
         }
     },
-
+    getCurrentUser(): User | null {
+        return auth.currentUser;
+    },
+    getCurrentUserId(): string | null {
+        return auth.currentUser?.uid || null;
+    },
+    onAuthStateChanged(callback: (user: User | null) => void): () => void {
+        return onAuthStateChanged(auth, callback);
+    }
 };  
