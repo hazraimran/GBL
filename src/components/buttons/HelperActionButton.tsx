@@ -7,12 +7,17 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
+import { useLevelAnalytics } from '../../hooks/useLevelAnalytics';
 
 const HelperActionButton: React.FC = () => {
-    const { isAiHelperON, setIsAiHelperON } = useContext(GameContext);
+    const { isAiHelperON, setIsAiHelperON, levelInfo } = useContext(GameContext);
+    const analytics = useLevelAnalytics(levelInfo?.id || 1);
 
     const toggleHelper = () => {
         setIsAiHelperON(!isAiHelperON);
+        
+        // Track help button click in analytics
+        analytics.trackHelpButtonClick();
     };
 
     return (

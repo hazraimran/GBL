@@ -10,7 +10,7 @@ import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { UploadRecordService } from '../services/firestore/uploadRecordService';
 import VictorySoundPlayer from './VictorySoundPlayer';
 import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
-
+import { useLevelAnalytics } from '../hooks/useLevelAnalytics';
 
 const PhaserGame = () => {
     const gameRef = useRef<HTMLDivElement>(null);
@@ -19,11 +19,16 @@ const PhaserGame = () => {
     const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn,
         commandsUsed, setGameStatus, setShowPopup, setExecuting, setErrorCnt, errorCnt } = useContext(GameContext);
     const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
+    
+    // Initialize analytics tracking
+    const analytics = useLevelAnalytics(levelInfo?.id || 1);
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
             setShowFailurePrompt(true);
             setFailurePromptMessage(error.message);
+            // Track error in analytics
+            analytics.trackError();
         }
     }));
 
@@ -60,6 +65,13 @@ const PhaserGame = () => {
             const report = extractUploadReport(errorCnt);
             UploadRecordService.uploadRecord(report, uid);
 
+            // Track level completion in analytics with 1 coin collected
+            analytics.stopTracking({
+                final_instruction_count: data.commandCnt,
+                success_on_first_try: errorCnt === 0,
+                coins_collected: 1
+            });
+
             // unlock next level
             unlockNextLevel(levelInfo.id);
         }
@@ -70,6 +82,9 @@ const PhaserGame = () => {
             setErrorCnt(errorCnt + 1);
             setShowFailurePrompt(true);
             setFailurePromptMessage(data.message);
+            
+            // Track level failure in analytics
+            analytics.trackError();
         }
 
         EventManager.on('levelCompleted', levelCompleted);
@@ -80,7 +95,7 @@ const PhaserGame = () => {
             EventManager.remove('levelCompleted', levelCompleted);
             EventManager.remove('levelFailed', levelFailed);
         }
-    }, [uid]);
+    }, [uid, analytics]);
 
     useEffect(() => {
         if (!gameRef.current) return;
@@ -139,6 +154,9 @@ const PhaserGame = () => {
         }
         setExecuting(true);
 
+        // Track instruction submission in analytics
+        analytics.trackInstructionSubmission(commandsUsed.length);
+
         if (levelInfo!.id === 1) {
             setShowReadyPrompt(false);
         }
@@ -154,6 +172,9 @@ const PhaserGame = () => {
             return;
         }
 
+        // Track reset in analytics
+        analytics.trackReset();
+
         setExecuting(false);
         mainSceneRef.current.reset();
 
@@ -163,6 +184,13 @@ const PhaserGame = () => {
     useEffect(() => {
         registerResetFn(handleReset);
     }, [])
+
+    // Start analytics tracking when level loads
+    useEffect(() => {
+        if (levelInfo?.id) {
+            analytics.startTracking();
+        }
+    }, [levelInfo?.id, analytics]);
 
     const handleDrag = (speed: number) => {
         mainSceneRef.current?.modifySpeed(speed + 0.5);

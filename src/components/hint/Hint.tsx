@@ -1,6 +1,7 @@
 import GameContext from '../../context/GameContext';
 import { commandDescriptions } from '../../data';
 import { LevelInfo } from '../../types/level';
+import { useLevelAnalytics } from '../../hooks/useLevelAnalytics';
 
 // src/types/index.ts
 export type Level = {
@@ -184,6 +185,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         isAiHelperON,
     } = useContext(GameContext);
 
+    // Analytics tracking
+    const analytics = useLevelAnalytics(level.id);
+
     // State
     const [hintService, setHintService] = useState<HintService | null>(null);
     const [loading, setLoading] = useState(false);
@@ -220,54 +224,21 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
 
 
     const getHint = () => {
+        // Start hint timer for analytics
+        analytics.startHintTimer();
+        
         if (level.hints && level.hints.length > 0) {
             setHint(level.hints[hintLevel - 1]);
             setHintLevel(prev => prev + 1);
             removeCoins(1);
+            
+            // Track hint usage in analytics
+            analytics.endHintTimer();
         } else {
             setHint('No hints available');
             setHintLevel(3);
         }
     }
-    // Get hint function
-    // const getHint = async () => {
-    //     if (!hintService) {
-    //         setError('Hint service not initialized');
-    //         return;
-    //     }
-
-    //     if (coins <= 0) {
-    //         setError('Not enough coins!');
-    //         return;
-    //     }
-
-    //     setLoading(true);
-    //     setError(null);
-
-    //     try {
-    //         const content = await hintService.getHint(
-    //             buildPrompt(currentCode, hintLevel, level),
-    //             1000
-    //         );
-
-    //         const suggestedCode = extractCodeSuggestion(content);
-    //         const cleanHint = content.replace(/<code>[\s\S]+?<\/code>/g, '').trim();
-
-    //         setHint(cleanHint);
-    //         removeCoins(1);
-
-    //         if (suggestedCode && onCodeSuggestion && hintLevel === 3) {
-    //             onCodeSuggestion(suggestedCode);
-    //         }
-
-    //         setHintLevel(prev => Math.min(prev + 1, 3));
-    //     } catch (err) {
-    //         console.error('Error getting hint:', err);
-    //         setError(err instanceof Error ? err.message : 'Failed to get hint');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     // Reset hints function
     const resetHints = () => {
