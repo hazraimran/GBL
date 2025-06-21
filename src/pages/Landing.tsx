@@ -1,20 +1,12 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import GameContext from "../context/GameContext";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
 import Login from "../components/login/login";
 import Carousel from "../components/Carrousel";
-import { useAuth } from "../context/AuthProvider";
 
 const Landing: React.FC = () => {
-    const { currentScene, navTo } = useContext(GameContext);
-    const { user } = useAuth();
+    const { currentScene } = useContext(GameContext);
     useGameStorage();
-
-    useEffect(() => {
-        if (user) {
-            navTo('LEVELS');
-        } 
-    }, [user, navTo]);
 
     const carrouselImages = [
         {image: 'intro/guide_speak1.webp'},

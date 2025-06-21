@@ -85,16 +85,19 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     resetFnRef.current();
   }, []);
 
-  const navTo = (scene: CurrentSceneType) => {
+  const navTo = useCallback((scene: CurrentSceneType) => {
+    // Prevent rapid navigation calls
+    if (currentScene === scene) return;
+    
     setShowModal(true);
     setTimeout(() => {
       setCurrentScene(scene);
-    }, 500);
+    }, 300); // Reduced from 500ms for faster transitions
 
     setTimeout(() => {
       setShowModal(false);
-    }, 1000);
-  }
+    }, 600); // Reduced from 1000ms
+  }, [currentScene]);
 
   return (
     <GameContext.Provider value={{
