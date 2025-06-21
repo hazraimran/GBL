@@ -69,7 +69,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [tutorial, setTutorial] = useState<boolean>(true);
   const [character, setCharacter] = useState<string>('');
   const [isAiHelperON, setIsAiHelperON] = useState<boolean>(() => {
-    const storedValue = localStorage.getItem('isAiHelperON');
+    const storedValue = localStorage.getItem('game:isAiHelperON');
     return storedValue !== null ? JSON.parse(storedValue) : true;
   });
 
