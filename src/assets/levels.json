@@ -1,5 +1,6 @@
 [{
         "id": 1,
+        "visible": true,
         "title": "Basic Instruction Pipelining",
         "description": "Drag commands into this area to build a program.\n\n Your program should tell your worker to grab each rock from the INBOX, and drop it into the OUTBOX.",
         "generatorFunction": "function (generatorFn) {\n    var len = 2;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -31,6 +32,7 @@
         ]
     }, {
         "id": 2,
+        "visible": true,
         "title": "Manual Loop Simulation (Goto-style Control)",
         "description": "Grab each rock from the INBOX, and drop each one into the OUTBOX.\n\n You got a new command!You can drag JUMP 's arrow to jump to different lines within your program.\n\n With this new ability, you can complete this assignment using only 3 total commands.",
         "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -61,6 +63,7 @@
         ]
     }, {
         "id": 3,
+        "visible": true,
         "title": "Constant Memory Access / Register Fetching",
         "description": "Ignore the INBOX for now, and just send the following 3 numbers to the OUTBOX: \n\n520\n\nThe Facilities Management staff has placed some items over there on the carpet for you.If only there were a way you could pick them up...",
         "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -103,6 +106,7 @@
         ]
     }, {
         "id": 4,
+        "visible": true,
         "title": "Scrambler Handler",
         "description": "Grab the first TWO rocks from the INBOX and drop them into the OUTBOX in the reverse order.Repeat until the INBOX is empty.\n\nYou got a new command!Feel free to COPYTO wherever you like on the carpet.It will be cleaned later.",
         "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -142,6 +146,7 @@
         ]
     }, {
         "id": 5,
+        "visible": true,
         "title": "Register Arithmetic: ADD with Local Storage",
         "description": "For each two rocks in the INBOX, add them together, and put the result in the OUTBOX.\n\nYou got a new command!It ADDs the contents of a tile on the floor to whatever value you 're currently holding.",
         "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -181,6 +186,7 @@
         ]
     }, {
         "id": 6,
+        "visible": true,
         "title": "Arithmetic via Instruction-Level Reuse",
         "description": "For each rock in the INBOX, TRIPLE it!",
         "generatorFunction": "function (generatorFn) {\n    var len = 3;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -220,6 +226,7 @@
         ]
     }, {
         "id": 7,
+        "visible": true,
         "title": "Efficient Arithmetic Composition (8x via ADD)",
         "description": "For each rock in the INBOX, multiply it by 8, and put the result in the OUTBOX. \n\nUsing a bunch of ADD commands is easy, but WASTEFUL!Can you do it using only 3 ADD commands ?Management is watching.",
         "generatorFunction": "function (generatorFn) {\n    var len = 3;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -264,6 +271,7 @@
         ]
     }, {
         "id": 8,
+        "visible": true,
         "title": "Control Flow: Conditional Execution (Jump if Zero)",
         "description": "Send all rocks that ARE NOT ZERO to the OUTBOX.\n\nYou got a new command!It jumps ONLY if the value you are holding is ZERO.Otherwise it continues to the next line.",
         "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        if (i % 2 === 0) {\n            arr.push(0);\n        }\n        else {\n            arr.push(generatorFn(1, 20));\n        }\n    }\n    return arr;\n}",
@@ -303,6 +311,7 @@
         ]
     }, {
         "id": 9,
+        "visible": true,
         "title": "Selective Output via Zero Flag Evaluation",
         "description": "Send only Zeros to the OUTBOX.",
         "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        if (i % 2 === 0) {\n            arr.push(0);\n        }\n        else {\n            arr.push(generatorFn(1, 20));\n        }\n    }\n    return arr;\n}",
@@ -342,6 +351,7 @@
         ]
     }, {
         "id": 10,
+        "visible": true,
         "title": "Arithmetic Logic Unit Behavior: SUB Operation",
         "description": "For each two rocks in the INBOX, first subtract the 1 st from the 2nd and put the result in the OUTBOX.AND THEN, subtract the 2n d from the Ist and put the result in the OUTBOX.Repeat.\n\nYou got a new command!SUBtracts the contents of a tile on the floor FROM whatever value you 're currently holding.",
         "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -381,6 +391,7 @@
         ]
     }, {
         "id": 11,
+        "visible": true,
         "title": "Equality Detection Using SUB + Zero Flag",
         "description": "Get two rocks from the INBOX.If they are EQUAL, put ONE of them in the OUTBOX. Discard non - equal pairs.\nRepeat!",
         "generatorFunction": "function (generatorFn) {\n    var len = 8;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        var val = generatorFn(1, 20);\n        arr.push(val);\n        if (i % 3 === 0) {\n            arr.push(val);\n        }\n    }\n    return arr;\n}",
@@ -420,6 +431,7 @@
         ]
     }, {
         "id": 12,
+        "visible": true,
         "title": "Efficient Max/Min Evaluation",
         "description": "Find the maximum number from a sequence of numbers in the INBOX:\n- For every number in the sequence, compare it with the current maximum.\n- At the end, output the maximum value to the OUTBOX.",
         "generatorFunction": "function (generatorFn) {\n    var len = 6;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(-20, 20));\n    }\n    return arr;\n}",
@@ -465,6 +477,7 @@
     },
     {
         "id": 13,
+        "visible": true,
         "title": "Efficient Arithmetic Expansion (40x via ADD)",
         "description": "For each number in the INBOX, multiply it by 40 and send the result to the OUTBOX.\n\nHint: Use repeated addition to simulate multiplication.",
         "generatorFunction": "function (generatorFn) {\n    var len = 3;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 10));\n    }\n    return arr;\n}",
@@ -510,6 +523,7 @@
     },
     {
         "id": 14,
+        "visible": true,
         "title": "Absolute Value Conversion",
         "description": "Send each number from the INBOX to the OUTBOX. If a number is negative, first remove its negative sign before sending it.\n\nHint: Use subtraction to convert negative numbers to positive.",
         "generatorFunction": "function (generatorFn) {\n    var len = 5;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(-20, 20));\n    }\n    return arr;\n}",
@@ -555,6 +569,7 @@
     },
     {
         "id": 15,
+        "visible": true,
         "title": "Divisibility and Parity Checking via SUB Loops",
         "description": "For each number in the INBOX:\n- Output 0 if the number is even\n- Output 1 if the number is odd\n\nHint: Use subtraction to simulate the modulus operation.",
         "generatorFunction": "function (generatorFn) {\n    var len = 5;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(-10, 10));\n    }\n    return arr;\n}",
@@ -600,6 +615,7 @@
     },
     {
         "id": 16,
+        "visible": true,
         "title": "Low-Level Sorting with Conditional Branching",
         "description": "Sort the numbers in the INBOX in ascending order and output them.\n\nHint: You can implement a simple bubble sort by comparing adjacent pairs and swapping them if they're in the wrong order.",
         "generatorFunction": "function (generatorFn) {\n    var len = 4;\n    var arr = [];\n    for (var i = 0; i < len; i++) {\n        arr.push(generatorFn(1, 20));\n    }\n    return arr;\n}",
@@ -645,6 +661,7 @@
     },
     {
         "id": 17,
+        "visible": true,
         "title": "Recursive Sequence Generation",
         "description": "Generate the Fibonacci sequence up to a given number (provided in the INBOX) and send each number to the OUTBOX.\n\nHint: Use two floor cells to store the last two numbers in the sequence.",
         "generatorFunction": "function (generatorFn) {\n    return [generatorFn(5, 10)];\n}",
@@ -690,6 +707,7 @@
     },
     {
         "id": 18,
+        "visible": true,
         "title": "Sign Checking and Conditional Output",
         "description": "Demonstrates sign comparison logic, crucial for control flow, boolean checks, and data validation in low-level systems.",
         "generatorFunction": "function (generatorFn) {\n    return [generatorFn(-10, 10), generatorFn(-10, 10)];\n}",
