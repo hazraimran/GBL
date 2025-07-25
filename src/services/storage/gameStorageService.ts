@@ -2,8 +2,10 @@
 import CircularJSON from 'circular-json';
 import { LevelInfo } from '../../types/level';
 import { CommandWithArgType } from '../../types/game';
-import levelsInfo from '../../assets/levels.json';
 import { FingerprintService } from '../fingerPrint/fingerPrintService';
+import { getLocalLevels } from '../firestore/levels';
+
+const levelsInfo: LevelInfo[] | null = await getLocalLevels();
 
 class GameStorageService {
     private storagePrefix: string = 'game';

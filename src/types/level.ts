@@ -10,6 +10,7 @@ export type CurrentSceneType = 'LANDING' | 'GAME' | 'LEVELS' | 'TUTORIAL';
 
 export interface LevelInfo {
     id: number;
+    visible: boolean;
     title: string;
     description: string;
     learningOutcome: {
