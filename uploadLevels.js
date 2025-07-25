@@ -1,8 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Get directory name in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -10,13 +14,13 @@ const __dirname = dirname(__filename);
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAZqHTg5QDJlTEAP3bVdQOM9oy-8zfLQII",
-    authDomain: "game-based-learning-3a957.firebaseapp.com",
-    projectId: "game-based-learning-3a957",
-    storageBucket: "game-based-learning-3a957.appspot.com",
-    messagingSenderId: "226620441583",
-    appId: "1:226620441583:web:6400b6d60dfbf72b212c1a",
-    measurementId: "G-2142X6GY7M"
+    apiKey: process.env.VITE_FIREBASE_API_KEY,
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.VITE_FIREBASE_APP_ID,
+    measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -28,24 +32,12 @@ async function uploadLevels() {
     // Read the JSON file
     const levelsData = JSON.parse(readFileSync(join(__dirname, 'src/assets/levels.json'), 'utf8'));
     
-    // Reference to the collection
-    const collectionRef = collection(db, 'settings/levels/configuration');
-    
-    // Upload each level as a separate document
-    const uploadPromises = levelsData.map(async (level) => {
-      try {
-        // Use level.id as the document ID
-        await setDoc(doc(collectionRef, level.id.toString()), level);
-        console.log(`Successfully uploaded level ${level.id}`);
-      } catch (error) {
-        console.error(`Error uploading level ${level.id}:`, error);
-      }
-    });
-
-    await Promise.all(uploadPromises);
+    // Upload all levels as a single document
+    const docRef = doc(db, 'settings', 'levels');
+    await setDoc(docRef, { levels: levelsData });
     console.log('All levels uploaded successfully!');
   } catch (error) {
-    console.error('Error reading or parsing the JSON file:', error);
+    console.error('Error uploading levels:', error);
   }
 }
 

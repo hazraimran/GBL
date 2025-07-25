@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "uploadLevels": "node uploadLevels.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
@@ -25,6 +26,7 @@
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
     "fingerprintjs": "^0.5.3",
     "firebase": "^11.0.1",
     "konva": "^9.3.16",
