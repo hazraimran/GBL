@@ -144,9 +144,15 @@ class GameStorageService {
 
     unlockNextLevel(currentLevel: number): void {
         const levels = this.getLevelsInfo();
-        const nextLevel = currentLevel;
+        let nextLevel = currentLevel;
+        while((nextLevel < (levels.length - 1)) && !levels[nextLevel].visible) {            
+            nextLevel++;
+            
+        }
+
         levels[nextLevel].isLocked = false;
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        
     }
 
     saveCommandsUsed(levelId: number, commandsUsed: CommandWithArgType[]): void {

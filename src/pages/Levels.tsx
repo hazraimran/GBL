@@ -31,6 +31,7 @@ interface LevelCoordinate {
 interface LevelStatus {
     visited: boolean;
     current: boolean;
+    visible: boolean;
 }
 
 type LevelCoordinates = LevelCoordinate[];
@@ -85,7 +86,7 @@ const Levels: React.FC = () => {
     };
 
     const handleClickLevel = (level: LevelInfo) => {
-        if (!level.isLocked) {
+        if (!level.isLocked && level.visible) {
             setLevel?.(level.id);
 
             addAccessedTime(level.id - 1);
@@ -118,7 +119,8 @@ const Levels: React.FC = () => {
         for (let i = levels.length - 1; i >= 0; i--) {
             const status: LevelStatus = {
                 visited: false,
-                current: false
+                current: false,
+                visible: levels[i].visible
             };
             if (!levels[i].isLocked) {
                 status.visited = true;
@@ -230,7 +232,7 @@ const Levels: React.FC = () => {
             <TooltipProvider>
                 <div className="select-none fixed inset-0 flex flex-row justify-center overflow-scroll" >
                     <img src="./map.webp" className="h-[160vh]" alt="" />
-                    {LEVEL_COORDINATES.map((level, idx) => {
+                    { LEVEL_COORDINATES.map((level, idx) => {
                         return (
                             <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
@@ -244,25 +246,33 @@ const Levels: React.FC = () => {
                                         }}
                                     >
                                         {
-                                            levelStatus[idx]?.visited && <img src="./tick.png" />
+                                            levelStatus[idx]?.visible && levelStatus[idx]?.visited && <img src="./tick.png" />
                                         }
+                                        {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" />}
                                         {
                                             levelStatus[idx]?.current && <img src={`./playercard/${character}.png`} className="animate-breath duration-3000" />
                                         }
                                     </button>
                                 </TooltipTrigger>
-
                                 <TooltipContent className="text-lg max-w-[300px]">
-                                    {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
-                                    {levelsInfo[idx] && <p> <span className="font-bold">CS Concept:</span>{levelsInfo[idx].learningOutcome.concept}</p>}
-                                    {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
 
-                                    <ConceptButton title="View More">
-                                        <div className="flex flex-col gap-2 text-white text-lg">
-                                        {levelsInfo[idx] && <p> <span className="font-bold">Why It Matters: </span>{levelsInfo[idx].learningOutcome.why}</p>}
-                                        {levelsInfo[idx] && <p> <span className="font-bold">How This level teaches it: </span>{levelsInfo[idx].learningOutcome.how}</p>}
-                                        </div>
-                                    </ConceptButton>
+                                    {levelsInfo[idx] && levelsInfo[idx].visible && (
+                                        <>
+
+                                        {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
+                                        {levelsInfo[idx] && <p> <span className="font-bold">CS Concept:</span>{levelsInfo[idx].learningOutcome.concept}</p>}
+                                        {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
+
+                                        <ConceptButton title="View More">
+                                            <div className="flex flex-col gap-2 text-white text-lg">
+                                            {levelsInfo[idx] && <p> <span className="font-bold">Why It Matters: </span>{levelsInfo[idx].learningOutcome.why}</p>}
+                                            {levelsInfo[idx] && <p> <span className="font-bold">How This level teaches it: </span>{levelsInfo[idx].learningOutcome.how}</p>}
+                                            </div>
+                                        </ConceptButton>
+                                        </>
+                                    )}
+
+                                    {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" />}
                                 </TooltipContent>
                             </Tooltip>
                         )
