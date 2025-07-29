@@ -2,6 +2,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import gameStorageService from '../storage/gameStorageService';
 import { authService } from '../firestore/authentication';
+import { getLocalLevels } from '../firestore/levels';
 
 export class StateSyncService {
     static async syncWithFirebase(): Promise<void> {
@@ -17,6 +18,8 @@ export class StateSyncService {
 
             if (userDoc.exists()) {
                 const firebaseData = userDoc.data();
+                //set levels info
+                await getLocalLevels();
                 
                 if (firebaseData.records) {
                     gameStorageService.setRecords(firebaseData.records);
@@ -26,6 +29,7 @@ export class StateSyncService {
                 if (typeof firebaseData.coins === 'number') {
                     gameStorageService.setCoins(firebaseData.coins);
                 }
+
             } else {
                 // No user document found in Firebase. Local state will be used.
             }

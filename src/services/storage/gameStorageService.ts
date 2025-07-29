@@ -3,9 +3,6 @@ import CircularJSON from 'circular-json';
 import { LevelInfo } from '../../types/level';
 import { CommandWithArgType } from '../../types/game';
 import { FingerprintService } from '../fingerPrint/fingerPrintService';
-import { getLocalLevels } from '../firestore/levels';
-
-const levelsInfo: LevelInfo[] | null = await getLocalLevels();
 
 class GameStorageService {
     private storagePrefix: string = 'game';
@@ -28,7 +25,6 @@ class GameStorageService {
 
         const newUID = await this.generateUID();
         localStorage.setItem(this.getKey('uid'), newUID);
-        this.createLevelInfoFromTemplate();
         this.initializeCoins();
         return newUID;
     }
@@ -45,10 +41,6 @@ class GameStorageService {
         }
     }
 
-    createLevelInfoFromTemplate(): void {
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levelsInfo));
-        this.setIsFirstTime(true);
-    }
 
     initializeCoins(): void {
         if (localStorage.getItem(this.getKey('coins')) === null) {
@@ -100,11 +92,10 @@ class GameStorageService {
         return false;
     }
 
-    getLevelsInfo(): any {
-        let levels = localStorage.getItem(this.getKey('levels'));
+    getLevelsInfo(): LevelInfo[] | null {
+        const levels = localStorage.getItem(this.getKey('levels'));
         if (!levels) {
-            this.createLevelInfoFromTemplate();
-            return levelsInfo;
+            return null;
         }
         return CircularJSON.parse(levels);
     }
@@ -210,8 +201,6 @@ class GameStorageService {
             }
 
             keysToRemove.forEach(key => localStorage.removeItem(key));
-
-            this.createLevelInfoFromTemplate();
 
             if (currentUID) {
                 localStorage.setItem(this.getKey('uid'), currentUID);
