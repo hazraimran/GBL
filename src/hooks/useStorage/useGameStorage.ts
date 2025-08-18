@@ -85,7 +85,15 @@ export const useGameStorage = () => {
             return newAmount;
         },
         // Original methods
-        getLevelsInfo: () => gameStorage.getLevelsInfo(),
+        getLevelsInfo: async () => {
+            const levels = gameStorage.getLevelsInfo();
+            if (levels.length === 0) {
+                // Try to load from Firestore
+                await gameStorage.initializeLevels();
+                return gameStorage.getLevelsInfo();
+            }
+            return levels;
+        },
         getLevelInfo: (levelId: number) => gameStorage.getLevelInfo(levelId),
         setLevelInfo: (levelId: number, info: LevelInfo) =>
             gameStorage.setLevelInfo(levelId, info),

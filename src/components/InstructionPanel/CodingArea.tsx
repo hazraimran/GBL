@@ -58,9 +58,8 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
         if (!slotPicked || !commandRef.current) return;
 
         commandRef.current.arg = slotPicked;
-        const copy = JSON.parse(JSON.stringify(commandsUsed));
+        const copy = CircularJSON.parse(CircularJSON.stringify(commandsUsed));
         setCommandsUsed(copy);
-        // commandRef.current = null;
     }, [slotPicked, commandsUsed, setCommandsUsed])
 
     useEffect(() => {

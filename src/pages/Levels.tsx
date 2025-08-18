@@ -45,11 +45,16 @@ const Levels: React.FC = () => {
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
     
-    
     useEffect(() => {
-        const levelsInfo = getLevelsInfo();
-        setLevelStatus(helper(levelsInfo));
-        setLevelsInfo(levelsInfo);
+        const initLevels = async () => {
+            const levels = await getLevelsInfo();
+            if (levels && levels.length > 0) {
+                setLevelStatus(helper(levels));
+                setLevelsInfo(levels);
+            }
+        };
+        
+        initLevels();
     }, [currentScene]);
 
     useEffect(() => {
@@ -227,12 +232,13 @@ const Levels: React.FC = () => {
         },
     ]
 
-    return currentScene === 'LEVELS' && levelsInfo && (
+    return currentScene === 'LEVELS' && levelsInfo.length > 0 && (
         <>
             <TooltipProvider>
                 <div className="select-none fixed inset-0 flex flex-row justify-center overflow-scroll" >
                     <img src="./map.webp" className="h-[160vh]" alt="" />
                     { LEVEL_COORDINATES.map((level, idx) => {
+                        if (!levelsInfo[idx]) return null;
                         return (
                             <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
@@ -246,33 +252,30 @@ const Levels: React.FC = () => {
                                         }}
                                     >
                                         {
-                                            levelStatus[idx]?.visible && levelStatus[idx]?.visited && <img src="./tick.png" />
+                                            levelStatus[idx]?.visible && levelStatus[idx]?.visited && <img src="./tick.png" alt="completed" />
                                         }
-                                        {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" />}
+                                        {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" alt="locked" />}
                                         {
-                                            levelStatus[idx]?.current && <img src={`./playercard/${character}.png`} className="animate-breath duration-3000" />
+                                            levelStatus[idx]?.current && <img src={`./playercard/${character}.png`} className="animate-breath duration-3000" alt="current" />
                                         }
                                     </button>
                                 </TooltipTrigger>
                                 <TooltipContent className="text-lg max-w-[300px]">
-
                                     {levelsInfo[idx] && levelsInfo[idx].visible && (
                                         <>
+                                            <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>
+                                            <p><span className="font-bold">CS Concept:</span>{levelsInfo[idx].learningOutcome.concept}</p>
+                                            {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
 
-                                        {levelsInfo[idx] && <p>{idx + 1}{'. '}{levelsInfo[idx].title}</p>}
-                                        {levelsInfo[idx] && <p> <span className="font-bold">CS Concept:</span>{levelsInfo[idx].learningOutcome.concept}</p>}
-                                        {idx > levelsInfo.length - 1 && <p>Unrevealed</p>}
-
-                                        <ConceptButton title="View More">
-                                            <div className="flex flex-col gap-2 text-white text-lg">
-                                            {levelsInfo[idx] && <p> <span className="font-bold">Why It Matters: </span>{levelsInfo[idx].learningOutcome.why}</p>}
-                                            {levelsInfo[idx] && <p> <span className="font-bold">How This level teaches it: </span>{levelsInfo[idx].learningOutcome.how}</p>}
-                                            </div>
-                                        </ConceptButton>
+                                            <ConceptButton title="View More">
+                                                <div className="flex flex-col gap-2 text-white text-lg">
+                                                    <p><span className="font-bold">Why It Matters: </span>{levelsInfo[idx].learningOutcome.why}</p>
+                                                    <p><span className="font-bold">How This level teaches it: </span>{levelsInfo[idx].learningOutcome.how}</p>
+                                                </div>
+                                            </ConceptButton>
                                         </>
                                     )}
-
-                                    {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" />}
+                                    {!levelStatus[idx]?.visible && <img className="w-full h-full" src="./Ancient-architect-logo.png" alt="locked" />}
                                 </TooltipContent>
                             </Tooltip>
                         )
@@ -294,9 +297,7 @@ const Levels: React.FC = () => {
                     Icon={OctagonAlert} 
                     colorIcon="red-600" 
                     position="bottom-0 right-0" />
-  
 
- 
                     <SilentButton />                
                     <SkillsButton/>
                     <HelperActionButton/>
@@ -305,7 +306,6 @@ const Levels: React.FC = () => {
             </TooltipProvider>
             <OpeningDialog />
             
-            {/* First Time Survey Modal */}
             <FirstTimeSurveyModal 
                 isOpen={showFirstTimeSurvey} 
                 onClose={handleFirstTimeSurveyClose} 

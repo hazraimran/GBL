@@ -3,6 +3,22 @@ import CircularJSON from 'circular-json';
 import { LevelInfo } from '../../types/level';
 import { CommandWithArgType } from '../../types/game';
 import { FingerprintService } from '../fingerPrint/fingerPrintService';
+import { getLocalLevels } from '../firestore/levels';
+
+interface LevelRecord {
+    id: number;
+    commandsUsed?: CommandWithArgType[];
+    executeCnt?: number;
+    timeSpent?: number;
+}
+
+interface UploadReport {
+    id: number;
+    commandsUsed: string;
+    executeCnt: number;
+    errorCnt: number;
+    timeSpent: number;
+}
 
 class GameStorageService {
     private storagePrefix: string = 'game';
@@ -35,12 +51,11 @@ class GameStorageService {
         try {
             const visitorId = await this.fingerprintService.getVisitorId();
             return `${visitorId}-${baseId}`;
-        } catch (error) {
+        } catch {
             console.warn('Failed to generate fingerprint, using fallback ID');
             return baseId;
         }
     }
-
 
     initializeCoins(): void {
         if (localStorage.getItem(this.getKey('coins')) === null) {
@@ -70,7 +85,7 @@ class GameStorageService {
 
     removeCoins(amount: number): number {
         const currentCoins = this.getCoins();
-        const newAmount = Math.max(0, currentCoins - amount); // 确保coins不会小于0
+        const newAmount = Math.max(0, currentCoins - amount);
         this.setCoins(newAmount);
         return newAmount;
     }
@@ -92,15 +107,24 @@ class GameStorageService {
         return false;
     }
 
-    getLevelsInfo(): LevelInfo[] | null {
+    getLevelsInfo(): LevelInfo[] {
         const levels = localStorage.getItem(this.getKey('levels'));
         if (!levels) {
-            return null;
+            // If no levels in localStorage, return an empty array
+            // The levels will be loaded from Firestore in the Levels component
+            return [];
         }
         return CircularJSON.parse(levels);
     }
 
-    setRecords(records: any[]): void {
+    async initializeLevels(): Promise<void> {
+        const defaultLevels = await getLocalLevels();
+        if (defaultLevels) {
+            localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(defaultLevels));
+        }
+    }
+
+    setRecords(records: LevelRecord[]): void {
         const levels = this.getLevelsInfo();
         
         records.forEach(record => {
@@ -138,12 +162,10 @@ class GameStorageService {
         let nextLevel = currentLevel;
         while((nextLevel < (levels.length - 1)) && !levels[nextLevel].visible) {            
             nextLevel++;
-            
         }
 
         levels[nextLevel].isLocked = false;
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
-        
     }
 
     saveCommandsUsed(levelId: number, commandsUsed: CommandWithArgType[]): void {
@@ -158,18 +180,15 @@ class GameStorageService {
         localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
     }
 
-    extractUploadReport(errorCnt: number): any {
+    extractUploadReport(errorCnt: number): UploadReport[] {
         const levels = this.getLevelsInfo();
-        const report = levels.map((level: LevelInfo) => {
-            return {
-                id: level.id,
-                commandsUsed: CircularJSON.stringify(level.commandsUsed),
-                executeCnt: level.executeCnt,
-                errorCnt: errorCnt,
-                timeSpent: level.timeSpent,
-            };
-        });
-        return report;
+        return levels.map((level: LevelInfo) => ({
+            id: level.id,
+            commandsUsed: CircularJSON.stringify(level.commandsUsed),
+            executeCnt: level.executeCnt,
+            errorCnt: errorCnt,
+            timeSpent: level.timeSpent,
+        }));
     }
 
     setMuteState(state: boolean): void {
