@@ -81,8 +81,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ levelData, onChange }) =>
             </div>
           </div>
           {idStatus === 'invalid' && (
-            <Alert className="border-red-500 bg-red-900/20">
-              <AlertDescription>
+            <Alert className="border-red-300 bg-red-50">
+              <AlertDescription className="text-red-700">
                 This level ID is already in use. Please choose a different ID.
               </AlertDescription>
             </Alert>

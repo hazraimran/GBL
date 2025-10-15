@@ -56,7 +56,7 @@ const LevelPreview: React.FC<LevelPreviewProps> = ({ levelData, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Level Preview & Test</CardTitle>
@@ -121,10 +121,10 @@ const LevelPreview: React.FC<LevelPreviewProps> = ({ levelData, onClose }) => {
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert className="border-red-500 bg-red-900/20">
-                  <XCircle className="h-4 w-4" />
+                <Alert className="border-red-300 bg-red-50">
+                  <XCircle className="h-4 w-4 text-red-600" />
                   <AlertDescription>
-                    <strong>Test Failed:</strong> {testResults.error}
+                    <strong className="text-red-800">Test Failed:</strong> <span className="text-red-700">{testResults.error}</span>
                   </AlertDescription>
                 </Alert>
               )}

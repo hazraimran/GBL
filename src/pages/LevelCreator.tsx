@@ -107,27 +107,27 @@ const LevelCreator: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 text-white z-[9999]">
+    <div className="fixed inset-0 bg-gray-50 text-gray-900 z-[9999]">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
+      <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               onClick={() => navigate('/')}
-              className="text-white hover:bg-gray-700"
+              className="text-gray-700 hover:bg-gray-100"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Game
             </Button>
-            <h1 className="text-2xl font-bold">Level Creator</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Level Creator</h1>
           </div>
           <div className="flex space-x-2">
             <Button
               onClick={handleTest}
               disabled={!isValid}
               variant="outline"
-              className="text-white border-gray-600 hover:bg-gray-700"
+              className="text-gray-700 border-gray-300 hover:bg-gray-50"
             >
               <Play className="w-4 h-4 mr-2" />
               Test Level
@@ -135,7 +135,7 @@ const LevelCreator: React.FC = () => {
             <Button
               onClick={handleSave}
               disabled={!isValid || isLoading}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Save className="w-4 h-4 mr-2" />
               {isLoading ? 'Saving...' : 'Save Level'}
@@ -147,23 +147,23 @@ const LevelCreator: React.FC = () => {
       {/* Main Content - Split Layout */}
       <div className="flex h-full">
         {/* Left Side - Validation Errors */}
-        <div className="w-1/3 p-4 border-r border-gray-700 overflow-y-auto">
+        <div className="w-1/3 p-4 border-r border-gray-200 overflow-y-auto bg-white">
           {validationErrors.length > 0 ? (
-            <Alert className="border-red-500 bg-red-900/20 h-fit">
-              <AlertCircle className="h-4 w-4" />
+            <Alert className="border-red-300 bg-red-50 h-fit">
+              <AlertCircle className="h-4 w-4 text-red-600" />
               <AlertDescription>
-                <div className="font-semibold mb-2">Please fix the following errors:</div>
+                <div className="font-semibold mb-2 text-red-800">Please fix the following errors:</div>
                 <ul className="list-disc list-inside space-y-1">
                   {validationErrors.map((error, index) => (
-                    <li key={index} className="text-sm">{error}</li>
+                    <li key={index} className="text-sm text-red-700">{error}</li>
                   ))}
                 </ul>
               </AlertDescription>
             </Alert>
           ) : (
-            <div className="text-center text-gray-400 mt-8">
+            <div className="text-center text-gray-600 mt-8">
               <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
-              <p className="text-lg">No validation errors</p>
+              <p className="text-lg font-medium">No validation errors</p>
               <p className="text-sm">All required fields are properly filled</p>
             </div>
           )}
@@ -172,7 +172,7 @@ const LevelCreator: React.FC = () => {
         {/* Right Side - Main Content */}
         <div className="w-2/3 p-4 overflow-y-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-7 bg-gray-100 border border-gray-200">
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="commands">Commands</TabsTrigger>
             <TabsTrigger value="generators">Generators</TabsTrigger>
