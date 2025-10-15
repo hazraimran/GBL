@@ -1,11 +1,9 @@
-import React, { useRef } from "react"
+import React, { useCallback, memo } from "react"
 import { ZoomIn } from "lucide-react"
 import HelpArea from "../hint/HelpArea"
 import { useAnalytics } from '../../context/AnalyticsContext';
 
-const ConceptButton = ( {children, title, className} : {children: React.ReactNode, title: string, className?:   string} ) => {
-  const displayButton = useRef(false);
-  
+const ConceptButton = memo(({children, title, className} : {children: React.ReactNode, title: string, className?: string}) => {
   // Try to get analytics, but don't fail if not available
   let analytics;
   try {
@@ -15,31 +13,28 @@ const ConceptButton = ( {children, title, className} : {children: React.ReactNod
     analytics = null;
   }
   
-  const handleClickConcept = () => {
-    displayButton.current = !displayButton.current;
-    
+  const handleClickConcept = useCallback(() => {
+
+    console.log("alexander clicked concept button");
     // Track concept button click in analytics if available
     if (analytics) {
       analytics.trackConceptButtonClick();
     }
-  } 
+  }, [analytics]);
 
-  const Element = () => (
-    <div
-      className=""
-      onClick={handleClickConcept}
-    > 
+  const Element = useCallback(() => (
+    <div className=""> 
       <span className="text-lg cursor-pointer flex flex-row items-center gap-2 bg-custom-bg rounded-lg px-2 py-1 text-white "><ZoomIn  />{title}</span>
-            
-
     </div>
-  );
+  ), [title]);
 
   return (
-    <HelpArea Trigger={Element} className={className}> 
+    <HelpArea Trigger={Element} className={className} onTriggerClick={handleClickConcept}> 
       {children}
     </HelpArea>
   )
-}
+})
+
+ConceptButton.displayName = 'ConceptButton';
 
 export default ConceptButton

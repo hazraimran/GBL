@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect, useState, forwardRef } from 'react';
+import React, { useContext, useRef, useEffect, useState, forwardRef, memo } from 'react';
 import { CommandType, CommandWithArgType } from '../../types/game';
 import GameContext from '../../context/GameContext';
 import { cn } from "../../lib/utils";
@@ -13,6 +13,16 @@ interface CodingAreaProps {
     setClearCommandsRef: (fn: () => void) => void;
     marginTop: number;
 }
+
+// Memoized component for concept content to prevent unnecessary re-renders
+const ConceptContent = memo(({ levelInfo }: { levelInfo: { learningOutcome: { why: string; how: string } } | null }) => (
+    <div className="flex flex-col gap-2 text-white text-lg ">
+        {levelInfo && <p> <span className="font-bold">Why It Matters: </span>{levelInfo.learningOutcome.why}</p>}
+        {levelInfo && <p> <span className="font-bold">How This level teaches it: </span>{levelInfo.learningOutcome.how}</p>}
+    </div>
+));
+
+ConceptContent.displayName = 'ConceptContent';
 
 const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
     const { setClearCommandsRef, marginTop } = props;
@@ -220,10 +230,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
             </div>
             <div className="text-center flex justify-center gap-2 items-center mt-10">
                 <ConceptButton title="CS Concept" className="-translate-x-3/4">
-                    <div className="flex flex-col gap-2 text-white text-lg ">
-                    {levelInfo && <p> <span className="font-bold">Why It Matters: </span>{levelInfo.learningOutcome.why}</p>}
-                    {levelInfo && <p> <span className="font-bold">How This level teaches it: </span>{levelInfo.learningOutcome.how}</p>}
-                    </div>
+                    <ConceptContent levelInfo={levelInfo} />
                 </ConceptButton>
                 <VideoScreenAlert 
                     title="Drag and Drop"

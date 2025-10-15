@@ -4,14 +4,18 @@ type HelpAreaProps = {
     children: React.ReactNode;
     Trigger: React.ElementType;
     className?: string;
+    onTriggerClick?: () => void;
 };
 
-const HelpArea = ({children, Trigger, className}: HelpAreaProps) => {
+const HelpArea = ({children, Trigger, className, onTriggerClick}: HelpAreaProps) => {
     
   const [showInfo, setShowInfo] = useState(false);
     const handleBackgroundClick = () => {
-        
-          setShowInfo(!showInfo);
+        // Call the optional onClick callback if provided
+        if (onTriggerClick) {
+            onTriggerClick();
+        }
+        setShowInfo(!showInfo);
     };
     
     return (

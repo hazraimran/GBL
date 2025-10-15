@@ -16,6 +16,7 @@ const InstructionPanel: React.FC = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isReverseRotation, setIsReverseRotation] = useState(true);
     const [fps, setFps] = useState(6); // 4 frames per second
+    const [marginTop, setMarginTop] = useState<number>(0);
 
 
     const frames = [
@@ -94,6 +95,13 @@ const InstructionPanel: React.FC = () => {
         };
     }, []);
 
+    // Update marginTop when content height changes
+    useEffect(() => {
+        if (ContentRef.current) {
+            setMarginTop(ContentRef.current.offsetHeight);
+        }
+    }, [ContentRef.current?.offsetHeight]);
+
     const setClearCommandsRef = (fn: () => void) => {
         clearCommandsRef.current = fn;
     }
@@ -171,7 +179,7 @@ const InstructionPanel: React.FC = () => {
 
                 <CommandList ref={CommandListRef} />
             </div>
-            <CodingArea ref={CodingAreaRef} setClearCommandsRef={setClearCommandsRef} marginTop={ContentRef.current?.offsetHeight} />
+            <CodingArea ref={CodingAreaRef} setClearCommandsRef={setClearCommandsRef} marginTop={marginTop} />
 
             {/* 下面的卷轴头 */}
             <img
