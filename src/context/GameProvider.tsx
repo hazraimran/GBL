@@ -3,6 +3,7 @@ import React, { useState, ReactNode, useRef, useCallback, useEffect } from 'reac
 import GameContext from './GameContext';
 import { CurrentSceneType, LevelInfo } from '../types/level';
 import { CommandWithArgType } from '../types/game';
+import { useAuth } from './AuthProvider';
 
 // Define props type for the GameProvider, which includes `children`
 interface GameProviderProps {
@@ -10,6 +11,7 @@ interface GameProviderProps {
 }
 
 const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
+  const { user, loading } = useAuth();
   const [level, setLevel] = useState<number>(1);
   const [currentScene, setCurrentScene] = useState<CurrentSceneType>('LANDING');
   const [instructions, setInstructions] = useState<string[]>([]);
@@ -77,6 +79,19 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     localStorage.setItem('game:isAiHelperON', JSON.stringify(isAiHelperON));
   }, [isAiHelperON]);
 
+  // Check authentication state on app startup
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        // User is logged in, redirect to levels
+        setCurrentScene('LEVELS');
+      } else {
+        // User is not logged in, stay on landing
+        setCurrentScene('LANDING');
+      }
+    }
+  }, [user, loading]);
+
   const registerReset = useCallback((fn: () => void) => {
     resetFnRef.current = fn;
   }, []);
@@ -98,6 +113,15 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       setShowModal(false);
     }, 600); // Reduced from 1000ms
   }, [currentScene]);
+
+  // Show loading screen while checking authentication
+  if (loading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <GameContext.Provider value={{
