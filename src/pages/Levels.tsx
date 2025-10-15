@@ -45,6 +45,7 @@ const Levels: React.FC = () => {
     const { getLevelsInfo, addAccessedTime } = useGameStorage();
     const [showResetPopup, setShowResetPopup] = useState(false);
     
+    
     useEffect(() => {
         const initLevels = async () => {
             const levels = await getLevelsInfo();
@@ -297,6 +298,7 @@ const Levels: React.FC = () => {
                     Icon={OctagonAlert} 
                     colorIcon="red-600" 
                     position="bottom-0 right-0" />
+
 
                     <SilentButton />                
                     <SkillsButton/>

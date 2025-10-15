@@ -1,28 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import GameScene from './pages/GameScene';
-import Landing from './pages/Landing';
-import GameProvider from './context/GameProvider';
-import Levels from './pages/Levels';
-import { Toaster } from "./components/ui/toaster"
-import JumpConnector from './components/InstructionPanel/JumpConnector';
-import ButtonScene from './components/ButtonScene';
-import GameContext from './context/GameContext';
-import AudioPlayer from './components/AudioPlayer';
-import { AuthProvider } from './context/AuthProvider';
+import React, { useEffect } from 'react';
+import AppRouter from './router/AppRouter';
 
 function App() {
-  const Modal: React.FC = () => {
-    const { showModal } = useContext(GameContext);
-
-    return <div
-      className={`fixed inset-0 z-[1000] h-[100vh] w-[100vw] transition-opacity duration-500 ease-linear ${showModal ? 'backdrop-blur-sm' : ''}`}
-      style={{
-        opacity: showModal ? 1 : 0,
-        pointerEvents: showModal ? 'auto' : 'none',
-      }}
-    />
-  }
-
   useEffect(() => {
     const preventZoom = (event: { ctrlKey: boolean; metaKey: boolean; preventDefault: () => void; }) => {
       if (event.ctrlKey || event.metaKey) {
@@ -45,23 +24,8 @@ function App() {
     };
   }, []);
 
-  return (
-    <AuthProvider>
-      <GameProvider>
-        <AudioPlayer />
-        <div className='h-[100vh] w-[100vw] relative'>
-          <Landing />
-          <Toaster />
-          <GameScene />
-          <Levels />
-          <JumpConnector />
-          <ButtonScene />
-        </div>
-        <Modal />
-      </GameProvider >
-    </AuthProvider>
-  )
+  return <AppRouter />;
 }
 
-export default App
+export default App;
 
