@@ -7,6 +7,7 @@ import Landing from '../pages/Landing';
 import GameScene from '../pages/GameScene';
 import Levels from '../pages/Levels';
 import LevelCreator from '../pages/LevelCreator';
+import Settings from '../pages/Settings';
 import { Toaster } from "../components/ui/toaster";
 import JumpConnector from '../components/InstructionPanel/JumpConnector';
 import ButtonScene from '../components/ButtonScene';
@@ -59,6 +60,24 @@ const AdminLevelCreator: React.FC = () => {
   );
 };
 
+const AdminSettings: React.FC = () => {
+  const { user } = useAuth();
+  
+  // Check if user is admin
+  const isAdmin = user?.email?.includes('admin') || user?.email?.includes('creator');
+  
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return (
+    <>
+      <AdminNav currentPage="settings" />
+      <Settings />
+    </>
+  );
+};
+
 const AppRouter: React.FC = () => {
   return (
     <AuthProvider>
@@ -70,6 +89,10 @@ const AppRouter: React.FC = () => {
             <Route 
               path="/admin/level-creator" 
               element={<AdminLevelCreator />}
+            />
+            <Route 
+              path="/admin/settings" 
+              element={<AdminSettings />}
             />
             
             {/* Main Game Routes */}

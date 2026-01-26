@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { ArrowLeft, Save, Play, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Save, Play, AlertCircle, CheckCircle, Settings } from 'lucide-react';
 
 // Import form components (we'll create these next)
 import BasicInfoForm from '../components/levelCreator/BasicInfoForm';
@@ -121,6 +121,14 @@ const LevelCreator: React.FC = () => {
               Back to Game
             </Button>
             <h1 className="text-2xl font-bold text-gray-900">Level Creator</h1>
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/admin/settings')}
+              className="text-gray-700 hover:bg-gray-100"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
           </div>
           <div className="flex space-x-2">
             <Button

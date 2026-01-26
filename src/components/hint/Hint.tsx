@@ -3,6 +3,7 @@ import { useAnalytics } from '../../context/AnalyticsContext';
 import GameContext from '../../context/GameContext';
 import { commandDescriptions } from '../../data';
 import { LevelInfo } from '../../types/level';
+import { useEconomySetting } from '../../hooks/useFirestore/useEconomySetting';
 
 // src/types/index.ts
 export type Level = {
@@ -84,7 +85,11 @@ export class HintService {
                 }
             ]
         });
-        return completion.content[0].text;
+        const firstContent = completion.content[0];
+        if ('text' in firstContent) {
+            return firstContent.text;
+        }
+        return '';
     }
 }
 
@@ -194,6 +199,9 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         analytics = null;
     }
 
+    // Economy setting
+    const { economyEnabled } = useEconomySetting();
+
     // State
     const [hintService, setHintService] = useState<HintService | null>(null);
     const [loading, setLoading] = useState(false);
@@ -238,7 +246,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         if (level.hints && level.hints.length > 0) {
             setHint(level.hints[hintLevel - 1]);
             setHintLevel(prev => prev + 1);
-            removeCoins(1);
+            // Only remove coins if economy is enabled
+            if (economyEnabled) {
+                removeCoins(1);
+            }
             
             // Track hint usage in analytics
             if (analytics) {
@@ -321,13 +332,18 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                 <Lightbulb />
 
                                 <span className="text-xl font-bold">
-                                    Need some help? That'll cost ya!
+                                    {economyEnabled 
+                                        ? "Need some help? That'll cost ya!"
+                                        : "Need some help? It's free!"
+                                    }
                                 </span>
                             </CardTitle>
-                            <div className="flex items-center gap-2">
-                                <Coins className="h-5 w-5 text-yellow-400" />
-                                <span className="font-bold">{coins} coins remaining</span>
-                            </div>
+                            {economyEnabled && (
+                                <div className="flex items-center gap-2">
+                                    <Coins className="h-5 w-5 text-yellow-400" />
+                                    <span className="font-bold">{coins} coins remaining</span>
+                                </div>
+                            )}
                         </div>
                     </CardHeader>
 
@@ -344,15 +360,21 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                             </li>
                                         ))}
                                     </ul>
-                                    <p className="mt-2 text-sm text-gray-600">Each hint costs 1 coin - spend them wisely!</p>
+                                    {economyEnabled ? (
+                                        <p className="mt-2 text-sm text-gray-600">Each hint costs 1 coin - spend them wisely!</p>
+                                    ) : (
+                                        <p className="mt-2 text-sm text-gray-600">Hints are free! Economy is currently disabled.</p>
+                                    )}
                                 </div>
 
-                                <div className="bg-gray-100 p-4 rounded-lg">
-                                    <p className="font-medium mb-2 text-lg">How to earn Coins:</p>
-                                    {/* <ul className="space-y-2 text-sm">
-                                    </ul> */}
-                                    <p className="mt-2 text-sm text-gray-600">Click & Read the Below Resource would give you 1 coin</p>
-                                </div>
+                                {economyEnabled && (
+                                    <div className="bg-gray-100 p-4 rounded-lg">
+                                        <p className="font-medium mb-2 text-lg">How to earn Coins:</p>
+                                        {/* <ul className="space-y-2 text-sm">
+                                        </ul> */}
+                                        <p className="mt-2 text-sm text-gray-600">Click & Read the Below Resource would give you 1 coin</p>
+                                    </div>
+                                )}
                             </>
                         )}
 
@@ -378,7 +400,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     e.stopPropagation();
                                     getHint();
                                 }}
-                                disabled={loading || hintLevel > 3 || coins <= 0}
+                                disabled={loading || hintLevel > 3 || (economyEnabled && coins <= 0)}
                                 className="flex items-center gap-2"
                                 variant={hintLevel > 2 ? "destructive" : "default"}
                             >
@@ -389,7 +411,10 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     </>
                                 ) : (
                                     <>
-                                        {!hint ? 'Purchase Hint' : 'Tell me more! (-1 coin)'}
+                                        {!hint 
+                                            ? (economyEnabled ? 'Purchase Hint' : 'Get Hint') 
+                                            : (economyEnabled ? 'Tell me more! (-1 coin)' : 'Tell me more!')
+                                        }
                                     </>
                                 )}
                             </Button>
@@ -408,7 +433,7 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
                                     Back
                                 </Button>
                             )}
-                            {!hint && (
+                            {!hint && economyEnabled && (
                                 <Button
                                     variant="outline"
                                     onClick={(e) => {

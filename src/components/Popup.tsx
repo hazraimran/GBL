@@ -8,10 +8,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
+import { useEconomySetting } from '../hooks/useFirestore/useEconomySetting';
 
 const Popup = () => {
     const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo, resetFn } = useContext(GameContext);
     const { addCoins } = useGameStorage();
+    const { economyEnabled } = useEconomySetting();
     
     
     const getStatusColor = (current, target) => {
@@ -25,10 +27,10 @@ const Popup = () => {
     const isSuccessful = (current, target) => current <= target;
 
     useEffect(() => {
-        if (isSuccessful(gameStatus.commandCnt, levelInfo?.expectedCommandCnt)) {
+        if (isSuccessful(gameStatus.commandCnt, levelInfo?.expectedCommandCnt) && economyEnabled) {
             addCoins(1);
         }
-    }, [gameStatus.commandCnt, levelInfo?.expectedCommandCnt])
+    }, [gameStatus.commandCnt, levelInfo?.expectedCommandCnt, economyEnabled])
 
     return showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
@@ -107,10 +109,12 @@ const Popup = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center justify-center font-bold gap-2 mb-3">
-                    <Coins className="h-10 w-10 text-blue-400" />
-                    <p className="text-xl text-[#8B4513] mb-2">You have won 1 coin</p>
-                </div>
+                {economyEnabled && (
+                    <div className="flex items-center justify-center font-bold gap-2 mb-3">
+                        <Coins className="h-10 w-10 text-blue-400" />
+                        <p className="text-xl text-[#8B4513] mb-2">You have won 1 coin</p>
+                    </div>
+                )}
 
                 {/* Buttons */}
                 <div className="flex justify-end gap-4">
