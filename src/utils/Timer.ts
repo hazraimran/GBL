@@ -45,6 +45,12 @@ class GameTimerManager {
         this.isRunning = true;
     }
 
+    public pause(): void {
+        if (!this.isRunning) return;
+        this.endTime = Date.now();
+        this.isRunning = false;
+    }
+
     public pauseAndSave(): void {
         if (!this.isRunning) return;
 
@@ -61,16 +67,28 @@ class GameTimerManager {
 
     public resume(): void {
         if (this.endTime && this.startTime) {
-            this.startTime = Date.now() - (this.endTime - this.startTime);
+            // Adjust start time to account for paused duration
+            const pausedDuration = Date.now() - this.endTime;
+            this.startTime = this.startTime + pausedDuration;
             this.endTime = null;
         }
-        this.start();
+        this.isRunning = true;
     }
 
     public getDuration(): number {
         if (!this.startTime) return 0;
         const endTime = this.endTime || Date.now();
         return Math.floor((endTime - this.startTime) / 1000);
+    }
+
+    public reset(): void {
+        this.startTime = null;
+        this.endTime = null;
+        this.isRunning = false;
+        if (this.timerId) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
     }
 
     private async saveGameDuration(duration: number, level: number | null): Promise<void> {

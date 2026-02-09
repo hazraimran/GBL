@@ -1,5 +1,14 @@
 import { CommandType, CommandWithArgType } from './game';
 
+/** A solution step can include optional display keys; only show in popup when set. */
+export type SolutionStep = CommandWithArgType & {
+    message?: string;
+    /** Slot index (e.g. for COPYFROM); 1-based in JSON. Only displayed when set. */
+    from?: number;
+    /** JUMP target step number (1-based). Only displayed when set. */
+    step?: number;
+};
+
 export interface ConstructtionSlotConfig {
     x: number;
     y: number;
@@ -35,4 +44,6 @@ export interface LevelInfo {
     timeAccessed: number;
     openningInstruction: string[];
     hints: string[];
+    timeLimitInSeconds?: number;
+    solution?: SolutionStep[] | CommandWithArgType[] | string; // Can be array or CircularJSON string; steps may include optional message
 };

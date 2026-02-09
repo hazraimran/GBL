@@ -1,4 +1,4 @@
-import React,{ useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef, useContext, useState } from 'react';
 import Phaser from 'phaser';
 import { MainScene } from './MainScene';
 import BottomPanel from '../components/BottomPanel';
@@ -11,17 +11,27 @@ import { UploadRecordService } from '../services/firestore/uploadRecordService';
 import VictorySoundPlayer from './VictorySoundPlayer';
 import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import { AnalyticsProvider, useAnalytics } from '../context/AnalyticsContext';
+import { useTimeCap } from '../hooks/useTimeCap';
+import TimeExpiredModal from '../components/modals/TimeExpiredModal';
+import SolutionStepsModal from '../components/modals/SolutionStepsModal';
+import TimerDisplay from '../components/TimerDisplay';
+import gameTimer from '../utils/Timer';
 
 const PhaserGameContent = () => {
     const gameRef = useRef<HTMLDivElement>(null);
     const mainSceneRef = useRef<MainScene | null>(null);
     const gameInstanceRef = useRef<Phaser.Game | null>(null);
     const { setShowReadyPrompt, setShowFailurePrompt, setFailurePromptMessage, levelInfo, registerResetFn,
-        commandsUsed, setGameStatus, setShowPopup, setExecuting, setErrorCnt, errorCnt } = useContext(GameContext);
+        commandsUsed, setCommandsUsed, setGameStatus, setShowPopup, setExecuting, exectuting, setErrorCnt, errorCnt,
+        showTimeExpiredModal, setShowTimeExpiredModal } = useContext(GameContext);
+    const [showSolutionStepsModal, setShowSolutionStepsModal] = useState(false);
     const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
     
     // Get analytics from context
     const analytics = useAnalytics();
+    
+    // Time cap hook
+    const { timeExpired, resetTimer } = useTimeCap(levelInfo);
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -74,6 +84,10 @@ const PhaserGameContent = () => {
 
             // unlock next level
             unlockNextLevel(levelInfo.id);
+            
+            // Resume timer when execution finishes
+            gameTimer.resume();
+            setExecuting(false);
         }
 
         const levelFailed = (data: {
@@ -85,17 +99,20 @@ const PhaserGameContent = () => {
             
             // Track level failure in analytics
             analytics.trackError();
+            
+            // Resume timer when execution finishes (even on failure)
+            gameTimer.resume();
+            setExecuting(false);
         }
 
         EventManager.on('levelCompleted', levelCompleted);
         EventManager.on('levelFailed', levelFailed);
-        setExecuting(false);
 
         return () => {
             EventManager.remove('levelCompleted', levelCompleted);
             EventManager.remove('levelFailed', levelFailed);
         }
-    }, [uid, analytics]);
+    }, [uid, analytics, levelInfo.id, errorCnt]);
 
     useEffect(() => {
         if (!gameRef.current) return;
@@ -152,6 +169,9 @@ const PhaserGameContent = () => {
             console.warn('Main scene not initialized');
             return;
         }
+        
+        // Pause timer when execution starts
+        gameTimer.pause();
         setExecuting(true);
 
         // Track instruction submission in analytics
@@ -175,6 +195,10 @@ const PhaserGameContent = () => {
         // Track reset in analytics
         analytics.trackReset();
 
+        // Resume timer if it was paused during execution
+        if (exectuting) {
+            gameTimer.resume();
+        }
         setExecuting(false);
         mainSceneRef.current.reset();
 
@@ -192,6 +216,38 @@ const PhaserGameContent = () => {
         }
     }, [levelInfo?.id, analytics]);
 
+    // Handle time expiration
+    useEffect(() => {
+        if (timeExpired && levelInfo?.timeLimitInSeconds) {
+            // Pause game execution if running
+            if (mainSceneRef.current) {
+                mainSceneRef.current.stopExecution();
+            }
+            setExecuting(false);
+            // Show time expired modal
+            setShowTimeExpiredModal(true);
+        }
+    }, [timeExpired, levelInfo?.timeLimitInSeconds, setExecuting, setShowTimeExpiredModal]);
+
+    // Handle Continue Playing action
+    const handleContinuePlaying = () => {
+        resetTimer();
+        setShowTimeExpiredModal(false);
+        // Resume game if needed
+        if (mainSceneRef.current) {
+            mainSceneRef.current.resumeExecution();
+        }
+    };
+
+    // Handle Know Answer action - show solution steps in a popup; do not insert into command area
+    const handleKnowAnswer = () => {
+        if (levelInfo?.solution) {
+            setShowTimeExpiredModal(false);
+            setShowSolutionStepsModal(true);
+            resetTimer();
+        }
+    };
+
     const handleDrag = (speed: number) => {
         mainSceneRef.current?.modifySpeed(speed + 0.5);
     };
@@ -202,12 +258,26 @@ const PhaserGameContent = () => {
                 ref={gameRef}
                 className="fixed inset-0"
             />
+            <TimerDisplay />
             <InstructionPanel />
             <BottomPanel
                 onExecute={handleRunCode}
                 onReset={handleReset}
                 onDrag={handleDrag}
             />
+            {showTimeExpiredModal && (
+                <TimeExpiredModal
+                    onContinue={handleContinuePlaying}
+                    onKnowAnswer={handleKnowAnswer}
+                    hasSolution={!!(levelInfo?.solution && (Array.isArray(levelInfo.solution) ? levelInfo.solution.length > 0 : (levelInfo.solution as string).length > 0))}
+                />
+            )}
+            {showSolutionStepsModal && (
+                <SolutionStepsModal
+                    solution={levelInfo?.solution}
+                    onClose={() => setShowSolutionStepsModal(false)}
+                />
+            )}
         </div>
     );
 };

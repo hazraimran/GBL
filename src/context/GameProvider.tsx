@@ -74,6 +74,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
     const storedValue = localStorage.getItem('game:isAiHelperON');
     return storedValue !== null ? JSON.parse(storedValue) : true;
   });
+  const [showTimeExpiredModal, setShowTimeExpiredModal] = useState<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem('game:isAiHelperON', JSON.stringify(isAiHelperON));
@@ -184,7 +185,9 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
       character,
       setCharacter,
       isAiHelperON,
-      setIsAiHelperON
+      setIsAiHelperON,
+      showTimeExpiredModal,
+      setShowTimeExpiredModal
     }}>
       {children}
     </GameContext.Provider>

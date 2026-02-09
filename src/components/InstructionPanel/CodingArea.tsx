@@ -69,6 +69,8 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
         commandRef.current.arg = slotPicked;
         const copy = CircularJSON.parse(CircularJSON.stringify(commandsUsed));
+        console.log(commandsUsed, copy);
+        console.log('[CodingArea] Commands updated (SLOT PICKED):', CircularJSON.stringify(copy, null, 2));
         setCommandsUsed(copy);
     }, [slotPicked, commandsUsed, setCommandsUsed])
 
@@ -92,24 +94,33 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
+        e.stopPropagation();
         e.dataTransfer.dropEffect = 'move';
         setIsOver(true);
     };
 
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
+        const commandData = e.dataTransfer.getData('command');
+        const argData = e.dataTransfer.getData('arg');
+        const idxData = e.dataTransfer.getData('idx');
+        
+        console.log('[CodingArea] Drop received - command:', commandData, 'arg:', argData, 'idx:', idxData);
+        
         const obj: CommandWithArgType = {
-            command: e.dataTransfer.getData('command') as CommandType,
+            command: commandData as CommandType,
         }
         
-        if (e.dataTransfer.getData('arg') !== '') {
-            obj.arg = CircularJSON.parse(e.dataTransfer.getData('arg'));
+        if (argData !== '') {
+            obj.arg = CircularJSON.parse(argData);
         };
 
         let from = null;
-        if (e.dataTransfer.getData('idx') !== '') {
-            from = parseInt(e.dataTransfer.getData('idx'));
+        if (idxData !== '') {
+            from = parseInt(idxData);
         }
+        
+        console.log('[CodingArea] Calling insert with:', CircularJSON.stringify(obj, null, 2), 'from:', from, 'to:', commandsUsed?.length ?? 0);
         await insert(obj, from, commandsUsed?.length ?? 0);
 
         setIsOver(false);
@@ -154,12 +165,12 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 ext.arg = jump;
 
                 newCommands.splice(to, 0, jump);
-                newCommands.splice(to, 0, ext);
+                newCommands.splice(to, 0, ext);                
                 setCommandsUsed(newCommands);
             } else {
                 const newCommands = [...(commandsUsed ?? [])];
 
-                newCommands.splice(to, 0, commandWithArg);
+                newCommands.splice(to, 0, commandWithArg);                
                 setCommandsUsed(newCommands);
             }
         } else {
@@ -170,7 +181,7 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 to--;
             }
 
-            newCommands.splice(to, 0, command[0]);
+            newCommands.splice(to, 0, command[0]);            
             setCommandsUsed(newCommands);
         }
     }
@@ -187,10 +198,12 @@ const CodingArea = forwardRef<HTMLDivElement, CodingAreaProps>((props, ref) => {
                 newCommands.splice(pos, 1);
                 newCommands.splice(idx - 1, 1);
             }
+            console.log('[CodingArea] Commands updated (DELETE - JUMP):', CircularJSON.stringify(newCommands, null, 2));
             setCommandsUsed(newCommands);
         } else {
             commandRefs.current.splice(idx, 1);
             newCommands.splice(idx, 1);
+            console.log('[CodingArea] Commands updated (DELETE - Other):', CircularJSON.stringify(newCommands, null, 2));
             setCommandsUsed(newCommands);
         }
     }

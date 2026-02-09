@@ -85,11 +85,21 @@ const LevelCreator: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await LevelCreatorService.createLevel(levelData as LevelInfo);
-      alert('Level created successfully!');
-      // Reset form
-      const nextId = await LevelCreatorService.getNextLevelId();
-      setLevelData(prev => ({ ...prev, id: nextId, title: '', description: '' }));
+      const levelId = levelData.id!;
+      const levelExists = await LevelCreatorService.levelExists(levelId);
+      
+      if (levelExists) {
+        // Update existing level
+        await LevelCreatorService.updateLevel(levelId, levelData as LevelInfo);
+        alert('Level updated successfully!');
+      } else {
+        // Create new level
+        await LevelCreatorService.createLevel(levelData as LevelInfo);
+        alert('Level created successfully!');
+        // Reset form only when creating a new level
+        const nextId = await LevelCreatorService.getNextLevelId();
+        setLevelData(prev => ({ ...prev, id: nextId, title: '', description: '' }));
+      }
     } catch (error) {
       console.error('Error saving level:', error);
       alert('Failed to save level. Please try again.');

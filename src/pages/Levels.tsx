@@ -96,7 +96,12 @@ const Levels: React.FC = () => {
             setLevel?.(level.id);
 
             addAccessedTime(level.id - 1);
-            setLevelInfo(level);
+            // Ensure default time limit is applied when setting level info
+            const levelWithDefaults = {
+                ...level,
+                timeLimitInSeconds: level.timeLimitInSeconds ?? 300
+            };
+            setLevelInfo(levelWithDefaults);
 
             // TODO: add condtional rendering
             setOpenningInstruction(level.openningInstruction);

@@ -1,0 +1,156 @@
+{
+  "levelSolutions": {
+    "1": {
+      "description": "Supply Chamber - Simple INPUT/OUTPUT loop",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "OUTPUT" },
+        { "command": "INPUT" },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "simpleFormat": ["INPUT", "OUTPUT", "INPUT", "OUTPUT", "JUMP"]
+    },
+    "2": {
+      "description": "Busy Supply Chamber - INPUT/OUTPUT with JUMP loop",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "simpleFormat": ["INPUT", "OUTPUT", "JUMP"]
+    },
+    "3": {
+      "description": "Replica Slate - COPYFROM from construction slots (5, 2, 0)",
+      "solution": [
+        { "command": "COPYFROM", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "COPYFROM", "arg": 1 },
+        { "command": "OUTPUT" },
+        { "command": "COPYFROM", "arg": 2 },
+        { "command": "OUTPUT" }
+      ],
+      "note": "COPYFROM uses slot indices: 0=first slot (value 5), 1=second slot (value 2), 2=third slot (value 0)"
+    },
+    "4": {
+      "description": "Scrambler Handler - Swap pairs of inputs",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "INPUT" },
+        { "command": "OUTPUT" },
+        { "command": "COPYFROM", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Stores first input in slot 0, outputs second input, then outputs stored first input"
+    },
+    "5": {
+      "description": "Replica Slate - Add pairs of inputs",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "INPUT" },
+        { "command": "ADD", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Stores first input in slot 0, adds it to second input, outputs result"
+    },
+    "6": {
+      "description": "Tripler Room - Triple each input (multiply by 3)",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "ADD", "arg": 0 },
+        { "command": "ADD", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Stores input in slot 0, adds it twice (x + x + x = 3x), outputs"
+    },
+    "7": {
+      "description": "Octoplier Suite - Multiply by 8 using only 3 ADD commands",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "ADD", "arg": 0 },
+        { "command": "COPYTO", "arg": 1 },
+        { "command": "ADD", "arg": 1 },
+        { "command": "COPYTO", "arg": 2 },
+        { "command": "ADD", "arg": 2 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Uses 3 slots: x -> 2x -> 4x -> 8x (each ADD doubles the value)"
+    },
+    "8": {
+      "description": "Zero Exterminator - Output only non-zero values",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "JUMP = 0", "arg": { "command": "" } },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "JUMP = 0 skips OUTPUT if value is zero, otherwise outputs and loops"
+    },
+    "9": {
+      "description": "Zero Preservation - Output only zeros",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "JUMP = 0", "arg": { "command": "" } },
+        { "command": "JUMP", "arg": { "command": "" } },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "JUMP = 0 jumps to OUTPUT only if value is zero, otherwise skips OUTPUT"
+    },
+    "10": {
+      "description": "Sub Hallway - Subtract pairs: (2nd - 1st) then (1st - 2nd)",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 1 },
+        { "command": "SUB", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "COPYFROM", "arg": 0 },
+        { "command": "SUB", "arg": 1 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Stores first in slot 0, second in slot 1. Outputs (second - first), then (first - second)"
+    },
+    "11": {
+      "description": "Equalization Room - Output one value only if two inputs are equal",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "COPYTO", "arg": 0 },
+        { "command": "INPUT" },
+        { "command": "SUB", "arg": 0 },
+        { "command": "JUMP = 0", "arg": { "command": "" } },
+        { "command": "JUMP", "arg": { "command": "" } },
+        { "command": "COPYFROM", "arg": 0 },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Stores first in slot 0, subtracts from second. If result is 0 (equal), output stored value"
+    },
+    "12": {
+      "description": "Note: Level 12 appears to be a duplicate of Level 8 (Zero Exterminator)",
+      "solution": [
+        { "command": "INPUT" },
+        { "command": "JUMP = 0", "arg": { "command": "" } },
+        { "command": "OUTPUT" },
+        { "command": "JUMP", "arg": { "command": "" } }
+      ],
+      "note": "Same as level 8 - Output only non-zero values"
+    }
+  },
+  "notes": {
+    "JUMP_commands": "JUMP commands require a label reference. In the solution format, use { \"command\": \"\" } as a placeholder for the label. The system will resolve these when loading.",
+    "slot_indices": "COPYFROM, COPYTO, ADD, SUB commands use slot indices (0, 1, 2, etc.) corresponding to constructionSlots array order.",
+    "firebase_format": "Store solutions as JSON array of CommandWithArgType objects in Firebase. The simpleFormat is provided for reference only."
+  }
+}
+

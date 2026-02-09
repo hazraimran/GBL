@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { LevelInfo } from '../../types/level';
+import CircularJSON from 'circular-json';
 
 export class LevelCreatorService {
   private static readonly COLLECTION_NAME = 'settings';
@@ -15,12 +16,30 @@ export class LevelCreatorService {
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        return docSnap.data().levels || [];
+        const levels = docSnap.data().levels || [];
+        // Set default time limit of 300 seconds for all levels that don't have one
+        return levels.map((level: LevelInfo) => ({
+          ...level,
+          timeLimitInSeconds: level.timeLimitInSeconds ?? 300
+        }));
       }
       return [];
     } catch (error) {
       console.error('Error fetching levels:', error);
       throw new Error('Failed to fetch levels');
+    }
+  }
+
+  /**
+   * Check if a level with the given ID exists
+   */
+  static async levelExists(levelId: number): Promise<boolean> {
+    try {
+      const allLevels = await this.getAllLevels();
+      return allLevels.some(level => level.id === levelId);
+    } catch (error) {
+      console.error('Error checking if level exists:', error);
+      return false;
     }
   }
 
@@ -32,17 +51,23 @@ export class LevelCreatorService {
       const docRef = doc(db, this.COLLECTION_NAME, this.DOCUMENT_NAME);
       const docSnap = await getDoc(docRef);
       
+      let updatedLevels: LevelInfo[];
+      
       if (docSnap.exists()) {
         // Update existing document by adding new level to array
-        await updateDoc(docRef, {
-          levels: arrayUnion(levelData)
-        });
+        const existingLevels = docSnap.data().levels || [];
+        updatedLevels = [...existingLevels, levelData];
+        await setDoc(docRef, { levels: updatedLevels });
       } else {
         // Create new document with single level
+        updatedLevels = [levelData];
         await setDoc(docRef, {
-          levels: [levelData]
+          levels: updatedLevels
         });
       }
+      
+      // Update localStorage to keep it in sync with Firebase
+      this.updateLocalStorageLevels(updatedLevels);
     } catch (error) {
       console.error('Error creating level:', error);
       throw new Error('Failed to create level');
@@ -61,9 +86,27 @@ export class LevelCreatorService {
       
       const docRef = doc(db, this.COLLECTION_NAME, this.DOCUMENT_NAME);
       await setDoc(docRef, { levels: updatedLevels });
+      
+      // Update localStorage to keep it in sync with Firebase
+      this.updateLocalStorageLevels(updatedLevels);
     } catch (error) {
       console.error('Error updating level:', error);
       throw new Error('Failed to update level');
+    }
+  }
+
+  /**
+   * Update localStorage with the latest levels from Firebase
+   */
+  private static updateLocalStorageLevels(levels: LevelInfo[]): void {
+    try {
+      localStorage.setItem('game:levels', CircularJSON.stringify(levels));
+      // Reset TTL to allow immediate use of updated levels
+      // The TTL will be set again when levels are loaded next time
+      localStorage.setItem('game:levelsttl', '0');
+    } catch (error) {
+      console.error('Error updating localStorage levels:', error);
+      // Don't throw - localStorage update failure shouldn't break the update
     }
   }
 
@@ -83,6 +126,9 @@ export class LevelCreatorService {
       
       const docRef = doc(db, this.COLLECTION_NAME, this.DOCUMENT_NAME);
       await setDoc(docRef, { levels: updatedLevels });
+      
+      // Update localStorage to keep it in sync with Firebase
+      this.updateLocalStorageLevels(updatedLevels);
     } catch (error) {
       console.error('Error deleting level:', error);
       throw new Error('Failed to delete level');
@@ -144,34 +190,7 @@ export class LevelCreatorService {
       errors.push('Expected execute count must be positive');
     }
 
-    // Validate generator functions
-    if (levelData.generatorFunction) {
-      try {
-        const inputFn = new Function('generatorFn', levelData.generatorFunction);
-        // Test with a mock generator function
-        const mockGenerator = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-        const result = inputFn(mockGenerator);
-        if (!Array.isArray(result)) {
-          errors.push('Generator function must return an array');
-        }
-      } catch (error) {
-        errors.push('Generator function is not valid JavaScript');
-      }
-    }
-
-    if (levelData.outputFunction) {
-      try {
-        const outputFn = new Function('generatorFn', levelData.outputFunction);
-        // Test with a mock generator function
-        const mockGenerator = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-        const result = outputFn(mockGenerator);
-        if (!Array.isArray(result)) {
-          errors.push('Output function must return an array');
-        }
-      } catch (error) {
-        errors.push('Output function is not valid JavaScript');
-      }
-    }
+    // Generator and output function validation removed - functions are validated at runtime
 
     // Validate construction slots
     if (levelData.constructionSlots) {

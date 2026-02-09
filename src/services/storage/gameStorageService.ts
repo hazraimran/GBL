@@ -114,13 +114,23 @@ class GameStorageService {
             // The levels will be loaded from Firestore in the Levels component
             return [];
         }
-        return CircularJSON.parse(levels);
+        const parsedLevels = CircularJSON.parse(levels) as LevelInfo[];
+        // Set default time limit of 300 seconds for all levels that don't have one
+        return parsedLevels.map(level => ({
+            ...level,
+            timeLimitInSeconds: level.timeLimitInSeconds ?? 300
+        }));
     }
 
     async initializeLevels(): Promise<void> {
         const defaultLevels = await getLocalLevels();
         if (defaultLevels) {
-            localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(defaultLevels));
+            // Ensure all levels have default time limit of 300 seconds
+            const levelsWithDefaults = defaultLevels.map(level => ({
+                ...level,
+                timeLimitInSeconds: level.timeLimitInSeconds ?? 300
+            }));
+            localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levelsWithDefaults));
         }
     }
 
@@ -142,7 +152,15 @@ class GameStorageService {
 
     getLevelInfo(levelId: number): LevelInfo {
         const levels = this.getLevelsInfo();
-        return levels[levelId];
+        const level = levels[levelId];
+        // Ensure default time limit is applied
+        if (level) {
+            return {
+                ...level,
+                timeLimitInSeconds: level.timeLimitInSeconds ?? 300
+            };
+        }
+        return level;
     }
 
     setLevelInfo(levelId: number, levelInfo: LevelInfo): void {
@@ -171,7 +189,11 @@ class GameStorageService {
     saveCommandsUsed(levelId: number, commandsUsed: CommandWithArgType[]): void {
         const levels = this.getLevelsInfo();
         levels[levelId - 1].commandsUsed = commandsUsed;
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        const levelsJson = CircularJSON.stringify(levels);
+        console.log('[GameStorageService] Commands saved to localStorage for level', levelId);
+        console.log('[GameStorageService] Commands JSON:', CircularJSON.stringify(commandsUsed, null, 2));
+        console.log('[GameStorageService] Full levels JSON (first 1000 chars):', levelsJson.substring(0, 1000));
+        localStorage.setItem(this.getKey('levels'), levelsJson);
     }
 
     updateTimeSpent(levelId: number, timeSpent: number): void {

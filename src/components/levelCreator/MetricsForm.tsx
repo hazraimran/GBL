@@ -1,9 +1,13 @@
 import React from 'react';
 import { LevelInfo } from '../../types/level';
+import { CommandWithArgType } from '../../types/game';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
+import { Textarea } from '../ui/textarea';
+import { Alert, AlertDescription } from '../ui/alert';
+import CircularJSON from 'circular-json';
 
 interface MetricsFormProps {
   levelData: Partial<LevelInfo>;
@@ -32,6 +36,46 @@ const MetricsForm: React.FC<MetricsFormProps> = ({ levelData, onChange }) => {
       ...levelData,
       isLocked: checked
     });
+  };
+
+  const handleTimeLimitChange = (value: string) => {
+    const num = parseInt(value);
+    onChange({
+      ...levelData,
+      timeLimitInSeconds: isNaN(num) || num <= 0 ? undefined : num
+    });
+  };
+
+  const handleSolutionChange = (value: string) => {
+    try {
+      if (!value.trim()) {
+        onChange({
+          ...levelData,
+          solution: undefined
+        });
+        return;
+      }
+      // Try parsing as CircularJSON first (for solutions with circular references)
+      let parsed: CommandWithArgType[];
+      try {
+        parsed = CircularJSON.parse(value) as CommandWithArgType[];
+      } catch {
+        // If CircularJSON fails, try regular JSON
+        parsed = JSON.parse(value) as CommandWithArgType[];
+      }
+      
+      if (Array.isArray(parsed)) {
+        // Store as CircularJSON string to preserve circular references
+        const circularJsonString = CircularJSON.stringify(parsed);
+        onChange({
+          ...levelData,
+          solution: circularJsonString
+        });
+      }
+    } catch (error) {
+      // Invalid JSON, don't update
+      console.error('Invalid solution JSON:', error);
+    }
   };
 
   return (
@@ -73,6 +117,52 @@ const MetricsForm: React.FC<MetricsFormProps> = ({ levelData, onChange }) => {
           <p className="text-sm text-gray-400">
             The ideal number of command executions during a successful run
           </p>
+        </div>
+
+        {/* Time Limit */}
+        <div className="space-y-2">
+          <Label htmlFor="time-limit">Time Limit (seconds)</Label>
+          <Input
+            id="time-limit"
+            type="number"
+            value={levelData.timeLimitInSeconds || ''}
+            onChange={(e) => handleTimeLimitChange(e.target.value)}
+            placeholder="e.g., 300 (5 minutes)"
+            min="1"
+          />
+          <p className="text-sm text-gray-400">
+            Optional: Set a time limit for this level. When time expires, players can continue or see the solution.
+          </p>
+        </div>
+
+        {/* Solution */}
+        <div className="space-y-2">
+          <Label htmlFor="solution">Solution (JSON Array)</Label>
+          <Textarea
+            id="solution"
+            value={levelData.solution 
+              ? (typeof levelData.solution === 'string' 
+                  ? levelData.solution 
+                  : CircularJSON.stringify(levelData.solution, null, 2))
+              : ''}
+            onChange={(e) => handleSolutionChange(e.target.value)}
+            placeholder='[{"command": ""}, {"command": "INPUT"}, {"command": "OUTPUT"}, ...] or CircularJSON format'
+            rows={8}
+            className="resize-none font-mono text-sm"
+          />
+          <p className="text-sm text-gray-400">
+            Optional: Provide the expected solution as a JSON array of CommandWithArgType objects.
+            This will be shown to players when time expires if they choose &quot;Know the Answer&quot;.
+          </p>
+          {levelData.solution && (
+            <Alert className="border-green-300 bg-green-50">
+              <AlertDescription className="text-green-700">
+                Solution loaded: {typeof levelData.solution === 'string' 
+                  ? CircularJSON.parse(levelData.solution).length 
+                  : levelData.solution.length} command(s)
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
 
         {/* Level Lock Status */}
