@@ -244,7 +244,14 @@ const SmartHintSystem: React.FC<SmartHintSystemProps> = ({
         }
         
         if (level.hints && level.hints.length > 0) {
-            setHint(level.hints[hintLevel - 1]);
+            const currentTier = hintLevel - 1; // hintLevel is 1-indexed, tier is 0-indexed
+            setHint(level.hints[currentTier]);
+            
+            // Track hint tier accessed (0/1/2/3)
+            if (analytics) {
+                analytics.trackHintTier(currentTier);
+            }
+            
             setHintLevel(prev => prev + 1);
             // Only remove coins if economy is enabled
             if (economyEnabled) {

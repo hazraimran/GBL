@@ -32,6 +32,9 @@ const PhaserGameContent = () => {
     
     // Time cap hook
     const { timeExpired, resetTimer } = useTimeCap(levelInfo);
+    
+    // Track level start time for time-to-first-run calculation
+    const levelStartTimeRef = useRef<number | null>(null);
 
     const errorHandlerRef = useRef(new ErrorHandler({
         onError: (error) => {
@@ -75,11 +78,19 @@ const PhaserGameContent = () => {
             const report = extractUploadReport(errorCnt);
             UploadRecordService.uploadRecord(report, uid);
 
+            // Calculate time-to-solution
+            let timeToSolutionSec: number | undefined;
+            if (levelStartTimeRef.current !== null) {
+                timeToSolutionSec = Math.floor((Date.now() - levelStartTimeRef.current) / 1000);
+            }
+
             // Track level completion in analytics with 1 coin collected
+            analytics.setTimeToSolution(timeToSolutionSec || 0);
             analytics.stopTracking({
                 final_instruction_count: data.commandCnt,
                 success_on_first_try: errorCnt === 0,
-                coins_collected: 1
+                coins_collected: 1,
+                time_to_solution_sec: timeToSolutionSec
             });
 
             // unlock next level
@@ -174,6 +185,15 @@ const PhaserGameContent = () => {
         gameTimer.pause();
         setExecuting(true);
 
+        // Track attempt count and time-to-first-run
+        const now = Date.now();
+        if (levelStartTimeRef.current !== null) {
+            const timeToFirstRunSec = Math.floor((now - levelStartTimeRef.current) / 1000);
+            analytics.trackAttempt(timeToFirstRunSec);
+        } else {
+            analytics.trackAttempt();
+        }
+
         // Track instruction submission in analytics
         analytics.trackInstructionSubmission(commandsUsed.length);
 
@@ -213,7 +233,11 @@ const PhaserGameContent = () => {
     useEffect(() => {
         if (levelInfo?.id) {
             analytics.startTracking();
+            levelStartTimeRef.current = Date.now();
         }
+        return () => {
+            levelStartTimeRef.current = null;
+        };
     }, [levelInfo?.id, analytics]);
 
     // Handle time expiration

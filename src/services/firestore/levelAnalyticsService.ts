@@ -2,6 +2,12 @@ import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { authService } from './authentication';
 
+export interface IdleTimeSpike {
+    start_time: string; // ISO string
+    end_time: string; // ISO string
+    duration_sec: number;
+}
+
 export interface LevelAnalytics {
     player_id: string;
     level_id: number;
@@ -23,6 +29,12 @@ export interface LevelAnalytics {
     ai_helper_enabled: boolean; // Was AI helper ON during this level
     day_session: string; // Date in YYYY-MM-DD format
     session_timestamp: string; // Full ISO timestamp for this session
+    // New metrics
+    attempt_count: number; // Number of times user ran code
+    time_to_first_run_sec?: number; // Time from level start to first execution (seconds)
+    time_to_solution_sec?: number; // Time from level start to completion (seconds)
+    hint_tier_accessed: number[]; // Array of hint tiers accessed (0/1/2/3)
+    idle_time_spikes: IdleTimeSpike[]; // Extended periods of no interaction (>30 seconds)
 }
 
 export class LevelAnalyticsService {
@@ -76,7 +88,10 @@ export class LevelAnalyticsService {
             coins_collected: 0,
             ai_helper_enabled: false,
             day_session: daySession,
-            session_timestamp: now.toISOString()
+            session_timestamp: now.toISOString(),
+            attempt_count: 0,
+            hint_tier_accessed: [],
+            idle_time_spikes: []
         };
 
         return analytics;
@@ -252,6 +267,49 @@ export class LevelAnalyticsService {
     static setAIHelperStatus(analytics: LevelAnalytics, enabled: boolean): LevelAnalytics {
         return this.updateAnalytics(analytics, {
             ai_helper_enabled: enabled
+        });
+    }
+
+    // Track attempt count (when user runs code)
+    static trackAttempt(analytics: LevelAnalytics, timeToFirstRunSec?: number): LevelAnalytics {
+        const updates: Partial<LevelAnalytics> = {
+            attempt_count: analytics.attempt_count + 1
+        };
+        // Set time_to_first_run_sec only on first attempt if not already set
+        if (analytics.attempt_count === 0 && timeToFirstRunSec !== undefined) {
+            updates.time_to_first_run_sec = timeToFirstRunSec;
+        }
+        return this.updateAnalytics(analytics, updates);
+    }
+
+    // Track hint tier accessed (0/1/2/3)
+    static trackHintTier(analytics: LevelAnalytics, tier: number): LevelAnalytics {
+        const hintTiers = [...(analytics.hint_tier_accessed || [])];
+        if (!hintTiers.includes(tier)) {
+            hintTiers.push(tier);
+        }
+        return this.updateAnalytics(analytics, {
+            hint_tier_accessed: hintTiers
+        });
+    }
+
+    // Track idle time spike (>30 seconds of no interaction)
+    static trackIdleTimeSpike(analytics: LevelAnalytics, startTime: string, endTime: string, durationSec: number): LevelAnalytics {
+        const idleSpikes = [...(analytics.idle_time_spikes || [])];
+        idleSpikes.push({
+            start_time: startTime,
+            end_time: endTime,
+            duration_sec: durationSec
+        });
+        return this.updateAnalytics(analytics, {
+            idle_time_spikes: idleSpikes
+        });
+    }
+
+    // Set time to solution when level completes
+    static setTimeToSolution(analytics: LevelAnalytics, timeToSolutionSec: number): LevelAnalytics {
+        return this.updateAnalytics(analytics, {
+            time_to_solution_sec: timeToSolutionSec
         });
     }
 } 
