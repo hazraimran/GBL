@@ -21,7 +21,7 @@ const GameScene: React.FC = () => {
     }
 
     useEffect(() => {
-        if (currentScene === 'GAME') {
+        if (currentScene === 'GAME' && levelInfo?.id != null) {
             gameTimer.setLevel(levelInfo.id);
             gameTimer.start();
 
@@ -35,7 +35,7 @@ const GameScene: React.FC = () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [currentScene]);
+    }, [currentScene, levelInfo?.id]);
 
     return currentScene === 'GAME' && (
         <div className={`fixed bg-cover bg-center bg-no-repeat h-[100vh] w-[100vw]`}

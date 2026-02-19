@@ -15,18 +15,12 @@ const EmptyRow = forwardRef<HTMLDivElement, EmptyRowProps>((props, ref) => {
             {commandsUsed.length === 0 ? (
                 <div className="flex h-[6rem] items-center justify-center p-4 rounded-lg bg-secondary/40"
                     ref={ref}    
-                    onDrop={(e) => {
-                        console.log('[EmptyRow] Drop on empty row');
-                        onDrop(e);
-                    }}
+                    onDrop={(e) => onDrop(e)}
                     onDragOver={(e) => { 
                         e.preventDefault();
                         e.stopPropagation();
                     }}
-                    onDragEnter={(e) => {
-                        e.preventDefault();
-                        console.log('[EmptyRow] Drag enter on empty row');
-                    }}
+                    onDragEnter={(e) => e.preventDefault()}
                 >
                     <p className="text-gray-500">Drag and drop commands here</p>
                 </div>

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import GameContext from "../context/GameContext";
 import { LevelInfo } from "../types/level";
 import { useGameStorage } from "../hooks/useStorage/useGameStorage";
-import { LogOut, OctagonAlert } from "lucide-react";
+import { LogOut, OctagonAlert, Loader2 } from "lucide-react";
 import { authService } from "../services/firestore/authentication";
 
 import ResetGamePopup from "../components/ResetGamePopup";
@@ -238,12 +238,12 @@ const Levels: React.FC = () => {
         },
     ]
 
-    return currentScene === 'LEVELS' && levelsInfo.length > 0 && (
+    return currentScene === 'LEVELS' && (
         <>
             <TooltipProvider>
                 <div className="select-none fixed inset-0 flex flex-row justify-center overflow-scroll" >
                     <img src="./map.webp" className="h-[160vh]" alt="" />
-                    { LEVEL_COORDINATES.map((level, idx) => {
+                    { levelsInfo.length > 0 && LEVEL_COORDINATES.map((level, idx) => {
                         if (!levelsInfo[idx]) return null;
                         return (
                             <Tooltip key={idx}>
@@ -286,6 +286,15 @@ const Levels: React.FC = () => {
                             </Tooltip>
                         )
                     })}
+                    { levelsInfo.length === 0 && (
+                        <div
+                            className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black/30"
+                            style={{ zIndex: 9999 }}
+                        >
+                            <Loader2 className="h-12 w-12 animate-spin text-white drop-shadow-lg" aria-hidden />
+                            <p className="text-xl font-semibold text-white drop-shadow-lg">Loading map...</p>
+                        </div>
+                    )}
 
                     <AlertButton onClick={() => {
                         authService.signOut();

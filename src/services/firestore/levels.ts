@@ -7,7 +7,6 @@ import CircularJSON from 'circular-json';
 export const getLocalLevels = async(): Promise<LevelInfo[] | null> => {
     const localLevels = localStorage.getItem('game:levels');
     if (localLevels && validateTTL()) {
-        console.log('localLevels', 'from local storage');
         try {
             // Parse with CircularJSON since localStorage uses CircularJSON
             const levels = CircularJSON.parse(localLevels) as LevelInfo[];
@@ -21,8 +20,8 @@ export const getLocalLevels = async(): Promise<LevelInfo[] | null> => {
                         if (str.includes('~') || str.includes('~0')) {
                             solution = str;
                         }
-                    } catch (e) {
-                        console.warn('Could not stringify solution with CircularJSON:', e);
+                    } catch {
+                        // CircularJSON stringify can fail; keep as array
                     }
                 }
                 
@@ -38,7 +37,6 @@ export const getLocalLevels = async(): Promise<LevelInfo[] | null> => {
         }
     }
 
-    console.log('localLevels', 'from firestore');
     return await getLevels();
 }
 
@@ -63,9 +61,8 @@ export const getLevels = async () : Promise<LevelInfo[] | null> => {
                     if (str.includes('~') || str.includes('~0')) {
                         solution = str;
                     }
-                } catch (e) {
+                } catch {
                     // If CircularJSON fails, keep as array
-                    console.warn('Could not stringify solution with CircularJSON:', e);
                 }
             }
             

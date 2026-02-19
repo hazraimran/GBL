@@ -63,6 +63,9 @@ export class MainScene extends Phaser.Scene {
     private generator1: SeededRandom;
     private generator2: SeededRandom;
     private ans: number[];
+    private activeTweenPromises: Set<() => void> = new Set(); // Track promises that need to resolve when stopped
+    private lastExecutionActivity: number = Date.now(); // Track when execution last made progress
+    private stuckCheckTimer: Phaser.Time.TimerEvent | null = null;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -131,6 +134,12 @@ export class MainScene extends Phaser.Scene {
         this.commandsToExecute = null;
         this.stopped = true;
 
+        // Reset character animation if worker exists
+        if (this.worker?.sprite) {
+            this.worker.sprite.stop();
+            this.worker.sprite.play('rest', true);
+        }
+
         // Clean up game objects
         this.destroyWorker();
         this.destroyStones(this.inputStones);
@@ -171,6 +180,9 @@ export class MainScene extends Phaser.Scene {
     }
 
     reset(): void {
+        // Clear any pending promises when resetting
+        this.activeTweenPromises.forEach(resolve => resolve());
+        this.activeTweenPromises.clear();
         this.resetGameState();
     }
 
@@ -195,12 +207,88 @@ export class MainScene extends Phaser.Scene {
     }
 
     create(): void {
+        // Clean up any existing objects before creating new ones
+        if (this.worker) {
+            this.destroyWorker();
+        }
+        if (this.constructionSlots.length > 0) {
+            this.destroyConstructionSlots();
+            this.constructionSlots = [];
+        }
+        if (this.inputStones.length > 0) {
+            this.destroyStones(this.inputStones);
+            this.inputStones = [];
+        }
+        if (this.outputStones.length > 0) {
+            this.destroyStones(this.outputStones);
+            this.outputStones = [];
+        }
+
         this.createAnimations();
         this.worker = this.createWorker();
         this.setupInputArea(this.config.layout.inputArea);
         this.setupConstructionArea();
         this.events.emit('sceneReady');
         this.worker.sprite.play('rest', true);
+        
+        // Periodic check to ensure character returns to rest if execution is stuck
+        this.stuckCheckTimer = this.time.addEvent({
+            delay: 1000, // Check every second
+            callback: () => {
+                if (!this.worker?.sprite) return;
+                
+                const currentAnim = this.worker.sprite.anims.currentAnim;
+                const animKey = currentAnim?.key;
+                
+                // If execution is stopped but character is not in rest animation, fix it
+                if (this.stopped && animKey && animKey !== 'rest') {
+                    this.worker.sprite.stop();
+                    this.worker.sprite.play('rest', true);
+                }
+                
+                // If execution appears to be running but hasn't made progress in 30 seconds, reset character
+                // This handles cases where execution is stuck waiting for a promise
+                if (!this.stopped && this.commandsToExecute && Date.now() - this.lastExecutionActivity > 30000) {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            runId: 'pre-fix',
+                            hypothesisId: 'H1-H4',
+                            location: 'MainScene.ts:create:stuck-check',
+                            message: 'Execution appears stuck (no progress for 30s)',
+                            data: {
+                                stopped: this.stopped,
+                                hasCommands: !!this.commandsToExecute,
+                                commandsLength: this.commandsToExecute ? this.commandsToExecute.length : 0,
+                                curLine: this.curLine,
+                                cmdExcCnt: this.cmdExcCnt,
+                                lastExecutionActivityDiffMs: Date.now() - this.lastExecutionActivity,
+                                animKey
+                            },
+                            timestamp: Date.now()
+                        })
+                    }).catch(() => { });
+                    // #endregion agent log
+                    if (animKey && animKey !== 'rest') {
+                        this.worker.sprite.stop();
+                        this.worker.sprite.play('rest', true);
+                    }
+                    // Reset activity time to prevent spam
+                    this.lastExecutionActivity = Date.now();
+                }
+            },
+            loop: true
+        });
+    }
+
+    shutdown(): void {
+        if (this.stuckCheckTimer) {
+            this.stuckCheckTimer.remove();
+            this.stuckCheckTimer = null;
+        }
+        super.shutdown();
     }
 
     private createAnimations(): void {
@@ -375,6 +463,19 @@ export class MainScene extends Phaser.Scene {
 
     stopExecution(): void {
         this.stopped = true;
+        
+        // Resolve all pending tween promises immediately to prevent hanging
+        this.activeTweenPromises.forEach(resolve => resolve());
+        this.activeTweenPromises.clear();
+        
+        // Kill all active tweens to prevent promises from hanging
+        this.tweens.killAll();
+        
+        // Reset character animation to rest pose
+        if (this.worker?.sprite) {
+            this.worker.sprite.stop();
+            this.worker.sprite.play('rest', true);
+        }
     }
 
     resumeExecution(): void {
@@ -382,6 +483,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     async executeCommands(commandsWithArg: CommandWithArgType[]): Promise<void> {
+        // Clear any pending promises from previous executions
+        this.activeTweenPromises.forEach(resolve => resolve());
+        this.activeTweenPromises.clear();
+        
         this.commandsToExecute = commandsWithArg;
         const processedCommands = this.preProcessCommands(commandsWithArg);
 
@@ -394,7 +499,29 @@ export class MainScene extends Phaser.Scene {
 
         this.stopped = false;
         this.curLine = 0;
+        this.lastExecutionActivity = Date.now(); // Reset activity tracking
 
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                runId: 'pre-fix',
+                hypothesisId: 'H1-H3',
+                location: 'MainScene.ts:executeCommands:entry',
+                message: 'executeCommands entry',
+                data: {
+                    level: this.config.currentLevel,
+                    commandsLength: processedCommands.length,
+                    stopped: this.stopped,
+                    curLine: this.curLine
+                },
+                timestamp: Date.now()
+            })
+        }).catch(() => { });
+        // #endregion agent log
+
+        try {
         // Command execution loop
         while (this.curLine < processedCommands.length && !this.stopped) {
             if (this.detectInfiniteLoop(jumpCnt)) return;
@@ -402,12 +529,87 @@ export class MainScene extends Phaser.Scene {
             const commandWithArg = processedCommands[this.curLine];
             this.curLine++;
             this.cmdExcCnt++;
+            this.lastExecutionActivity = Date.now(); // Update activity on each command
 
-            await this.executeCommand(commandWithArg, jumpto);
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    runId: 'pre-fix',
+                    hypothesisId: 'H1-H3',
+                    location: 'MainScene.ts:executeCommands:loop',
+                    message: 'executeCommands loop iteration',
+                    data: {
+                        level: this.config.currentLevel,
+                        curLine: this.curLine,
+                        command: commandWithArg.command,
+                        jumpCnt,
+                        stopped: this.stopped
+                    },
+                    timestamp: Date.now()
+                })
+            }).catch(() => { });
+            // #endregion agent log
+
+            try {
+                // Double-check stopped before executing command
+                if (this.stopped) {
+                    return;
+                }
+                
+                await this.executeCommand(commandWithArg, jumpto);
+                
+                // Check stopped again after command completes
+                if (this.stopped) {
+                    return;
+                }
+            } catch (error) {
+                console.error('[MAIN_SCENE] Error executing command:', error);
+                // If stopped during execution, exit gracefully
+                if (this.stopped) {
+                    return;
+                }
+                // Otherwise, emit error and stop
+                EventManager.emit('levelFailed', {
+                    message: 'Execution error occurred'
+                });
+                this.stopExecution();
+                return;
+            }
         }
 
         if (!this.stopped) {
-            this.validateOutput();
+            await this.validateOutput();
+        }
+        
+        // Always ensure character returns to rest state when execution completes (successfully or stopped)
+        if (this.worker?.sprite) {
+            this.worker.sprite.stop();
+            this.worker.sprite.play('rest', true);
+        }
+
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                runId: 'pre-fix',
+                hypothesisId: 'H1-H3',
+                location: 'MainScene.ts:executeCommands:exit',
+                message: 'executeCommands exit',
+                data: {
+                    level: this.config.currentLevel,
+                    stopped: this.stopped,
+                    curLine: this.curLine,
+                    commandsLength: this.commandsToExecute ? this.commandsToExecute.length : 0
+                },
+                timestamp: Date.now()
+            })
+        }).catch(() => { });
+        // #endregion agent log
+        } finally {
+            this.commandsToExecute = null;
         }
     }
 
@@ -455,6 +657,7 @@ export class MainScene extends Phaser.Scene {
             EventManager.emit('levelFailed', {
                 "message": "Infinite loop detected!"
             });
+            this.stopExecution();
             return true;
         }
         return false;
@@ -555,38 +758,91 @@ export class MainScene extends Phaser.Scene {
 
         stone.shadow = shadow;
 
-        // Animate stone placement
-        this.tweens.add({
-            targets: shadow,
-            x: this.config.layout.outputArea.x + 70,
-            y: stone.sprite.y + adjust.y + 10,
-            alpha: 1,
-            scale: 0.35,
-            duration: 700,
-            ease: 'Power2.easeInOut',
-        });
+        const duration = 700;
 
-        this.tweens.add({
-            targets: stone.sprite,
-            x: this.config.layout.outputArea.x + 60,
-            y: stone.sprite.y + adjust.y,
-            duration: 700,
-            ease: 'Power2.easeInOut',
-        });
-
-        this.tweens.add({
-            targets: stone.text,
-            x: this.config.layout.outputArea.x + 60,
-            y: stone.text.y + adjust.y,
-            duration: 700,
-            ease: 'Power2.easeInOut',
-        });
-
-        await this.delay(1000);
+        // Animate stone placement - wait for completion instead of fixed delay
+        await Promise.all([
+            new Promise<void>((resolve) => {
+                this.tweens.add({
+                    targets: shadow,
+                    x: this.config.layout.outputArea.x + 70,
+                    y: stone.sprite.y + adjust.y + 10,
+                    alpha: 1,
+                    scale: 0.35,
+                    duration,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>((resolve) => {
+                this.tweens.add({
+                    targets: stone.sprite,
+                    x: this.config.layout.outputArea.x + 60,
+                    y: stone.sprite.y + adjust.y,
+                    duration,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            }),
+            new Promise<void>((resolve) => {
+                this.tweens.add({
+                    targets: stone.text,
+                    x: this.config.layout.outputArea.x + 60,
+                    y: stone.text.y + adjust.y,
+                    duration,
+                    ease: 'Power2.easeInOut',
+                    onComplete: () => resolve()
+                });
+            })
+        ]);
     }
 
     private async delay(ms: number): Promise<void> {
         return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Play an animation and wait for it to complete
+     * @param animationKey The animation key to play
+     * @param timeoutMs Optional timeout in ms (default: animation duration + 200ms buffer)
+     */
+    private async waitForAnimation(animationKey: string, timeoutMs: number = 1200): Promise<void> {
+        if (!this.worker?.sprite) return;
+        
+        return new Promise<void>((resolve) => {
+            let resolved = false;
+            const safeResolve = () => {
+                if (!resolved) {
+                    resolved = true;
+                    this.activeTweenPromises.delete(safeResolve);
+                    if (this.worker?.sprite) this.worker.sprite.off('animationcomplete', onComplete);
+                    if (timeoutId !== null) clearTimeout(timeoutId);
+                    resolve();
+                }
+            };
+            this.activeTweenPromises.add(safeResolve);
+            
+            // Remove any existing listeners to prevent duplicates
+            this.worker.sprite.off('animationcomplete');
+            
+            // Play animation
+            this.worker.sprite.play(animationKey, true);
+            
+            // Listen for animation complete event
+            const onComplete = (animation: Phaser.Animations.Animation) => {
+                if (animation.key === animationKey) {
+                    safeResolve();
+                }
+            };
+            
+            this.worker.sprite.on('animationcomplete', onComplete);
+            
+            // Safety timeout in case animation doesn't fire complete event
+            let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+                timeoutId = null;
+                safeResolve();
+            }, timeoutMs);
+        });
     }
 
     private async pickUpStone(stone: Stone, faceLeft: boolean, useCopy: boolean): Promise<void> {
@@ -600,9 +856,9 @@ export class MainScene extends Phaser.Scene {
         stone.sprite.setDepth(7);
         stone.text?.setDepth(7);
 
-        // Play pickup animation
-        this.worker.sprite.play('pick', true);
-        await this.delay(300);
+        // Play pickup animation and wait for it to complete
+        // The 'pick' animation has 9 frames at 9 fps = 1 second duration
+        await this.waitForAnimation('pick', 1200);
 
         // Calculate position adjustment based on facing direction
         const adjust = { x: faceLeft ? 45 : -45, y: -55 };
@@ -625,23 +881,41 @@ export class MainScene extends Phaser.Scene {
         // Animate stone movement to worker's hand
         await Promise.all([
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.sprite,
                     x: stone.sprite.x + adjust.x,
                     y: stone.sprite.y + adjust.y,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             }),
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.text,
                     x: stone.text.x + adjust.x,
                     y: stone.text.y + adjust.y,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             })
         ]);
@@ -720,9 +994,8 @@ export class MainScene extends Phaser.Scene {
         // Calculate the result value based on the operation
         const resultValue = operation(originalSlotValue, carriedValue);
 
-        // Pick up result stone animation
-        this.worker.sprite.play('pick', true);
-        await this.delay(300);
+        // Pick up result stone animation and wait for completion
+        await this.waitForAnimation('pick', 1200);
 
         // Create the result stone at the slot position
         const resultStone = this.createStoneWithValue(targetX, targetY, resultValue);
@@ -782,33 +1055,60 @@ export class MainScene extends Phaser.Scene {
     private async animateStoneCopyToSlot(stone: Stone, targetX: number, targetY: number): Promise<void> {
         await Promise.all([
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.sprite,
                     x: targetX,
                     y: targetY,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             }),
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.text,
                     x: targetX,
                     y: targetY - 8,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             }),
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.shadow,
                     x: targetX + 10,
                     y: targetY + 10,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             })
         ]);
@@ -862,23 +1162,41 @@ export class MainScene extends Phaser.Scene {
     ): Promise<void> {
         await Promise.all([
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.sprite,
                     x: baseX + offset.x,
                     y: baseY + offset.y,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             }),
             new Promise<void>(resolve => {
+                let resolved = false;
+                const safeResolve = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.activeTweenPromises.delete(safeResolve);
+                        resolve();
+                    }
+                };
+                this.activeTweenPromises.add(safeResolve);
                 this.tweens.add({
                     targets: stone.text,
                     x: baseX + offset.x,
                     y: baseY + offset.y - 8,
                     duration: 700,
                     ease: 'Power2.easeInOut',
-                    onComplete: () => resolve()
+                    onComplete: () => safeResolve()
                 });
             })
         ]);
@@ -916,13 +1234,12 @@ export class MainScene extends Phaser.Scene {
 
         // Face the right direction
         this.worker.sprite.setFlipX(false);
-        this.worker.sprite.play('pick', true);
-
+        
         // Create a copy of the stone in the slot
         const originalStone = slotStone.stone;
         const stoneCopy = this.createStoneCopy(originalStone);
 
-        // Pick up the stone
+        // Pick up the stone (this will play the pickup animation)
         await this.pickUpStone(stoneCopy, false, false);
         this.worker.stoneCarried = stoneCopy;
     }
@@ -975,8 +1292,8 @@ export class MainScene extends Phaser.Scene {
         carriedStone.text?.setVisible(true);
         carriedStone.shadow?.setVisible(true);
 
-        // Small delay to complete animation
-        await this.delay(200);
+        // Small delay to complete animation - reduced for faster execution
+        await this.delay(100);
     }
 
     private async handleDropToOutput(): Promise<void> {
@@ -1012,6 +1329,34 @@ export class MainScene extends Phaser.Scene {
     private async tweenWorkerTo(x: number, y: number): Promise<void> {
         return new Promise((resolve) => {
             if (!this.worker) return resolve();
+            
+            // Check if stopped before starting tween
+            if (this.stopped) return resolve();
+
+            // Declare timer refs so safeResolve can clear them when invoked from stopExecution()
+            let timeoutId: ReturnType<typeof setTimeout> | null = null;
+            let checkInterval: ReturnType<typeof setInterval> | null = null;
+
+            // Wrapper to ensure promise resolves only once and is tracked
+            let resolved = false;
+            const safeResolve = () => {
+                if (!resolved) {
+                    resolved = true;
+                    this.activeTweenPromises.delete(safeResolve);
+                    if (timeoutId !== null) {
+                        clearTimeout(timeoutId);
+                        timeoutId = null;
+                    }
+                    if (checkInterval !== null) {
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+                    resolve();
+                }
+            };
+            
+            // Track this promise so it can be resolved if execution stops
+            this.activeTweenPromises.add(safeResolve);
 
             const dx = x - this.worker.sprite.x;
             this.worker.sprite.setFlipX(dx < 0);
@@ -1022,8 +1367,19 @@ export class MainScene extends Phaser.Scene {
                 x, y
             );
 
+            // Optimized speed calculation - baseSpeed represents pixels per ms at speed 1.0
             const baseSpeed = 4;
-            const duration = (distance * baseSpeed) / this.config.speed;
+            // Ensure minimum duration to prevent instant movement
+            const duration = Math.max(50, (distance * baseSpeed) / this.config.speed);
+
+            // Safety timeout: resolve after max duration + small buffer to prevent hanging
+            timeoutId = setTimeout(() => {
+                if (this.worker && !this.stopped) {
+                    this.worker.sprite.stop();
+                    this.worker.sprite.play('rest', true);
+                }
+                safeResolve();
+            }, duration + 200); // duration is already in ms, add 200ms buffer (reduced from 1000ms)
 
             // Set animation based on whether worker is carrying a stone
             if (this.worker.stoneCarried) {
@@ -1045,14 +1401,19 @@ export class MainScene extends Phaser.Scene {
             }
 
             // Move worker
-            this.tweens.add({
+            const workerTween = this.tweens.add({
                 targets: this.worker.sprite,
                 x, y,
                 duration,
                 ease: 'Linear',
                 onComplete: () => {
-                    this.worker?.sprite.stop();
-                    resolve();
+                    clearTimeout(timeoutId);
+                    if (checkInterval) clearInterval(checkInterval);
+                    if (this.worker?.sprite && !this.stopped) {
+                        this.worker.sprite.stop();
+                        this.worker.sprite.play('rest', true);
+                    }
+                    safeResolve();
                 }
             });
 
@@ -1064,6 +1425,20 @@ export class MainScene extends Phaser.Scene {
                 duration,
                 ease: 'Linear'
             });
+
+            // Check periodically if stopped and resolve early
+            checkInterval = setInterval(() => {
+                if (this.stopped) {
+                    clearTimeout(timeoutId);
+                    if (checkInterval) clearInterval(checkInterval);
+                    this.tweens.remove(workerTween);
+                    if (this.worker) {
+                        this.worker.sprite.stop();
+                        this.worker.sprite.play('rest', true);
+                    }
+                    safeResolve();
+                }
+            }, 50);
         });
     }
 

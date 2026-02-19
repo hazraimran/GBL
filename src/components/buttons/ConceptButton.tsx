@@ -15,7 +15,6 @@ const ConceptButton = memo(({children, title, className} : {children: React.Reac
   
   const handleClickConcept = useCallback(() => {
 
-    console.log("alexander clicked concept button");
     // Track concept button click in analytics if available
     if (analytics) {
       analytics.trackConceptButtonClick();

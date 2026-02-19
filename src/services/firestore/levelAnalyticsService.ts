@@ -1,6 +1,9 @@
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { doc, collection, addDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { authService } from './authentication';
+
+const USERS_COLLECTION = 'users';
+const LEVEL_SESSIONS_SUBCOLLECTION = 'level_sessions';
 
 export interface IdleTimeSpike {
     start_time: string; // ISO string
@@ -38,25 +41,8 @@ export interface LevelAnalytics {
 }
 
 export class LevelAnalyticsService {
-    private static collectionName = 'users';
-
-    // Ensure user document exists
-    private static async ensureUserDocument(userId: string): Promise<void> {
-        try {
-            const userDocRef = doc(db, this.collectionName, userId);
-            const docSnap = await getDoc(userDocRef);
-
-            if (docSnap.exists()) {
-                // User document exists, no action needed
-            } else {
-                // Create new user document with level_analytics field
-                await setDoc(userDocRef, {
-                    level_analytics: {}
-                });
-            }
-        } catch (error) {
-            console.error('Error ensuring user document:', error);
-        }
+    private static levelSessionsRef(userId: string) {
+        return collection(db, USERS_COLLECTION, userId, LEVEL_SESSIONS_SUBCOLLECTION);
     }
 
     // Start tracking a new level session (in-memory only)
@@ -102,7 +88,7 @@ export class LevelAnalyticsService {
         return { ...analytics, ...updates };
     }
 
-    // Complete level session and save to user profile as array
+    // Complete level session and save as a new document in users/{userId}/level_sessions
     static async completeLevelSession(analytics: LevelAnalytics, finalData: Partial<LevelAnalytics>): Promise<void> {
         const currentUserId = authService.getCurrentUserId();
         if (!currentUserId) {
@@ -113,108 +99,77 @@ export class LevelAnalyticsService {
         const startTime = new Date(analytics.start_time);
         const timeSpentSec = Math.floor((new Date(endTime).getTime() - startTime.getTime()) / 1000);
 
-        const completedAnalytics = {
+        const completedAnalytics: LevelAnalytics = {
             ...analytics,
             ...finalData,
             end_time: endTime,
             time_spent_sec: timeSpentSec
         };
 
-        // Save to user profile as array (preserve existing level analytics)
-        const userDocRef = doc(db, this.collectionName, currentUserId);
-                
         try {
-            // Ensure user document exists
-            await this.ensureUserDocument(currentUserId);
-            
-            // Get the existing user data to preserve other level analytics
-            const docSnap = await getDoc(userDocRef);
-            let existingLevelAnalytics: Record<number, LevelAnalytics[]> = {};
-            
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                existingLevelAnalytics = userData.level_analytics || {};
-            }
+            const sessionsRef = this.levelSessionsRef(currentUserId);
+            await addDoc(sessionsRef, completedAnalytics);
 
-            // Add the new session to the existing level analytics
-            const currentLevelSessions = existingLevelAnalytics[analytics.level_id] || [];
-            const updatedLevelSessions = [...currentLevelSessions, completedAnalytics];
-
-            // Create the complete level analytics object
-            const completeLevelAnalytics = {
-                ...existingLevelAnalytics,
-                [analytics.level_id]: updatedLevelSessions
-            };
-
-            // Update with all level analytics preserved
-            await updateDoc(userDocRef, {
-                level_analytics: completeLevelAnalytics,
-                lastPlayed: new Date().toISOString()
-            });
+            // Update user document lastPlayed only (merge so we don't overwrite other fields)
+            const userDocRef = doc(db, USERS_COLLECTION, currentUserId);
+            await setDoc(userDocRef, { lastPlayed: new Date().toISOString() }, { merge: true });
         } catch (error) {
-            console.error('Error saving level analytics to user profile:', error);
+            console.error('Error saving level analytics to subcollection:', error);
             throw error;
         }
     }
 
-    // Get analytics for a specific level from user profile (returns array of sessions)
+    // Get analytics for a specific level (query level_sessions subcollection)
     static async getLevelAnalytics(levelId: number): Promise<LevelAnalytics[]> {
         const currentUserId = authService.getCurrentUserId();
         if (!currentUserId) {
             throw new Error('User must be authenticated to get analytics');
         }
 
-        const userDocRef = doc(db, this.collectionName, currentUserId);
-        const docSnap = await getDoc(userDocRef);
-        
-        if (!docSnap.exists()) {
-            return [];
-        }
-
-        const userData = docSnap.data();
-        const levelAnalytics = userData.level_analytics?.[levelId];
-        
-        return Array.isArray(levelAnalytics) ? levelAnalytics : [];
+        const sessionsRef = this.levelSessionsRef(currentUserId);
+        const q = query(sessionsRef, where('level_id', '==', levelId));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(d => d.data() as LevelAnalytics);
     }
 
-    // Get all analytics for current user from user profile (returns array of all sessions)
+    // Get all analytics for current user (all docs in level_sessions subcollection)
     static async getAllUserAnalytics(): Promise<LevelAnalytics[]> {
         const currentUserId = authService.getCurrentUserId();
         if (!currentUserId) {
             throw new Error('User must be authenticated to get analytics');
         }
 
-        const userDocRef = doc(db, this.collectionName, currentUserId);
-        const docSnap = await getDoc(userDocRef);
-        
-        if (!docSnap.exists()) {
-            return [];
-        }
-
-        const userData = docSnap.data();
-        const levelAnalytics = userData.level_analytics || {};
-        
-        // Flatten all level sessions into a single array
-        const allSessions: LevelAnalytics[] = [];
-        Object.values(levelAnalytics).forEach((levelSessions: unknown) => {
-            if (Array.isArray(levelSessions)) {
-                allSessions.push(...(levelSessions as LevelAnalytics[]));
-            }
-        });
-        
-        return allSessions;
+        const sessionsRef = this.levelSessionsRef(currentUserId);
+        const snapshot = await getDocs(sessionsRef);
+        return snapshot.docs.map(d => d.data() as LevelAnalytics);
     }
 
     // Get analytics for a specific day
     static async getDayAnalytics(daySession: string): Promise<LevelAnalytics[]> {
-        const allAnalytics = await this.getAllUserAnalytics();
-        return allAnalytics.filter(session => session.day_session === daySession);
+        const currentUserId = authService.getCurrentUserId();
+        if (!currentUserId) {
+            throw new Error('User must be authenticated to get analytics');
+        }
+        const sessionsRef = this.levelSessionsRef(currentUserId);
+        const q = query(sessionsRef, where('day_session', '==', daySession));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(d => d.data() as LevelAnalytics);
     }
 
     // Get analytics for a specific level on a specific day
     static async getLevelDayAnalytics(levelId: number, daySession: string): Promise<LevelAnalytics[]> {
-        const levelAnalytics = await this.getLevelAnalytics(levelId);
-        return levelAnalytics.filter(session => session.day_session === daySession);
+        const currentUserId = authService.getCurrentUserId();
+        if (!currentUserId) {
+            throw new Error('User must be authenticated to get analytics');
+        }
+        const sessionsRef = this.levelSessionsRef(currentUserId);
+        const q = query(
+            sessionsRef,
+            where('level_id', '==', levelId),
+            where('day_session', '==', daySession)
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(d => d.data() as LevelAnalytics);
     }
 
     // Helper methods for tracking specific events (in-memory only)

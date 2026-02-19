@@ -18,7 +18,7 @@ const TimerDisplay: React.FC = () => {
     const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
     // Calculate percentage for progress bar
-    const percentage = (remainingTime / levelInfo.timeLimitInSeconds) * 100;
+    const percentage = (remainingTime / (levelInfo?.timeLimitInSeconds || 1)) * 100;
     
     // Color based on remaining time
     const getColorClass = () => {

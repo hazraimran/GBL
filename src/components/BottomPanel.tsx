@@ -40,7 +40,8 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
         isAiHelperON,
         levelInfo,
         commandsUsed,
-        exectuting
+        exectuting,
+        setExecuting
     } = useContext(GameContext);
     const { saveCommandsUsed } = useGameStorage();
 
@@ -71,11 +72,24 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 
     const handleBackToLevels = useCallback(() => {
         if (levelInfo) {
-            navTo('LEVELS');
+            // Stop execution immediately if running to prevent blocking navigation
+            if (exectuting && setExecuting) {
+                setExecuting(false);
+            }
+            
+            // Save commands and navigate immediately - don't wait for reset
             saveCommandsUsed(levelInfo.id, commandsUsed);
-            onReset();
+            navTo('LEVELS');
+            
+            // Reset asynchronously to avoid blocking navigation
+            requestAnimationFrame(() => {
+                try {
+                    onReset();
+                } catch (error) {
+                }
+            });
         }
-    }, [navTo, saveCommandsUsed, levelInfo, commandsUsed, onReset]);
+    }, [navTo, saveCommandsUsed, levelInfo, commandsUsed, onReset, exectuting, setExecuting]);
 
 
     const handleShowInfo = useCallback(() => {

@@ -1,8 +1,41 @@
 // utils/progressService.ts
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { CommandWithArgType } from '../../types/game';
 import { authService } from './authentication';
+
+const USERS_COLLECTION = 'users';
+const LEVEL_RECORDS_SUBCOLLECTION = 'level_records';
+
+// Firestore string value limit is 1,048,487 bytes; use a safe limit with margin
+const MAX_COMMANDSUSED_BYTES = 1_000_000;
+
+/** Return byte length of a string (UTF-8). */
+function byteLength(str: string): number {
+    return new TextEncoder().encode(str).length;
+}
+
+/**
+ * Ensure commandsUsed serialization fits within Firestore size limit.
+ * If over limit, truncate to a prefix of the array that fits and return valid JSON string.
+ */
+function capCommandsUsedForFirestore(commandsUsed: CommandWithArgType[] | string): string {
+    const str = Array.isArray(commandsUsed) ? JSON.stringify(commandsUsed) : commandsUsed;
+    if (byteLength(str) <= MAX_COMMANDSUSED_BYTES) return str;
+    let arr: CommandWithArgType[];
+    try {
+        arr = Array.isArray(commandsUsed) ? commandsUsed : (JSON.parse(commandsUsed) as CommandWithArgType[]);
+    } catch {
+        return '[]';
+    }
+    let n = arr.length;
+    while (n > 0) {
+        const truncated = JSON.stringify(arr.slice(0, n));
+        if (byteLength(truncated) <= MAX_COMMANDSUSED_BYTES) return truncated;
+        n = Math.floor(n * 0.9) || n - 1;
+    }
+    return '[]';
+}
 
 interface Record {
     id: number,
@@ -13,7 +46,11 @@ interface Record {
 }
 
 export class UploadRecordService {
-    static async uploadRecord(record: Record, uid: string | null): Promise<void> {
+    private static levelRecordsRef(userId: string) {
+        return collection(db, USERS_COLLECTION, userId, LEVEL_RECORDS_SUBCOLLECTION);
+    }
+
+    static async uploadRecord(record: Record | Record[], uid: string | null): Promise<void> {
         if (!uid) {
             throw new Error('User ID is required');
         }
@@ -25,11 +62,30 @@ export class UploadRecordService {
         }
 
         try {
-            const userDocRef = doc(db, 'users', uid);
+            // Handle both single record and array of records
+            const records = Array.isArray(record) ? record : [record];
+            const recordsRef = this.levelRecordsRef(uid);
+            const timestamp = new Date().toISOString();
 
-            await setDoc(userDocRef, {
-                records: record
-            }, { merge: true });
+            // Upload each record as a separate document in subcollection to avoid document size limits
+            const uploadPromises = records.map(async (rec) => {
+                const commandsUsedStr = capCommandsUsedForFirestore(rec.commandsUsed);
+
+                return addDoc(recordsRef, {
+                    level_id: rec.id,
+                    commandsUsed: commandsUsedStr,
+                    executeCnt: rec.executeCnt,
+                    errorCnt: rec.errorCnt,
+                    timeSpent: rec.timeSpent,
+                    timestamp
+                });
+            });
+
+            await Promise.all(uploadPromises);
+
+            // Update user's lastPlayed timestamp (small update, won't cause size issues)
+            const userDocRef = doc(db, USERS_COLLECTION, uid);
+            await setDoc(userDocRef, { lastPlayed: timestamp }, { merge: true });
         } catch (error) {
             console.error('Error uploading record:', error);
             throw error;
@@ -48,24 +104,25 @@ export class UploadRecordService {
         }
 
         try {
-            const userDocRef = doc(db, 'users', uid);
-            const userDoc = await getDoc(userDocRef);
+            // Query records from subcollection
+            const recordsRef = this.levelRecordsRef(uid);
+            const querySnapshot = await getDocs(recordsRef);
 
-            if (!userDoc.exists()) {
+            if (querySnapshot.empty) {
                 return [];
             }
 
-            const userData = userDoc.data();
-            const records = userData.records || {};
-
-            // 将对象格式转回数组格式
-            return Object.values(records).map((record: unknown) => {
-                const typedRecord = record as Record;
+            // Convert subcollection documents back to Record format
+            return querySnapshot.docs.map((docSnap) => {
+                const data = docSnap.data();
                 return {
-                    ...typedRecord,
-                    commandsUsed: typeof typedRecord.commandsUsed === 'string' 
-                        ? JSON.parse(typedRecord.commandsUsed) 
-                        : typedRecord.commandsUsed
+                    id: data.level_id,
+                    commandsUsed: typeof data.commandsUsed === 'string' 
+                        ? JSON.parse(data.commandsUsed) 
+                        : data.commandsUsed,
+                    executeCnt: data.executeCnt,
+                    errorCnt: data.errorCnt,
+                    timeSpent: data.timeSpent
                 };
             });
         } catch (error) {

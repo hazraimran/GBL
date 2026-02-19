@@ -15,7 +15,6 @@ import { useTimeCap } from '../hooks/useTimeCap';
 import TimeExpiredModal from '../components/modals/TimeExpiredModal';
 import SolutionStepsModal from '../components/modals/SolutionStepsModal';
 import TimerDisplay from '../components/TimerDisplay';
-import gameTimer from '../utils/Timer';
 
 const PhaserGameContent = () => {
     const gameRef = useRef<HTMLDivElement>(null);
@@ -31,7 +30,7 @@ const PhaserGameContent = () => {
     const analytics = useAnalytics();
     
     // Time cap hook
-    const { timeExpired, resetTimer } = useTimeCap(levelInfo);
+    const { timeExpired, resetTimer: resetTimeCapTimer } = useTimeCap(levelInfo);
     
     // Track level start time for time-to-first-run calculation
     const levelStartTimeRef = useRef<number | null>(null);
@@ -68,6 +67,10 @@ const PhaserGameContent = () => {
             executeCnt: number;
             commandCnt: number;
         }) => {
+            if (executionSafetyTimeoutRef.current) {
+                clearTimeout(executionSafetyTimeoutRef.current);
+                executionSafetyTimeoutRef.current = null;
+            }
             VictorySoundPlayer.play();
             setGameStatus({
                 executeCnt: data.executeCnt,
@@ -96,14 +99,16 @@ const PhaserGameContent = () => {
             // unlock next level
             unlockNextLevel(levelInfo.id);
             
-            // Resume timer when execution finishes
-            gameTimer.resume();
             setExecuting(false);
         }
 
         const levelFailed = (data: {
             message: string;
         }) => {
+            if (executionSafetyTimeoutRef.current) {
+                clearTimeout(executionSafetyTimeoutRef.current);
+                executionSafetyTimeoutRef.current = null;
+            }
             setErrorCnt(errorCnt + 1);
             setShowFailurePrompt(true);
             setFailurePromptMessage(data.message);
@@ -111,8 +116,6 @@ const PhaserGameContent = () => {
             // Track level failure in analytics
             analytics.trackError();
             
-            // Resume timer when execution finishes (even on failure)
-            gameTimer.resume();
             setExecuting(false);
         }
 
@@ -174,16 +177,30 @@ const PhaserGameContent = () => {
         };
     }, []);
 
+    // Safety: if execution never completes (e.g. scene stuck), resume timer and clear executing state
+    const executionSafetyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const EXECUTION_SAFETY_MS = 120_000; // 2 minutes
+
     const handleRunCode = () => {
         saveCommandsUsed(levelInfo!.id, commandsUsed);
         if (!mainSceneRef.current) {
-            console.warn('Main scene not initialized');
             return;
         }
-        
-        // Pause timer when execution starts
-        gameTimer.pause();
+
+        // Clear any previous safety timeout
+        if (executionSafetyTimeoutRef.current) {
+            clearTimeout(executionSafetyTimeoutRef.current);
+            executionSafetyTimeoutRef.current = null;
+        }
+
+        // Start execution immediately - don't block on timer reset
         setExecuting(true);
+
+        // Safety: force clear executing if we never get levelCompleted/levelFailed
+        executionSafetyTimeoutRef.current = setTimeout(() => {
+            executionSafetyTimeoutRef.current = null;
+            setExecuting(false);
+        }, EXECUTION_SAFETY_MS);
 
         // Track attempt count and time-to-first-run
         const now = Date.now();
@@ -201,28 +218,39 @@ const PhaserGameContent = () => {
             setShowReadyPrompt(false);
         }
 
+        // Start execution immediately
         mainSceneRef.current.executeCommands(commandsUsed);
+
+        // Restart timer asynchronously to avoid blocking execution start
+        requestAnimationFrame(() => resetTimeCapTimer());
     };
 
 
     const handleReset = () => {
+        if (executionSafetyTimeoutRef.current) {
+            clearTimeout(executionSafetyTimeoutRef.current);
+            executionSafetyTimeoutRef.current = null;
+        }
         setShowFailurePrompt(false);
         if (!mainSceneRef.current) {
-            console.warn('Main scene not initialized');
             return;
         }
 
         // Track reset in analytics
         analytics.trackReset();
 
-        // Resume timer if it was paused during execution
-        if (exectuting) {
-            gameTimer.resume();
-        }
+        // Stop execution and reset immediately - don't block on timer reset
         setExecuting(false);
         mainSceneRef.current.reset();
 
-        gameInstanceRef.current?.scene.start('MainScene');
+        // Restart scene with init data so init() receives config and the scene renders correctly
+        gameInstanceRef.current?.scene.start('MainScene', {
+            errorHandler: errorHandlerRef.current,
+            sceneConfig: parseConfig(levelInfo),
+        });
+
+        // Restart timer asynchronously to avoid blocking reset
+        requestAnimationFrame(() => resetTimeCapTimer());
     };
 
     useEffect(() => {
@@ -243,6 +271,10 @@ const PhaserGameContent = () => {
     // Handle time expiration
     useEffect(() => {
         if (timeExpired && levelInfo?.timeLimitInSeconds) {
+            if (executionSafetyTimeoutRef.current) {
+                clearTimeout(executionSafetyTimeoutRef.current);
+                executionSafetyTimeoutRef.current = null;
+            }
             // Pause game execution if running
             if (mainSceneRef.current) {
                 mainSceneRef.current.stopExecution();
@@ -255,12 +287,13 @@ const PhaserGameContent = () => {
 
     // Handle Continue Playing action
     const handleContinuePlaying = () => {
-        resetTimer();
         setShowTimeExpiredModal(false);
-        // Resume game if needed
+        // Resume game immediately if needed
         if (mainSceneRef.current) {
             mainSceneRef.current.resumeExecution();
         }
+        // Restart timer asynchronously to avoid blocking
+        requestAnimationFrame(() => resetTimeCapTimer());
     };
 
     // Handle Know Answer action - show solution steps in a popup; do not insert into command area
@@ -268,7 +301,8 @@ const PhaserGameContent = () => {
         if (levelInfo?.solution) {
             setShowTimeExpiredModal(false);
             setShowSolutionStepsModal(true);
-            resetTimer();
+            // Restart timer asynchronously to avoid blocking
+            requestAnimationFrame(() => resetTimeCapTimer());
         }
     };
 

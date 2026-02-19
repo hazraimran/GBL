@@ -14,7 +14,6 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
     const [isShaking, setIsShaking] = React.useState(shaking);
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-        console.log('[Command] Drag start:', value.command, 'idx:', idx);
         window.getSelection()?.removeAllRanges();
         // Stop event propagation to prevent parent elements from becoming draggable
         e.stopPropagation();
@@ -26,7 +25,6 @@ const Command = forwardRef<HTMLDivElement, DraggableItemProps>((props, ref) => {
         e.dataTransfer.setData('arg', value.arg ? CircularJSON.stringify(value.arg) : '');
         e.dataTransfer.effectAllowed = 'move';
 
-        console.log('[Command] Drag data set - command:', value.command, 'arg:', value.arg);
         setDragging(true);
 
         if (isShaking) {

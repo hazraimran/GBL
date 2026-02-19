@@ -20,6 +20,13 @@ interface UploadReport {
     timeSpent: number;
 }
 
+// localStorage is typically 5–10MB per origin; leave margin for other keys
+const MAX_LEVELS_STORAGE_BYTES = 4 * 1024 * 1024;
+
+function byteLength(str: string): number {
+    return new TextEncoder().encode(str).length;
+}
+
 class GameStorageService {
     private storagePrefix: string = 'game';
     private fingerprintService: FingerprintService;
@@ -31,6 +38,41 @@ class GameStorageService {
 
     private getKey(key: string): string {
         return `${this.storagePrefix}:${key}`;
+    }
+
+    /**
+     * Write levels to localStorage. On QuotaExceededError, retries with truncated
+     * commandsUsed so we don't lose progress metadata (executeCnt, timeSpent, etc.).
+     */
+    private setLevelsToStorage(levels: LevelInfo[]): void {
+        const trySet = (payload: LevelInfo[]) => {
+            const json = CircularJSON.stringify(payload);
+            localStorage.setItem(this.getKey('levels'), json);
+        };
+        try {
+            trySet(levels);
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'QuotaExceededError') {
+                const truncated = levels.map((level) => ({
+                    ...level,
+                    commandsUsed: Array.isArray(level.commandsUsed)
+                        ? level.commandsUsed.slice(0, 200)
+                        : []
+                }));
+                try {
+                    trySet(truncated);
+                } catch (err2) {
+                    if (err2 instanceof DOMException && err2.name === 'QuotaExceededError') {
+                        const minimal = levels.map((level) => ({ ...level, commandsUsed: [] }));
+                        trySet(minimal);
+                    } else {
+                        throw err2;
+                    }
+                }
+            } else {
+                throw err;
+            }
+        }
     }
 
     async getOrCreateUID(): Promise<string> {
@@ -52,7 +94,6 @@ class GameStorageService {
             const visitorId = await this.fingerprintService.getVisitorId();
             return `${visitorId}-${baseId}`;
         } catch {
-            console.warn('Failed to generate fingerprint, using fallback ID');
             return baseId;
         }
     }
@@ -130,24 +171,46 @@ class GameStorageService {
                 ...level,
                 timeLimitInSeconds: level.timeLimitInSeconds ?? 300
             }));
-            localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levelsWithDefaults));
+            this.setLevelsToStorage(levelsWithDefaults);
         }
     }
 
     setRecords(records: LevelRecord[]): void {
         const levels = this.getLevelsInfo();
-        
+
         records.forEach(record => {
             const levelIndex = levels.findIndex(l => l.id === record.id);
             if (levelIndex !== -1) {
-                levels[levelIndex] = {
+                const merged = {
                     ...levels[levelIndex],
                     ...record
                 };
+                // Cap commandsUsed from Firebase so merged payload doesn't blow localStorage quota
+                if (merged.commandsUsed != null) {
+                    const raw = typeof merged.commandsUsed === 'string'
+                        ? merged.commandsUsed
+                        : CircularJSON.stringify(merged.commandsUsed);
+                    if (byteLength(raw) > MAX_LEVELS_STORAGE_BYTES / Math.max(1, levels.length)) {
+                        try {
+                            merged.commandsUsed = typeof merged.commandsUsed === 'string'
+                                ? (JSON.parse(merged.commandsUsed) as CommandWithArgType[]).slice(0, 500)
+                                : merged.commandsUsed.slice(0, 500);
+                        } catch {
+                            merged.commandsUsed = [];
+                        }
+                    } else if (typeof merged.commandsUsed === 'string') {
+                        try {
+                            merged.commandsUsed = JSON.parse(merged.commandsUsed) as CommandWithArgType[];
+                        } catch {
+                            merged.commandsUsed = [];
+                        }
+                    }
+                }
+                levels[levelIndex] = merged;
             }
         });
 
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        this.setLevelsToStorage(levels);
     }
 
     getLevelInfo(levelId: number): LevelInfo {
@@ -166,40 +229,36 @@ class GameStorageService {
     setLevelInfo(levelId: number, levelInfo: LevelInfo): void {
         const levels = this.getLevelsInfo();
         levels[levelId] = levelInfo;
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        this.setLevelsToStorage(levels);
     }
 
     addAccessedTime(levelId: number): void {
         const levels = this.getLevelsInfo();
         levels[levelId].timeAccessed += 1;
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        this.setLevelsToStorage(levels);
     }
 
     unlockNextLevel(currentLevel: number): void {
         const levels = this.getLevelsInfo();
         let nextLevel = currentLevel;
-        while((nextLevel < (levels.length - 1)) && !levels[nextLevel].visible) {            
+        while((nextLevel < (levels.length - 1)) && !levels[nextLevel].visible) {
             nextLevel++;
         }
 
         levels[nextLevel].isLocked = false;
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        this.setLevelsToStorage(levels);
     }
 
     saveCommandsUsed(levelId: number, commandsUsed: CommandWithArgType[]): void {
         const levels = this.getLevelsInfo();
         levels[levelId - 1].commandsUsed = commandsUsed;
-        const levelsJson = CircularJSON.stringify(levels);
-        console.log('[GameStorageService] Commands saved to localStorage for level', levelId);
-        console.log('[GameStorageService] Commands JSON:', CircularJSON.stringify(commandsUsed, null, 2));
-        console.log('[GameStorageService] Full levels JSON (first 1000 chars):', levelsJson.substring(0, 1000));
-        localStorage.setItem(this.getKey('levels'), levelsJson);
+        this.setLevelsToStorage(levels);
     }
 
     updateTimeSpent(levelId: number, timeSpent: number): void {
         const levels = this.getLevelsInfo();
         levels[levelId - 1].timeSpent += timeSpent;
-        localStorage.setItem(this.getKey('levels'), CircularJSON.stringify(levels));
+        this.setLevelsToStorage(levels);
     }
 
     extractUploadReport(errorCnt: number): UploadReport[] {

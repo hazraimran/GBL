@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
 import { useEconomySetting } from '../hooks/useFirestore/useEconomySetting';
+import gameTimer from '../utils/Timer';
 
 const Popup = () => {
     const { gameStatus, levelInfo, setCommandsUsed, showPopup, setShowPopup, navTo, resetFn } = useContext(GameContext);
@@ -129,6 +130,7 @@ const Popup = () => {
                     </button>
                     <button
                         onClick={() => {
+                            gameTimer.pauseAndSave();
                             navTo('LEVELS');
                             setCommandsUsed([]);
                             setShowPopup(false);
