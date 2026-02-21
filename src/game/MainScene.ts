@@ -734,7 +734,7 @@ export class MainScene extends Phaser.Scene {
                     resolved = true;
                     this.activeTweenPromises.delete(safeResolve);
                     if (this.worker?.sprite) this.worker.sprite.off('animationcomplete', onComplete);
-                    if (timeoutId !== null) clearTimeout(timeoutId);
+                    // if (timeoutId !== null) clearTimeout(timeoutId);
                     resolve();
                 }
             };
@@ -756,10 +756,10 @@ export class MainScene extends Phaser.Scene {
             this.worker.sprite.on('animationcomplete', onComplete);
             
             // Safety timeout in case animation doesn't fire complete event
-            let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-                timeoutId = null;
-                safeResolve();
-            }, timeoutMs);
+            // let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+            //     timeoutId = null;
+            //     safeResolve();
+            // }, timeoutMs);
         });
     }
 
@@ -1211,7 +1211,7 @@ export class MainScene extends Phaser.Scene {
         carriedStone.shadow?.setVisible(true);
 
         // Small delay to complete animation - reduced for faster execution
-        await this.delay(100);
+        // await this.delay(100);
     }
 
     private async handleDropToOutput(): Promise<void> {
@@ -1252,7 +1252,7 @@ export class MainScene extends Phaser.Scene {
             if (this.stopped) return resolve();
 
             // Declare timer refs so safeResolve can clear them when invoked from stopExecution()
-            let timeoutId: ReturnType<typeof setTimeout> | null = null;
+            // let timeoutId: ReturnType<typeof setTimeout> | null = null;
             let checkInterval: ReturnType<typeof setInterval> | null = null;
 
             // Wrapper to ensure promise resolves only once and is tracked
@@ -1261,10 +1261,10 @@ export class MainScene extends Phaser.Scene {
                 if (!resolved) {
                     resolved = true;
                     this.activeTweenPromises.delete(safeResolve);
-                    if (timeoutId !== null) {
-                        clearTimeout(timeoutId);
-                        timeoutId = null;
-                    }
+                    // if (timeoutId !== null) {
+                    //     clearTimeout(timeoutId);
+                    //     timeoutId = null;
+                    // }
                     if (checkInterval !== null) {
                         clearInterval(checkInterval);
                         checkInterval = null;
@@ -1291,13 +1291,13 @@ export class MainScene extends Phaser.Scene {
             const duration = Math.max(50, (distance * baseSpeed) / this.config.speed);
 
             // Safety timeout: resolve after max duration + small buffer to prevent hanging
-            timeoutId = setTimeout(() => {
-                if (this.worker && !this.stopped) {
-                    this.worker.sprite.stop();
-                    this.worker.sprite.play('rest', true);
-                }
-                safeResolve();
-            }, duration + 200); // duration is already in ms, add 200ms buffer (reduced from 1000ms)
+            // timeoutId = setTimeout(() => {
+            //     if (this.worker && !this.stopped) {
+            //         this.worker.sprite.stop();
+            //         this.worker.sprite.play('rest', true);
+            //     }
+            //     safeResolve();
+            // }, duration + 200); // duration is already in ms, add 200ms buffer (reduced from 1000ms)
 
             // Set animation based on whether worker is carrying a stone
             if (this.worker.stoneCarried) {
@@ -1325,7 +1325,7 @@ export class MainScene extends Phaser.Scene {
                 duration,
                 ease: 'Linear',
                 onComplete: () => {
-                    clearTimeout(timeoutId);
+                    // clearTimeout(timeoutId);
                     if (checkInterval) clearInterval(checkInterval);
                     if (this.worker?.sprite && !this.stopped) {
                         this.worker.sprite.stop();
@@ -1347,7 +1347,7 @@ export class MainScene extends Phaser.Scene {
             // Check periodically if stopped and resolve early
             checkInterval = setInterval(() => {
                 if (this.stopped) {
-                    clearTimeout(timeoutId);
+                    // clearTimeout(timeoutId);
                     if (checkInterval) clearInterval(checkInterval);
                     this.tweens.remove(workerTween);
                     if (this.worker) {
