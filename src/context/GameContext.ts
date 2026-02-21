@@ -153,7 +153,7 @@ const GameContext = createContext<GameContextType>({
     setShowInfo: () => { },
     navTo: () => { },
     showModal: false,
-    muted: false,
+    muted: true,
     setMuted: () => { },
     playBGM: false,
     setPlayBGM: () => { },

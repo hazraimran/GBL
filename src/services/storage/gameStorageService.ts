@@ -277,7 +277,9 @@ class GameStorageService {
     }
 
     getMuteState(): boolean {
-        return localStorage.getItem(this.getKey('muteState')) === 'true';
+        const stored = localStorage.getItem(this.getKey('muteState'));
+        if (stored === null) return true;
+        return stored === 'true';
     }
 
     resetGameData(): boolean {

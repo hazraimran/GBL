@@ -10,12 +10,12 @@ export const useGameStorage = () => {
     const [gameStorage] = useState(GameStorageService);
     const [uid, setUid] = useState<string | null>(null);
     const [coins, setCoins] = useState<number>(0);
-    const {setMuted} = useContext(GameContext);
+    const { setMuted } = useContext(GameContext);
 
     useEffect(() => {
         const initUID = async () => {
             const authUserId = authService.getCurrentUserId();
-            
+
             if (authUserId) {
                 setUid(authUserId);
                 await StateSyncService.syncWithFirebase();
@@ -23,12 +23,12 @@ export const useGameStorage = () => {
                 const id = await gameStorage.getOrCreateUID();
                 setUid(id);
             }
-            
+
             updateCoinsState();
         };
-        
+
         initUID();
-        
+
         const unsubscribe = authService.onAuthStateChanged(async (user) => {
             if (user) {
                 setUid(user.uid);
@@ -38,7 +38,7 @@ export const useGameStorage = () => {
                 setUid(id);
             }
         });
-        
+
         return () => unsubscribe();
     }, [gameStorage]);
 

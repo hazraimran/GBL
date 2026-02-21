@@ -66,7 +66,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }): ReactNode => {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const resetFnRef = useRef(() => { });
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [muted, setMuted] = useState<boolean>(false);
+  const [muted, setMuted] = useState<boolean>(true);
   const [playBGM, setPlayBGM] = useState<boolean>(false);
   const [tutorial, setTutorial] = useState<boolean>(true);
   const [character, setCharacter] = useState<string>('');

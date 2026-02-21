@@ -72,24 +72,9 @@ const BottomPanel: React.FC<BottomPanelProps> = memo(({
 
     const handleBackToLevels = useCallback(() => {
         if (levelInfo) {
-            // Stop execution immediately if running to prevent blocking navigation
-            if (exectuting && setExecuting) {
-                setExecuting(false);
-            }
-            
-            // Save commands and navigate immediately - don't wait for reset
-            saveCommandsUsed(levelInfo.id, commandsUsed);
-            navTo('LEVELS');
-            
-            // Reset asynchronously to avoid blocking navigation
-            requestAnimationFrame(() => {
-                try {
-                    onReset();
-                } catch (error) {
-                }
-            });
+            window.location.reload();
         }
-    }, [navTo, saveCommandsUsed, levelInfo, commandsUsed, onReset, exectuting, setExecuting]);
+    }, [levelInfo]);
 
 
     const handleShowInfo = useCallback(() => {

@@ -249,28 +249,6 @@ export class MainScene extends Phaser.Scene {
                 // If execution appears to be running but hasn't made progress in 30 seconds, reset character
                 // This handles cases where execution is stuck waiting for a promise
                 if (!this.stopped && this.commandsToExecute && Date.now() - this.lastExecutionActivity > 30000) {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            runId: 'pre-fix',
-                            hypothesisId: 'H1-H4',
-                            location: 'MainScene.ts:create:stuck-check',
-                            message: 'Execution appears stuck (no progress for 30s)',
-                            data: {
-                                stopped: this.stopped,
-                                hasCommands: !!this.commandsToExecute,
-                                commandsLength: this.commandsToExecute ? this.commandsToExecute.length : 0,
-                                curLine: this.curLine,
-                                cmdExcCnt: this.cmdExcCnt,
-                                lastExecutionActivityDiffMs: Date.now() - this.lastExecutionActivity,
-                                animKey
-                            },
-                            timestamp: Date.now()
-                        })
-                    }).catch(() => { });
-                    // #endregion agent log
                     if (animKey && animKey !== 'rest') {
                         this.worker.sprite.stop();
                         this.worker.sprite.play('rest', true);
@@ -501,26 +479,6 @@ export class MainScene extends Phaser.Scene {
         this.curLine = 0;
         this.lastExecutionActivity = Date.now(); // Reset activity tracking
 
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                runId: 'pre-fix',
-                hypothesisId: 'H1-H3',
-                location: 'MainScene.ts:executeCommands:entry',
-                message: 'executeCommands entry',
-                data: {
-                    level: this.config.currentLevel,
-                    commandsLength: processedCommands.length,
-                    stopped: this.stopped,
-                    curLine: this.curLine
-                },
-                timestamp: Date.now()
-            })
-        }).catch(() => { });
-        // #endregion agent log
-
         try {
         // Command execution loop
         while (this.curLine < processedCommands.length && !this.stopped) {
@@ -530,27 +488,6 @@ export class MainScene extends Phaser.Scene {
             this.curLine++;
             this.cmdExcCnt++;
             this.lastExecutionActivity = Date.now(); // Update activity on each command
-
-            // #region agent log
-            fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    runId: 'pre-fix',
-                    hypothesisId: 'H1-H3',
-                    location: 'MainScene.ts:executeCommands:loop',
-                    message: 'executeCommands loop iteration',
-                    data: {
-                        level: this.config.currentLevel,
-                        curLine: this.curLine,
-                        command: commandWithArg.command,
-                        jumpCnt,
-                        stopped: this.stopped
-                    },
-                    timestamp: Date.now()
-                })
-            }).catch(() => { });
-            // #endregion agent log
 
             try {
                 // Double-check stopped before executing command
@@ -589,25 +526,6 @@ export class MainScene extends Phaser.Scene {
             this.worker.sprite.play('rest', true);
         }
 
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/45d67e7f-cd1b-47f2-aa26-61a4a4c9204a', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                runId: 'pre-fix',
-                hypothesisId: 'H1-H3',
-                location: 'MainScene.ts:executeCommands:exit',
-                message: 'executeCommands exit',
-                data: {
-                    level: this.config.currentLevel,
-                    stopped: this.stopped,
-                    curLine: this.curLine,
-                    commandsLength: this.commandsToExecute ? this.commandsToExecute.length : 0
-                },
-                timestamp: Date.now()
-            })
-        }).catch(() => { });
-        // #endregion agent log
         } finally {
             this.commandsToExecute = null;
         }

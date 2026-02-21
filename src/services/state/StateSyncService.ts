@@ -7,12 +7,19 @@ import { getLocalLevels } from '../firestore/levels';
 const USERS_COLLECTION = 'users';
 const LEVEL_RECORDS_SUBCOLLECTION = 'level_records';
 
+let lastSyncedUserId: string | null = null;
+
 export class StateSyncService {
     static async syncWithFirebase(): Promise<void> {
         const userId = authService.getCurrentUserId();
         if (!userId) {
+            lastSyncedUserId = null;
             return;
         }
+        if (userId === lastSyncedUserId) {
+            return;
+        }
+        lastSyncedUserId = userId;
 
         try {
             const userDocRef = doc(db, USERS_COLLECTION, userId);
@@ -67,6 +74,7 @@ export class StateSyncService {
                 // No user document found in Firebase. Local state will be used.
             }
         } catch (error) {
+            lastSyncedUserId = null;
             console.error('Error syncing state with Firebase:', error);
         }
     }

@@ -131,9 +131,9 @@ const Popup = () => {
                     <button
                         onClick={() => {
                             gameTimer.pauseAndSave();
-                            navTo('LEVELS');
                             setCommandsUsed([]);
                             setShowPopup(false);
+                            window.location.reload();
                         }}
                         className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-['Comic Sans MS'] text-lg flex items-center gap-2"
                     >

@@ -48,9 +48,11 @@ function AudioPlayer() {
             audioRef.current.src = audioUrl;
             setCurrentBgm(audioUrl);
 
-            // Play the new BGM
-            audioRef.current.play().catch(error => {
-                console.error("Failed to play audio:", error);
+            // Play the new BGM (may fail with NotAllowedError until user has interacted)
+            audioRef.current.play().catch((error: Error & { name?: string }) => {
+                if (error?.name !== 'NotAllowedError') {
+                    console.error("Failed to play audio:", error);
+                }
             });
         }
     }, [currentScene, currentBgm, playBGM]);

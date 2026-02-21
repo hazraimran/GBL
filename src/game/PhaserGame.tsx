@@ -7,7 +7,6 @@ import { ErrorHandler } from '../ErrorHandler';
 import { LevelInfo } from '../types/level';
 import EventManager from '../EventManager';
 import { useGameStorage } from '../hooks/useStorage/useGameStorage';
-import { UploadRecordService } from '../services/firestore/uploadRecordService';
 import VictorySoundPlayer from './VictorySoundPlayer';
 import InstructionPanel from '../components/InstructionPanel/InstructionPanel';
 import { AnalyticsProvider, useAnalytics } from '../context/AnalyticsContext';
@@ -24,7 +23,7 @@ const PhaserGameContent = () => {
         commandsUsed, setCommandsUsed, setGameStatus, setShowPopup, setExecuting, exectuting, setErrorCnt, errorCnt,
         showTimeExpiredModal, setShowTimeExpiredModal } = useContext(GameContext);
     const [showSolutionStepsModal, setShowSolutionStepsModal] = useState(false);
-    const { extractUploadReport, saveCommandsUsed, unlockNextLevel, uid } = useGameStorage();
+    const { saveCommandsUsed, unlockNextLevel } = useGameStorage();
     
     // Get analytics from context
     const analytics = useAnalytics();
@@ -78,9 +77,6 @@ const PhaserGameContent = () => {
             });
             setShowPopup(true);
 
-            const report = extractUploadReport(errorCnt);
-            UploadRecordService.uploadRecord(report, uid);
-
             // Calculate time-to-solution
             let timeToSolutionSec: number | undefined;
             if (levelStartTimeRef.current !== null) {
@@ -126,7 +122,7 @@ const PhaserGameContent = () => {
             EventManager.remove('levelCompleted', levelCompleted);
             EventManager.remove('levelFailed', levelFailed);
         }
-    }, [uid, analytics, levelInfo.id, errorCnt]);
+    }, [analytics, levelInfo.id, errorCnt]);
 
     useEffect(() => {
         if (!gameRef.current) return;
